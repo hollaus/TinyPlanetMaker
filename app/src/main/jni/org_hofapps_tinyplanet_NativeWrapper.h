@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_hofapps_tinyplanet_NativeWrapper
+ * Method:    nativeLogPolar
+ * Signature: (JJFFDDD)V
+ */
+JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeLogPolar
+  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     org_hofapps_tinyplanet_NativeWrapper
  * Method:    getStringFromNative
  * Signature: ()Ljava/lang/String;
  */

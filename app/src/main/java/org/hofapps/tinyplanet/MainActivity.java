@@ -1,9 +1,18 @@
 package org.hofapps.tinyplanet;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,10 +21,27 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("opencv_java");
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Mat m = Mat.zeros(100,400, CvType.CV_8UC3);
+
+
+        Core.putText(m, "hi there ;)", new Point(30, 80), Core.FONT_HERSHEY_SCRIPT_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
+
+        // convert to bitmap:
+        Bitmap bm = Bitmap.createBitmap(m.cols(), m.rows(),Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(m, bm);
+
+
+        // find the imageview and draw it!
+        ImageView iv = (ImageView) findViewById(R.id.imageView);
+        iv.setImageBitmap(bm);
+
+
     }
 
 

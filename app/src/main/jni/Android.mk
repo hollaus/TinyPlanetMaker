@@ -9,7 +9,7 @@ OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=SHARED
 include ${OPENCVROOT}/sdk/native/jni/OpenCV.mk
 
-LOCAL_SRC_FILES := org_hofapps_tinyplanet_NativeWrapper.cpp
+LOCAL_SRC_FILES := NativeWrapper.cpp
 LOCAL_LDLIBS += -llog
 LOCAL_MODULE := MyLib
 
