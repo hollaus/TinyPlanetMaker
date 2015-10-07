@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">TinyPlanet</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Planet size</string>
     <string name="action_settings">Settings</string>
 </resources>
