@@ -14,21 +14,60 @@
         android:id="@+id/imageView"
         android:layout_centerHorizontal="true"
         />
-    <TextView android:text="@string/hello_world"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/size_textView"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/size_seekBar"
-        android:layout_below="@id/imageView"
-        />
-    <SeekBar
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/size_seekBar"
-        android:layout_below="@id/imageView"
-        android:layout_alignParentRight="true"
 
-        />
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
+        android:layout_centerHorizontal="true"
+        >
+        <TableRow>
+           <TextView
+                android:text="@string/hello_world"
+                android:id="@+id/size_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/size_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+
+                />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:text="Log"
+                android:id="@+id/scale_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/scale_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:text="Angle"
+                android:id="@+id/angle_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/angle_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                />
+        </TableRow>
+
+    </TableLayout>
 
 </RelativeLayout>
+
+<!--
+        android:layout_toLeftOf="@+id/size_seekBar"
+-->

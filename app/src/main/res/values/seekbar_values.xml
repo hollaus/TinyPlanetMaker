@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer-array name="size_seekbar_values">
+        <item>0</item>
+        <item>5000</item>
+    </integer-array>
+
+    <integer-array name="scale_seekbar_values">
+        <item>0</item>
+        <item>8000</item>
+    </integer-array>
+
+    <integer-array name="angle_seekbar_values">
+        <item>0</item>
+        <item>360</item>
+    </integer-array>
+
+</resources>

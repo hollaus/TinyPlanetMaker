@@ -10,10 +10,12 @@ import org.opencv.imgproc.Imgproc;
  */
 public class PlanetMaker {
 
+    private static final double DEG2RAD = 0.017453292519943;
+
     private Mat inputImage, planetImage;
     private NativeWrapper nativeWrapper;
     private int outputSize;
-    private double size;
+    private double size, scale, angle;
 
     public PlanetMaker(Mat inputImage, NativeWrapper nativeWrapper,int outputSize) {
 
@@ -38,9 +40,23 @@ public class PlanetMaker {
 
     }
 
+    public void setScale(double scale) {
+
+        this.scale = scale;
+        updatePlanet();
+
+    }
+
+    public void setAngle(double angle) {
+
+        this.angle = angle;
+        updatePlanet();
+
+    }
+
     private void updatePlanet() {
 
-        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, 300, 0);
+        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
 
     }
 

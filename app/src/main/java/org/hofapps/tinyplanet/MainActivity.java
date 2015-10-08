@@ -40,38 +40,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             originalImg = Utils.loadResource(MainActivity.this, R.drawable.nancy, Highgui.CV_LOAD_IMAGE_ANYCOLOR);
 
             previewPlanetMaker = new PlanetMaker(originalImg, nativeWrapper, 500);
-//            int maxLength = 1000;
-//            double scaleFac;
-//            if (originalImg.width() > originalImg.height())
-//                scaleFac = (double) maxLength / originalImg.width();
-//
-//            else
-//                scaleFac = (double) maxLength / originalImg.height();
-//
-////            Imgproc.resize(originalImg, originalImg, new Size(), scaleFac, scaleFac, Imgproc.INTER_CUBIC);
-//
-//            Imgproc.resize(originalImg, originalImg, new Size(1000, 1000),0, 0, Imgproc.INTER_CUBIC);
-//
-//            Core.flip(originalImg.t(), originalImg, 1);
-//
-////            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
-//            Imgproc.cvtColor(originalImg, originalImg, Imgproc.COLOR_BGR2RGBA);
-//            transformedImg = new Mat(originalImg.rows(), originalImg.cols(), originalImg.type());
-//
-////            NativeWrapper wrapper = new NativeWrapper();
-//            nativeWrapper.logPolar(originalImg, transformedImg, 200, 200, 30, 300, 0);
-//
-//
-////            Bitmap bm = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-////            Utils.matToBitmap(m, bm);
-//
-//            Bitmap bm = Bitmap.createBitmap(transformedImg.cols(), transformedImg.rows(), Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(transformedImg, bm);
-//
-//
-//            // find the imageview and draw it!
-//            imageView = (ImageView) findViewById(R.id.imageView);
-//            imageView.setImageBitmap(bm);
 
         }
         catch (IOException exception) {
@@ -118,8 +86,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     public void onSizeChange(int size) {
 
-        previewPlanetMaker.setSize((double) size);
-//        nativeWrapper.logPolar(originalImg, transformedImg, originalImg.width() * 0.5f, originalImg.height() * 0.5f, (double) size, 300, 0);
+        previewPlanetMaker.setSize((double) size * 10);
+        updateImageView();
+
+    }
+
+    @Override
+    public void onScaleChange(int scale) {
+
+        previewPlanetMaker.setScale((double) scale * 30);
+        updateImageView();
+
+    }
+
+    @Override
+    public void onAngleChange(int angle) {
+
+        previewPlanetMaker.setAngle((double) angle);
         updateImageView();
 
     }
