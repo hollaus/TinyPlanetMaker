@@ -2,6 +2,8 @@ package org.hofapps.tinyplanet;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.SeekBar;
 public class MainActivityFragment extends Fragment {
 
     private PlanetChangeCallBack mPlanetChangeCallBacks;
+    private CoordinatorLayout coordinatorLayout;
 
     private static final int ARRAY_MIN_POS = 0;
     private static final int ARRAY_MAX_POS = 1;
@@ -43,6 +46,17 @@ public class MainActivityFragment extends Fragment {
 
         SeekBar angleSeekBar = (SeekBar) view.findViewById(R.id.angle_seekBar);
         angleSeekBar.setOnSeekBarChangeListener(listener);
+
+        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+
+        view.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                View coordinatorLayoutView = findViewById(R.id.slidingLayout);
+                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(view, "Hello Snackbar", Snackbar.LENGTH_LONG).show();
+            }
+        });
 
     }
 

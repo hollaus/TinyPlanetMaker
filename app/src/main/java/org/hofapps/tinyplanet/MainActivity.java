@@ -2,6 +2,7 @@ package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private Mat originalImg, transformedImg;
     private ImageView imageView;
     private PlanetMaker previewPlanetMaker;
+    private CoordinatorLayout coordinatorLayout;
 
     static {
         System.loadLibrary("MyLib");
@@ -35,6 +37,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         nativeWrapper = new NativeWrapper();
 
+
+
+        int a = 0;
+
         try {
 
             originalImg = Utils.loadResource(MainActivity.this, R.drawable.nancy, Highgui.CV_LOAD_IMAGE_ANYCOLOR);
@@ -45,6 +51,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         catch (IOException exception) {
 
         }
+
+//        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+//
+//        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                View coordinatorLayoutView = findViewById(R.id.slidingLayout);
+//                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
+////                Snackbar.make(view, "Hello Snackbar", Snackbar.LENGTH_LONG).show();
+//            }
+//        });
+
 
 
     }
