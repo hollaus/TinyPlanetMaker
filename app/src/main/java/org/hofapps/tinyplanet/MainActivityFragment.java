@@ -1,14 +1,14 @@
 package org.hofapps.tinyplanet;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import android.app.Fragment;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -17,6 +17,8 @@ public class MainActivityFragment extends Fragment {
 
     private PlanetChangeCallBack mPlanetChangeCallBacks;
     private CoordinatorLayout coordinatorLayout;
+    private SettingsFragment settingsFragment;
+    FragmentManager fragmentManager;
 
     private static final int ARRAY_MIN_POS = 0;
     private static final int ARRAY_MAX_POS = 1;
@@ -49,16 +51,31 @@ public class MainActivityFragment extends Fragment {
 
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
+        // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
+
+        fragmentManager = getChildFragmentManager();
+        settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+
+
+
+
+
+
+
         view.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                View coordinatorLayoutView = findViewById(R.id.slidingLayout);
-                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
-//                Snackbar.make(view, "Hello Snackbar", Snackbar.LENGTH_LONG).show();
+
+                if (settingsFragment.isHidden())
+                    fragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in, R.animator.fade_out).show(settingsFragment).commit();
+                else
+                    fragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in, R.animator.fade_out).hide(settingsFragment).commit();
+//                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
             }
         });
 
     }
+
 
     @Override
     public void onAttach(Activity activity) {

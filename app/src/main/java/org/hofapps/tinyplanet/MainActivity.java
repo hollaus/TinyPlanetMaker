@@ -1,5 +1,6 @@
 package org.hofapps.tinyplanet;
 
+import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         nativeWrapper = new NativeWrapper();
 
-
+        FragmentManager fragmentManager = getFragmentManager();
+        SettingsFragment settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
 
         int a = 0;
 
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
 
     }
+
+
 
 
     @Override

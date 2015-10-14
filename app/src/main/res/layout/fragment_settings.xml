@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    >
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/table_layout_tmp"
+        >
+    <TableRow>
+        <TextView
+            android:text="ASDFSADFSADF"
+            android:id="@+id/size_textView_tmp"
+            android:gravity="bottom"
+            android:layout_gravity="center_vertical"
+            />
+        <SeekBar
+            android:id="@+id/size_seekBar"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+
+            />
+    </TableRow>
+
+    </TableLayout>
+
+
+</RelativeLayout>
