@@ -6,23 +6,54 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/table_layout_tmp"
-        >
-    <TableRow>
-        <TextView
-            android:text="ASDFSADFSADF"
-            android:id="@+id/size_textView_tmp"
-            android:gravity="bottom"
-            android:layout_gravity="center_vertical"
-            />
-        <SeekBar
-            android:id="@+id/size_seekBar"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
 
-            />
-    </TableRow>
+        android:layout_centerHorizontal="true"
+        android:id="@+id/table_layout"
+
+
+        >
+        <TableRow>
+            <TextView
+                android:text="@string/hello_world"
+                android:id="@+id/size_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/size_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+
+                />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:text="Log"
+                android:id="@+id/scale_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/scale_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:text="Angle"
+                android:id="@+id/angle_textView"
+                android:gravity="bottom"
+                android:layout_gravity="center_vertical"
+                />
+            <SeekBar
+                android:id="@+id/angle_seekBar"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                />
+        </TableRow>
 
     </TableLayout>
 

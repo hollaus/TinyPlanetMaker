@@ -1,6 +1,7 @@
 package org.hofapps.tinyplanet;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -8,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-import android.app.Fragment;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -40,14 +40,14 @@ public class MainActivityFragment extends Fragment {
 
         SeekBar.OnSeekBarChangeListener listener = getSeekBarListener();
 
-        SeekBar sizeSeekBar = (SeekBar) view.findViewById(R.id.size_seekBar);
-        sizeSeekBar.setOnSeekBarChangeListener(listener);
-
-        SeekBar scaleSeekBar = (SeekBar) view.findViewById(R.id.scale_seekBar);
-        scaleSeekBar.setOnSeekBarChangeListener(listener);
-
-        SeekBar angleSeekBar = (SeekBar) view.findViewById(R.id.angle_seekBar);
-        angleSeekBar.setOnSeekBarChangeListener(listener);
+//        SeekBar sizeSeekBar = (SeekBar) view.findViewById(R.id.size_seekBar);
+//        sizeSeekBar.setOnSeekBarChangeListener(listener);
+//
+//        SeekBar scaleSeekBar = (SeekBar) view.findViewById(R.id.scale_seekBar);
+//        scaleSeekBar.setOnSeekBarChangeListener(listener);
+//
+//        SeekBar angleSeekBar = (SeekBar) view.findViewById(R.id.angle_seekBar);
+//        angleSeekBar.setOnSeekBarChangeListener(listener);
 
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
@@ -67,9 +67,19 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
 
                 if (settingsFragment.isHidden())
-                    fragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in, R.animator.fade_out).show(settingsFragment).commit();
+                    fragmentManager.beginTransaction().setCustomAnimations(
+                            R.animator.slide_up,
+                            R.animator.slide_down,
+                            R.animator.slide_up,
+                            R.animator.slide_down).show(settingsFragment).commit();
                 else
-                    fragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in, R.animator.fade_out).hide(settingsFragment).commit();
+                    fragmentManager.beginTransaction().setCustomAnimations(
+                            R.animator.slide_up,
+                            R.animator.slide_down,
+                            R.animator.slide_up,
+                            R.animator.slide_down
+                            ).hide(settingsFragment).commit();
+
 //                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
             }
         });
@@ -106,23 +116,23 @@ public class MainActivityFragment extends Fragment {
 
                 int value;
 
-                if (id == R.id.size_seekBar) {
-
-                    value = getSeekBarValue(R.array.size_seekbar_values, i);
-                    mPlanetChangeCallBacks.onSizeChange(value);
-                }
-                else if (id == R.id.scale_seekBar) {
-
-                    value = getSeekBarValue(R.array.scale_seekbar_values, i);
-                    mPlanetChangeCallBacks.onScaleChange(value);
-
-                }
-                else if (id == R.id.angle_seekBar) {
-
-                    value = getSeekBarValue(R.array.angle_seekbar_values, i);
-                    mPlanetChangeCallBacks.onAngleChange(value);
-
-                }
+//                if (id == R.id.size_seekBar) {
+//
+//                    value = getSeekBarValue(R.array.size_seekbar_values, i);
+//                    mPlanetChangeCallBacks.onSizeChange(value);
+//                }
+//                else if (id == R.id.scale_seekBar) {
+//
+//                    value = getSeekBarValue(R.array.scale_seekbar_values, i);
+//                    mPlanetChangeCallBacks.onScaleChange(value);
+//
+//                }
+//                else if (id == R.id.angle_seekBar) {
+//
+//                    value = getSeekBarValue(R.array.angle_seekbar_values, i);
+//                    mPlanetChangeCallBacks.onAngleChange(value);
+//
+//                }
             }
 
             @Override
