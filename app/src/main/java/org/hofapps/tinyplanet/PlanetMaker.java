@@ -1,5 +1,8 @@
 package org.hofapps.tinyplanet;
 
+import android.graphics.Bitmap;
+
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -17,21 +20,74 @@ public class PlanetMaker {
     private int outputSize;
     private double size, scale, angle;
 
+    public PlanetMaker(NativeWrapper nativeWrapper,int outputSize) {
+
+        this.nativeWrapper = nativeWrapper;
+        this.outputSize = outputSize;
+
+        size = 1000;
+        scale = 5000;
+        angle = 180;
+
+    }
+
     public PlanetMaker(Mat inputImage, NativeWrapper nativeWrapper,int outputSize) {
 
         this.inputImage = inputImage;
         this.nativeWrapper = nativeWrapper;
         this.outputSize = outputSize;
 
+        size = 1000;
+        scale = 5000;
+        angle = 180;
+
+        initImages();
+
+
+    }
+
+    public void setInputImage(Bitmap bitmap) {
+
+        inputImage = new Mat();
+
+        Utils.bitmapToMat(bitmap, inputImage);
         initImages();
 
     }
+
+    public void setInputImage(Mat inputImage) {
+
+        this.inputImage = inputImage;
+        initImages();
+
+    }
+
 
     public Mat getPlanetImage() {
 
         return planetImage;
 
     }
+
+    public double getSize() {
+
+        return size;
+
+    }
+
+    public double getScale() {
+
+        return scale;
+
+    }
+
+    public double getAngle() {
+
+        return angle;
+
+    }
+
+
 
     public void setSize(double size) {
 
@@ -71,6 +127,7 @@ public class PlanetMaker {
         Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
         planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
 
+        updatePlanet();
 
     }
 
