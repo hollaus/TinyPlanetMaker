@@ -87,8 +87,6 @@ public class PlanetMaker {
 
     }
 
-
-
     public void setSize(double size) {
 
         this.size = size;
@@ -106,6 +104,24 @@ public class PlanetMaker {
     public void setAngle(double angle) {
 
         this.angle = angle;
+        updatePlanet();
+
+    }
+
+    public void addAngle(double angleDiff) {
+
+        angle += angleDiff;
+        angle = Math.round(angle);
+        angle %= 360;
+
+        updatePlanet();
+
+    }
+
+    public void addScale(double scaleDiff) {
+
+        scale *= scaleDiff;
+        scale = Math.round(scale);
         updatePlanet();
 
     }
@@ -134,7 +150,14 @@ public class PlanetMaker {
 
 
 
+    public static interface PlanetChangeCallBack {
 
+        void onSizeChange(int size);
+        void onScaleChange(int scale);
+        void onAngleChange(int angle);
+        void addAngle(float angle);
+        void addScale(float scale);
+    }
 
 
 

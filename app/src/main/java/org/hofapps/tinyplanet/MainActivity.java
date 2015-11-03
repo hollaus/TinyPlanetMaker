@@ -10,11 +10,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 
 import org.opencv.android.Utils;
@@ -25,7 +22,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements SettingsFragment.PlanetChangeCallBack, View.OnTouchListener {
+public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
     private Mat originalImg, transformedImg;
@@ -36,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private static final String TAG = "Touch";
+    private MainActivityFragment mainActivityFragment;
     // These matrices will be used to move and zoom image
 
     // We can be in one of these 3 states
@@ -63,37 +61,19 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         setContentView(R.layout.activity_main);
         imageView = (ImageView) findViewById(R.id.imageView);
 
-        imageView.setOnTouchListener(this);
+        imageView.setOnTouchListener(new OnPlanetTouchListener(this));
 
         nativeWrapper = new NativeWrapper();
 
-//        FragmentManager fragmentManager = getFragmentManager();
-//        SettingsFragment settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+        previewPlanetMaker = new PlanetMaker(nativeWrapper, 500);
 
-        int a = 0;
-
-//        try {
+        // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
 
-//            originalImg = Utils.loadResource(MainActivity.this, R.drawable.nancy, Highgui.CV_LOAD_IMAGE_ANYCOLOR);
-//
-//            previewPlanetMaker = new PlanetMaker(originalImg, nativeWrapper, 500);
+        FragmentManager fragmentManager = getFragmentManager();
+        mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
 
-            previewPlanetMaker = new PlanetMaker(nativeWrapper, 500);
-
-            // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
-
-
-            FragmentManager fragmentManager = getFragmentManager();
-            MainActivityFragment mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
-
-            mainActivityFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
-
-
-
-
-//            imageView.setOnTouchListener(gestureDetector);
-
+        mainActivityFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
 
     }
 
@@ -133,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -165,9 +146,6 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
         Mat previewImg = previewPlanetMaker.getPlanetImage();
 
-//        File file = getOutputMediaFile();
-//        boolean imgSaved = Highgui.imwrite(file.toString(), previewImg);
-
         Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(previewImg, bm);
 
@@ -199,6 +177,23 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     }
 
+    @Override
+    public void addAngle(float angle) {
+
+        previewPlanetMaker.addAngle(angle);
+        updateImageView();
+
+    }
+
+    @Override
+    public void addScale(float scale) {
+
+        previewPlanetMaker.addScale(scale);
+        updateImageView();
+
+        mainActivityFragment.setScaleBarValue((int) previewPlanetMaker.getScale());
+
+    }
 
     public static interface PlanetInitCallBack {
 
@@ -206,167 +201,6 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     }
 
-
-    // ============================================================================================
-
-    /** Show an event in the LogCat view, for debugging */
-    private void dumpEvent(MotionEvent event) {
-        // ...
-        String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
-                "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
-        StringBuilder sb = new StringBuilder();
-        int action = event.getAction();
-        int actionCode = action & MotionEvent.ACTION_MASK;
-        sb.append("event ACTION_").append(names[actionCode]);
-        if (actionCode == MotionEvent.ACTION_POINTER_DOWN
-                || actionCode == MotionEvent.ACTION_POINTER_UP) {
-            sb.append("(pid ").append(
-                    action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
-            sb.append(")");
-        }
-        sb.append("[");
-        for (int i = 0; i < event.getPointerCount(); i++) {
-            sb.append("#").append(i);
-            sb.append("(pid ").append(event.getPointerId(i));
-            sb.append(")=").append((int) event.getX(i));
-            sb.append(",").append((int) event.getY(i));
-            if (i + 1 < event.getPointerCount())
-                sb.append(";");
-        }
-        sb.append("]");
-        Log.d("test", sb.toString());
-    }
-
-    float[] lastEvent = null;
-    float d = 0f;
-    float newRot = 0f;
-
-    /** Determine the space between the first two fingers */
-    private float spacing(MotionEvent event) {
-        // ...
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        return (float) Math.sqrt(x * x + y * y);
-
-    }
-
-    /** Calculate the mid point of the first two fingers */
-    private void midPoint(PointF point, MotionEvent event) {
-        // ...
-        float x = event.getX(0) + event.getX(1);
-        float y = event.getY(0) + event.getY(1);
-        point.set(x / 2, y / 2);
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        ImageView view = (ImageView) v;
-
-        // Dump touch event to log
-        dumpEvent(event);
-
-        // Handle touch events here...
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-//                savedMatrix.set(matrix);
-                start.set(event.getX(), event.getY());
-//                if (Constant.TRACE) Log.d(TAG, "mode=DRAG");
-                mode = DRAG;
-                lastEvent = null;
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                oldDist = spacing(event);
-//                savedMatrix.set(matrix);
-                midPoint(mid, event);
-                mode = ZOOM;
-//                if (Constant.TRACE) Log.d(TAG, "mode=ZOOM");
-
-                lastEvent = new float[4];
-                lastEvent[0] = event.getX(0);
-                lastEvent[1] = event.getX(1);
-                lastEvent[2] = event.getY(0);
-                lastEvent[3] = event.getY(1);
-                d = rotation(event);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
-                mode = NONE;
-                lastEvent = null;
-//                if (Constant.TRACE) Log.d(TAG, "mode=NONE");
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (mode == DRAG) {
-
-                    float xDiff = event.getX() - start.x;
-                    float yDiff = event.getY() - start.y;
-
-                    float diff;
-
-                    if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                        diff = xDiff;
-                        if (event.getY() < imageView.getHeight() / 2)
-                            diff *= -1;
-                    }
-                    else {
-                        diff = yDiff;
-                        if (event.getX() > imageView.getWidth() / 2)
-                            diff *= -1;
-                    }
-
-                    float fac = .25f;
-                    int iDiff = Math.round(diff * fac);
-
-                    Log.d("Rotate", Integer.toString(iDiff));
-
-                    int angle = (int) Math.round(previewPlanetMaker.getAngle()) + iDiff;
-
-                    angle = angle % 360;
-
-
-                    previewPlanetMaker.setAngle(angle);
-                    updateImageView();
-
-
-                } else if (mode == ZOOM && event.getPointerCount() == 2) {
-                    float newDist = spacing(event);
-//                    if (Constant.TRACE) Log.d(TAG, "Count=" + event.getPointerCount());
-//                    if (Constant.TRACE) Log.d(TAG, "newDist=" + newDist);
-//                    matrix.set(savedMatrix);
-                    if (newDist > 10f) {
-                        float scale = oldDist / newDist;
-
-                        Log.d("Scale", Float.toString(scale));
-
-                        previewPlanetMaker.setScale(previewPlanetMaker.getScale() * scale);
-                        updateImageView();
-
-
-//                        matrix.postScale(scale, scale, mid.x, mid.y);
-                    }
-                    if (lastEvent != null) {
-                        newRot = rotation(event);
-//                        if (Constant.TRACE) Log.d("Degreeeeeeeeeee", "newRot=" + (newRot));
-                        float r = newRot - d;
-//                        matrix.postRotate(r, imgView.getMeasuredWidth() / 2, imgView.getMeasuredHeight() / 2);
-                    }
-                }
-                break;
-        }
-
-//        view.setImageMatrix(matrix);
-        return true; // indicate event was handled
-
-    }
-
-    /** Determine the degree between the first two fingers */
-    private float rotation(MotionEvent event) {
-        double delta_x = (event.getX(0) - event.getX(1));
-        double delta_y = (event.getY(0) - event.getY(1));
-        double radians = Math.atan2(delta_y, delta_x);
-//        if (Constant.TRACE) Log.d("Rotation ~~~~~~~~~~~~~~~~~", delta_x+" ## "+delta_y+" ## "+radians+" ## "
-//                +Math.toDegrees(radians));
-        return (float) Math.toDegrees(radians);
-    }
 
 
 //    Debugging methods:

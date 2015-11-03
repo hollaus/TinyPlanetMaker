@@ -73,6 +73,11 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    public void setScaleBarValue(int position) {
+
+        settingsFragment.setScaleBarValue(position);
+
+    }
 
 
 
