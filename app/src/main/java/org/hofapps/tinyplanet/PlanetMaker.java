@@ -123,8 +123,9 @@ public class PlanetMaker {
 //        Rotate the image 90 degrees:
         Core.flip(inputImage.t(), inputImage, 1);
 
+//        This was necessary when the image was opened by OpenCV and NOT Android BitmapFactory
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
-        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
+//        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
         planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
 
         updatePlanet();
