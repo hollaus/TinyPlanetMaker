@@ -12,7 +12,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private static final String TAG = "Touch";
     private MainActivityFragment mainActivityFragment;
+    private OnPlanetTouchListener onPlanetTouchListener;
     // These matrices will be used to move and zoom image
 
     // We can be in one of these 3 states
@@ -61,7 +64,30 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         setContentView(R.layout.activity_main);
         imageView = (ImageView) findViewById(R.id.imageView);
 
-        imageView.setOnTouchListener(new OnPlanetTouchListener(this));
+        onPlanetTouchListener = new OnPlanetTouchListener(this);
+
+        imageView.setOnTouchListener(onPlanetTouchListener);
+
+
+        // TODO: Put this into MainActivityFragment and connect via callbacks
+        Switch gestureSwitch = (Switch) findViewById(R.id.gestureSwitch);
+
+        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if (isChecked) {
+                    onPlanetTouchListener.setGestureMode(true);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                } else {
+                    onPlanetTouchListener.setGestureMode(false);
+                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                }
+
+            }
+        });
 
         nativeWrapper = new NativeWrapper();
 
@@ -150,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         Utils.matToBitmap(previewImg, bm);
 
         imageView.setImageBitmap(bm);
+
+        imageView.setScaleType(ImageView.ScaleType.MATRIX);
 
     }
 

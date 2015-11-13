@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.Switch;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -21,6 +22,7 @@ public class MainActivityFragment extends Fragment {
     private SettingsFragment settingsFragment;
     FragmentManager fragmentManager;
     private ImageView imageView;
+    private Switch gestureSwitch;
 
 //    private static final int ARRAY_MIN_POS = 0;
 //    private static final int ARRAY_MAX_POS = 1;
@@ -47,12 +49,22 @@ public class MainActivityFragment extends Fragment {
         imageView = (ImageView) view.findViewById(R.id.imageView);
         fragmentManager = getChildFragmentManager();
         settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+        gestureSwitch = (Switch) view.findViewById(R.id.gestureSwitch);
 
-
-
-//        ViewGroup.LayoutParams params = settingsFragment.getView().getLayoutParams();
-//        params.height = 10;
-//        settingsFragment.getView().setLayoutParams(params);
+//        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//
+//                if (isChecked) {
+//                    switchStatus.setText("Switch is currently ON");
+//                } else {
+//                    switchStatus.setText("Switch is currently OFF");
+//                }
+//
+//            }
+//        });
 
         view.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,8 +81,7 @@ public class MainActivityFragment extends Fragment {
                     animation.setDuration(20);
                     imageView.startAnimation(animation);
 
-                }
-                else {
+                } else {
                     fragmentManager.beginTransaction().setCustomAnimations(
                             R.animator.slide_up,
                             R.animator.slide_down,
@@ -86,9 +97,6 @@ public class MainActivityFragment extends Fragment {
                     imageView.startAnimation(animation);
 
                 }
-
-
-
 
 
             }
