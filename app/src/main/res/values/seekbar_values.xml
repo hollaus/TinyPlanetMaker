@@ -2,13 +2,13 @@
 <resources>
 
     <integer-array name="size_seekbar_values">
-        <item>0</item>
-        <item>5000</item>
+        <item>1</item>
+        <item>500</item>
     </integer-array>
 
     <integer-array name="scale_seekbar_values">
         <item>0</item>
-        <item>8000</item>
+        <item>500</item>
     </integer-array>
 
     <integer-array name="angle_seekbar_values">

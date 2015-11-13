@@ -1,7 +1,7 @@
 package org.hofapps.tinyplanet;
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,11 +52,11 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity activity) {
 
-        super.onAttach(context);
+        super.onAttach(activity);
         try {
-            mPlanetChangeCallBacks = (PlanetMaker.PlanetChangeCallBack) context;
+            mPlanetChangeCallBacks = (PlanetMaker.PlanetChangeCallBack) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement PlanetChangeCallBacks.");
         }
@@ -81,6 +81,7 @@ public class SettingsFragment extends Fragment {
 
     public void setScaleBarValue(int position) {
 
+//        TODO: Check if this triggers an event in MainActivity!
         scaleSeekBar.setValue(position);
 
     }

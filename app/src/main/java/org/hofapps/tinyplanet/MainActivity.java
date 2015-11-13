@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void onSizeChange(int size) {
 
-        previewPlanetMaker.setSize((double) size * 10);
+        previewPlanetMaker.setSize((double) size);
         updateImageView();
 
     }
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void onScaleChange(int scale) {
 
-        previewPlanetMaker.setScale((double) scale * 30);
+        previewPlanetMaker.setScale((double) scale);
         updateImageView();
 
     }

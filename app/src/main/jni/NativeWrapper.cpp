@@ -20,6 +20,7 @@ inline void nativeLogPolar(Mat src, Mat dst, float xCenter, float yCenter, doubl
 
     cv::Mat mapx, mapy;
 
+
     cv::Size ssize, dsize;
     ssize = src.size();
     dsize = dst.size();
@@ -75,14 +76,13 @@ inline void nativeLogPolar(Mat src, Mat dst, float xCenter, float yCenter, doubl
         }
     }
 
-    cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, 0);
+    cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, BORDER_REPLICATE);
 
 }
 
 JNIEXPORT jstring JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_getStringFromNative
         (JNIEnv * env, jobject obj){
 
-    std::string cs("asdf");
 
     return NULL;
 }

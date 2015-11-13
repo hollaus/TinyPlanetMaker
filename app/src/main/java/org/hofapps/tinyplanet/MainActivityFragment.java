@@ -7,6 +7,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -17,6 +20,7 @@ public class MainActivityFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private SettingsFragment settingsFragment;
     FragmentManager fragmentManager;
+    private ImageView imageView;
 
 //    private static final int ARRAY_MIN_POS = 0;
 //    private static final int ARRAY_MAX_POS = 1;
@@ -40,30 +44,57 @@ public class MainActivityFragment extends Fragment {
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
+        imageView = (ImageView) view.findViewById(R.id.imageView);
         fragmentManager = getChildFragmentManager();
         settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+
+
+
+//        ViewGroup.LayoutParams params = settingsFragment.getView().getLayoutParams();
+//        params.height = 10;
+//        settingsFragment.getView().setLayoutParams(params);
 
         view.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (settingsFragment.isHidden())
+                if (settingsFragment.isHidden()) {
                     fragmentManager.beginTransaction().setCustomAnimations(
                             R.animator.slide_up,
                             R.animator.slide_down,
                             R.animator.slide_up,
                             R.animator.slide_down).show(settingsFragment).commit();
-                else
+                    Animation animation = new ScaleAnimation(1f, .9f, 1f, .9f, imageView.getPivotX(), imageView.getPivotY());
+                    animation.setFillAfter(true);
+                    animation.setDuration(20);
+                    imageView.startAnimation(animation);
+
+                }
+                else {
                     fragmentManager.beginTransaction().setCustomAnimations(
                             R.animator.slide_up,
                             R.animator.slide_down,
                             R.animator.slide_up,
                             R.animator.slide_down
-                            ).hide(settingsFragment).commit();
+                    ).hide(settingsFragment).commit();
 
-//                Snackbar.make(coordinatorLayout, "snackbar test", Snackbar.LENGTH_LONG).show();
+                    Animation animation = new ScaleAnimation(.9f, 1f, .9f, 1f, imageView.getPivotX(), imageView.getPivotY());
+                    animation.setFillAfter(true);
+
+                    // config_mediumAnimTime
+                    animation.setDuration(20);
+                    imageView.startAnimation(animation);
+
+                }
+
+
+
+
+
             }
         });
+
+
 
     }
 
