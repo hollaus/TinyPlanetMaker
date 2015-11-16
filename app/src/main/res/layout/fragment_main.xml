@@ -66,23 +66,48 @@
         android:layout_gravity="bottom"
         app:layout_behavior="org.hofapps.tinyplanet.FloatingActionButtonBehavior"
         >
-        <Switch
-            android:id="@+id/gestureSwitch"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gestures modify"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        <RadioGroup
+            android:id="@+id/modeRadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:text="Gestures modify planet"
             android:layout_centerInParent="true"
-            />
+            android:orientation="horizontal"
+            android:onClick="onRadioButtonClicked"
+            >
+            <RadioButton android:id="@+id/viewModeRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton android:id="@+id/editModeRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Planet"
+                android:onClick="onRadioButtonClicked"/>
+
+        </RadioGroup>
+        </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:scaleType="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
-            android:src="@mipmap/ic_mode_edit_black_24dp"
+            android:src="@drawable/ic_close_black_24dp"
             android:layout_centerInParent="true"
+
 
             />
 

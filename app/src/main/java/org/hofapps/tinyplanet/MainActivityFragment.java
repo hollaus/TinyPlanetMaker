@@ -2,15 +2,16 @@ package org.hofapps.tinyplanet;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
-import android.widget.Switch;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -22,7 +23,9 @@ public class MainActivityFragment extends Fragment {
     private SettingsFragment settingsFragment;
     FragmentManager fragmentManager;
     private ImageView imageView;
-    private Switch gestureSwitch;
+    private FloatingActionButton fab;
+    private Drawable closeIcon;
+    private Drawable menuIcon;
 
 //    private static final int ARRAY_MIN_POS = 0;
 //    private static final int ARRAY_MAX_POS = 1;
@@ -35,6 +38,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.fragment_main, container, false);
+
     }
 
     @Override
@@ -49,7 +53,13 @@ public class MainActivityFragment extends Fragment {
         imageView = (ImageView) view.findViewById(R.id.imageView);
         fragmentManager = getChildFragmentManager();
         settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
-        gestureSwitch = (Switch) view.findViewById(R.id.gestureSwitch);
+
+        closeIcon = getResources().getDrawable(R.drawable.ic_close_black_24dp);
+        menuIcon = getResources().getDrawable(R.drawable.ic_menu_black_24dp);
+
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+//        gestureSwitch = (Switch) view.findViewById(R.id.gestureSwitch);
 
 //        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
 //
@@ -66,11 +76,14 @@ public class MainActivityFragment extends Fragment {
 //            }
 //        });
 
-        view.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (settingsFragment.isHidden()) {
+
+                    fab.setImageDrawable(closeIcon);
+
                     fragmentManager.beginTransaction().setCustomAnimations(
                             R.animator.slide_up,
                             R.animator.slide_down,
@@ -82,6 +95,9 @@ public class MainActivityFragment extends Fragment {
                     imageView.startAnimation(animation);
 
                 } else {
+
+                    fab.setImageDrawable(menuIcon);
+
                     fragmentManager.beginTransaction().setCustomAnimations(
                             R.animator.slide_up,
                             R.animator.slide_down,

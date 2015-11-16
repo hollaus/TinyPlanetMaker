@@ -46,6 +46,8 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
             throw new ClassCastException("Activity must implement PlanetChangeCallBacks.");
         }
 
+        gesturesModifyPlanet = true;
+
     }
 
     public void setGestureMode(boolean gesturesModifyPlanet) {

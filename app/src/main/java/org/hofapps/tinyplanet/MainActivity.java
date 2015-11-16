@@ -12,9 +12,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.Switch;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -57,6 +58,26 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.viewModeRadioButton:
+                if (checked)
+                    onPlanetTouchListener.setGestureMode(false);
+                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                    break;
+            case R.id.editModeRadioButton:
+                if (checked) {
+                    onPlanetTouchListener.setGestureMode(true);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    break;
+                }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -70,24 +91,40 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
         // TODO: Put this into MainActivityFragment and connect via callbacks
-        Switch gestureSwitch = (Switch) findViewById(R.id.gestureSwitch);
 
-        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.modeRadioGroup);
+        radioGroup.check(R.id.editModeRadioButton);
 
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
+//        /* Attach CheckedChangeListener to radio group */
+//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                RadioButton rb = (RadioButton) group.findViewById(checkedId);
+//                if (null != rb && checkedId > -1) {
+//                    Toast.makeText(MainActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//        });
 
-                if (isChecked) {
-                    onPlanetTouchListener.setGestureMode(true);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                } else {
-                    onPlanetTouchListener.setGestureMode(false);
-                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                }
-
-            }
-        });
+//        Switch gestureSwitch = (Switch) findViewById(R.id.gestureSwitch);
+//
+//        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//
+//                if (isChecked) {
+//                    onPlanetTouchListener.setGestureMode(true);
+//                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                } else {
+//                    onPlanetTouchListener.setGestureMode(false);
+//                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+//                }
+//
+//            }
+//        });
 
         nativeWrapper = new NativeWrapper();
 
