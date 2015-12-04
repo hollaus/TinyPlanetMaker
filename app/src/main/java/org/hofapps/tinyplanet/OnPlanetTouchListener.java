@@ -129,11 +129,11 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
                         float newDist = spacing(event);
 
                         if (newDist > 10f) {
-                            float scale = oldDist / newDist;
+                            float scale = newDist / oldDist;
 
                             Log.d("Scale", Float.toString(scale));
 
-                            mPlanetChangeCallBacks.addScale(scale);
+                            mPlanetChangeCallBacks.addScaleLog(scale);
                         }
 
                     }

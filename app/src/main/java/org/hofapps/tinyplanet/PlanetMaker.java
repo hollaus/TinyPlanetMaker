@@ -1,6 +1,7 @@
 package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -19,15 +20,22 @@ public class PlanetMaker {
     private NativeWrapper nativeWrapper;
     private int outputSize;
     private double size, scale, angle;
+    private int[] sizeMinMax;
+    private boolean isTaskRunning;
 
-    public PlanetMaker(NativeWrapper nativeWrapper,int outputSize) {
+
+    public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
 
         this.nativeWrapper = nativeWrapper;
         this.outputSize = outputSize;
+        this.sizeMinMax = sizeMinMax;
 
         size = 1000;
-        scale = 5000;
+        scale = 100;
         angle = 180;
+
+        isTaskRunning = false;
+
 
     }
 
@@ -37,7 +45,7 @@ public class PlanetMaker {
         this.nativeWrapper = nativeWrapper;
         this.outputSize = outputSize;
 
-        size = 1000;
+        size = 250;
         scale = 5000;
         angle = 180;
 
@@ -110,9 +118,14 @@ public class PlanetMaker {
 
     public void addAngle(double angleDiff) {
 
+
+
         angle += angleDiff;
         angle = Math.round(angle);
         angle %= 360;
+
+        if (angle < 0)
+            angle = 360 + angle;
 
         updatePlanet();
 
@@ -120,8 +133,24 @@ public class PlanetMaker {
 
     public void addScale(double scaleDiff) {
 
-        scale *= scaleDiff;
-        scale = Math.round(scale);
+        double newSize = size * scaleDiff;
+        newSize = Math.round(newSize);
+
+        if (newSize > sizeMinMax[SettingsFragment.ARRAY_MAX_POS])
+            newSize = sizeMinMax[SettingsFragment.ARRAY_MAX_POS];
+        else if (newSize < sizeMinMax[SettingsFragment.ARRAY_MIN_POS])
+            newSize = sizeMinMax[SettingsFragment.ARRAY_MIN_POS];
+
+        size = newSize;
+
+        updatePlanet();
+
+    }
+
+    public void addScaleLog(double scaleDiff) {
+
+        size *= scaleDiff;
+        size = Math.round(size);
         updatePlanet();
 
     }
@@ -129,6 +158,19 @@ public class PlanetMaker {
     private void updatePlanet() {
 
         nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+//        if (!isTaskRunning) {
+//
+//            isTaskRunning = true;
+//
+//            Double[] values = new Double[3];
+//            values[0] = size;
+//            values[1] = scale;
+//            values[2] = angle * DEG2RAD;
+//
+//            new PlanetCalcTask().execute(values);
+//
+//        }
 
     }
 
@@ -156,9 +198,30 @@ public class PlanetMaker {
         void onScaleChange(int scale);
         void onAngleChange(int angle);
         void addAngle(float angle);
-        void addScale(float scale);
+        void addScaleLog(float scaleLog);
     }
 
+//    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+    private class PlanetCalcTask extends AsyncTask<Double, Void, Void> {
+
+
+        protected Void doInBackground(Double... values) {
+
+            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, values[0], values[1], values[2]);
+
+            return null;
+
+        }
+
+        protected void onPostExecute(Void v) {
+
+            isTaskRunning = false;
+
+        }
+
+
+    }
 
 
 }

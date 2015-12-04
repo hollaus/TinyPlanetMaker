@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
-import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,30 +25,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack {
+//public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
     private Mat originalImg, transformedImg;
     private ImageView imageView;
     private PlanetMaker previewPlanetMaker;
     private CoordinatorLayout coordinatorLayout;
+    private int[] sizeMinMax;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private static final String TAG = "Touch";
     private MainActivityFragment mainActivityFragment;
     private OnPlanetTouchListener onPlanetTouchListener;
-    // These matrices will be used to move and zoom image
 
-    // We can be in one of these 3 states
-    static final int NONE = 0;
-    static final int DRAG = 1;
-    static final int ZOOM = 2;
-    int mode = NONE;
-    float oldscale =0;
-    // Remember some things for zooming
-    PointF start = new PointF();
-    PointF mid = new PointF();
-    float oldDist = 1f;
+
 
 
     static {
@@ -95,40 +86,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.modeRadioGroup);
         radioGroup.check(R.id.editModeRadioButton);
 
-//        /* Attach CheckedChangeListener to radio group */
-//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                RadioButton rb = (RadioButton) group.findViewById(checkedId);
-//                if (null != rb && checkedId > -1) {
-//                    Toast.makeText(MainActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
-//                }
-//
-//            }
-//        });
-
-//        Switch gestureSwitch = (Switch) findViewById(R.id.gestureSwitch);
-//
-//        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-//
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView,
-//                                         boolean isChecked) {
-//
-//                if (isChecked) {
-//                    onPlanetTouchListener.setGestureMode(true);
-//                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                } else {
-//                    onPlanetTouchListener.setGestureMode(false);
-//                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
-//                }
-//
-//            }
-//        });
-
         nativeWrapper = new NativeWrapper();
 
-        previewPlanetMaker = new PlanetMaker(nativeWrapper, 500);
+        sizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
+
+        previewPlanetMaker = new PlanetMaker(nativeWrapper, 500, sizeMinMax);
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
@@ -245,18 +207,25 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void addAngle(float angle) {
 
+//        if (angle > angleMinMax[SettingsFragment.ARRAY_MAX_POS])
+//            angle = angleMinMax[SettingsFragment.ARRAY_MIN_POS];
+//        else if (angle < angleMinMax[SettingsFragment.ARRAY_MIN_POS])
+//            angle = angleMinMax[SettingsFragment.ARRAY_MAX_POS];
+
         previewPlanetMaker.addAngle(angle);
         updateImageView();
+
+        mainActivityFragment.setAngleBarValue((int) previewPlanetMaker.getAngle());
 
     }
 
     @Override
-    public void addScale(float scale) {
+    public void addScaleLog(float scale) {
 
         previewPlanetMaker.addScale(scale);
         updateImageView();
 
-        mainActivityFragment.setScaleBarValue((int) previewPlanetMaker.getScale());
+        mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
 
     }
 

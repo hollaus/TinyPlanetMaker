@@ -1,13 +1,28 @@
 <resources>
 
-    <!-- Base application theme.     ´-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
 
-    </style>
+    <!--<style name="AppTheme" parent="android:Theme.Material">-->
+        <!--&lt;!&ndash; Main theme colors &ndash;&gt;-->
+        <!--&lt;!&ndash;   your app branding color for the app bar &ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:colorPrimary">@color/primary</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;   darker variant for the status bar and contextual app bars &ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:colorPrimaryDark">@color/primary_dark</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;   theme UI controls like checkboxes and text fields &ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:colorAccent">@color/accent</item>&ndash;&gt;-->
+    <!--</style>-->
+
 
     <!--<style name="AppTheme" parent="Theme.AppCompat">-->
 
 
     <!--</style>-->
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Taken from the Google color palette: -->
+        <!-- https://www.google.com/design/spec/style/color.html#color-color-palette -->
+        <item name="colorPrimary">#607d8b</item>
+        <item name="colorPrimaryDark">#263238</item>
+        <item name="colorAccent">#26a69a</item>
+    </style>
 
 </resources>

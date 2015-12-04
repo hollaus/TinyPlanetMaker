@@ -28,6 +28,14 @@ inline void nativeLogPolar(Mat src, Mat dst, float xCenter, float yCenter, doubl
     mapx = cv::Mat( dsize.height, dsize.width, CV_32F );
     mapy = cv::Mat( dsize.height, dsize.width, CV_32F );
 
+    float xDist = dst.cols - xCenter;
+    float yDist = dst.rows - yCenter;
+
+    float radius = std::sqrt(xDist*xDist + yDist*yDist);
+
+    float fixedScale = src.cols / std::log(radius/scaleLog + 1);
+    scale = fixedScale / (scale/100);
+
     int x, y;
     cv::Mat bufx, bufy, bufp, bufa;
     double ascale = ssize.height/(2*CV_PI);

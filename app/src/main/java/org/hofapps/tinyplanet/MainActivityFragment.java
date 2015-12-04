@@ -54,8 +54,8 @@ public class MainActivityFragment extends Fragment {
         fragmentManager = getChildFragmentManager();
         settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
 
-        closeIcon = getResources().getDrawable(R.drawable.ic_close_black_24dp);
-        menuIcon = getResources().getDrawable(R.drawable.ic_menu_black_24dp);
+        closeIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp);
+        menuIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp);
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
@@ -128,9 +128,15 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    public void setScaleBarValue(int position) {
+    public void setSizeBarValue(int position) {
 
-        settingsFragment.setScaleBarValue(position);
+        settingsFragment.setSizeBarValue(position);
+
+    }
+
+    public void setAngleBarValue(int position) {
+
+        settingsFragment.setAngleBarValue(position);
 
     }
 

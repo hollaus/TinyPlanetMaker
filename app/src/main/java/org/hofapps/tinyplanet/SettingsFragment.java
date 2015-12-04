@@ -14,10 +14,10 @@ import android.widget.SeekBar;
 public class SettingsFragment extends Fragment {
 
     private PlanetMaker.PlanetChangeCallBack mPlanetChangeCallBacks;
-    private static final int ARRAY_MIN_POS = 0;
-    private static final int ARRAY_MAX_POS = 1;
+    protected static final int ARRAY_MIN_POS = 0;
+    protected static final int ARRAY_MAX_POS = 1;
 
-    private RangeSeekBar sizeSeekBar, scaleSeekBar, angleSeekBar;
+    private RangeSeekBar sizeSeekBar, angleSeekBar;
 
     public SettingsFragment() {
 
@@ -33,15 +33,15 @@ public class SettingsFragment extends Fragment {
         SeekBar.OnSeekBarChangeListener listener = getSeekBarListener();
 
         super.onResume();
-        int[] array = getResources().getIntArray(R.array.size_seekbar_values);
+
 
         sizeSeekBar = (RangeSeekBar) view.findViewById(R.id.size_seekBar);
         sizeSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
         sizeSeekBar.setOnSeekBarChangeListener(listener);
 
-        scaleSeekBar = (RangeSeekBar) view.findViewById(R.id.scale_seekBar);
-        scaleSeekBar.setRange(getResources().getIntArray(R.array.scale_seekbar_values));
-        scaleSeekBar.setOnSeekBarChangeListener(listener);
+//        scaleSeekBar = (RangeSeekBar) view.findViewById(R.id.scale_seekBar);
+//        scaleSeekBar.setRange(getResources().getIntArray(R.array.scale_seekbar_values));
+//        scaleSeekBar.setOnSeekBarChangeListener(listener);
 
         angleSeekBar = (RangeSeekBar) view.findViewById(R.id.angle_seekBar);
         angleSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
@@ -74,15 +74,22 @@ public class SettingsFragment extends Fragment {
     public void initSeekBarValues(int size, int scale, int angle) {
 
         sizeSeekBar.setValue(size);
-        scaleSeekBar.setValue(scale);
+//        scaleSeekBar.setValue(scale);
         angleSeekBar.setValue(angle);
 
     }
 
-    public void setScaleBarValue(int position) {
+    public void setSizeBarValue(int position) {
 
 //        TODO: Check if this triggers an event in MainActivity!
-        scaleSeekBar.setValue(position);
+        sizeSeekBar.setValue(position);
+
+    }
+
+    public void setAngleBarValue(int position) {
+
+//        TODO: Check if this triggers an event in MainActivity!
+        angleSeekBar.setValue(position);
 
     }
 
@@ -103,8 +110,8 @@ public class SettingsFragment extends Fragment {
 
                 if (id == R.id.size_seekBar)
                     mPlanetChangeCallBacks.onSizeChange(value);
-                else if (id == R.id.scale_seekBar)
-                    mPlanetChangeCallBacks.onScaleChange(value);
+//                else if (id == R.id.scale_seekBar)
+//                    mPlanetChangeCallBacks.onScaleChange(value);
                 else if (id == R.id.angle_seekBar)
                     mPlanetChangeCallBacks.onAngleChange(value);
 

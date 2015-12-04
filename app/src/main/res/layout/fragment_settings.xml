@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b0bec5"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     >
     <ScrollView
         android:layout_height="match_parent"
@@ -14,9 +20,11 @@
 
 
         >
-        <TableRow>
+        <TableRow
+            android:minHeight="40dp"
+            >
             <TextView
-                android:text="@string/hello_world"
+                android:text="Warp"
                 android:id="@+id/size_textView"
                 android:gravity="bottom"
                 android:layout_gravity="center_vertical"
@@ -29,9 +37,10 @@
                 />
         </TableRow>
 
+        <!--
         <TableRow>
             <TextView
-                android:text="Log"
+                android:text="Zoom"
                 android:id="@+id/scale_textView"
                 android:gravity="bottom"
                 android:layout_gravity="center_vertical"
@@ -42,8 +51,12 @@
                 android:layout_weight="1"
                 />
         </TableRow>
+        -->
 
-        <TableRow>
+        <TableRow
+            android:minHeight="40dp"
+            >
+
             <TextView
                 android:text="Angle"
                 android:id="@+id/angle_textView"

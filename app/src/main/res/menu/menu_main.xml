@@ -11,4 +11,12 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_action_name"
         />
+
+    <item android:id="@+id/action_save_file"
+        android:title="@string/action_open_image"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_save_white_24dp"
+        />
+
 </menu>

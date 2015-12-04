@@ -8,7 +8,7 @@
 
     <integer-array name="scale_seekbar_values">
         <item>0</item>
-        <item>500</item>
+        <item>200</item>
     </integer-array>
 
     <integer-array name="angle_seekbar_values">
