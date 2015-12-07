@@ -1,9 +1,12 @@
 package org.hofapps.tinyplanet;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,13 +21,16 @@ import android.widget.RadioGroup;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack {
+public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient {
 //public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
@@ -34,11 +40,18 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private CoordinatorLayout coordinatorLayout;
     private int[] sizeMinMax;
 
+
     private static final int PICK_IMAGE_REQUEST = 1;
+
+    private static final int MENU_ITEM_GALLERY = 0;
+    private static final int MENU_ITEM_SHARE = 1;
+
+    private int menuItem = -1;
 
     private static final String TAG = "Touch";
     private MainActivityFragment mainActivityFragment;
     private OnPlanetTouchListener onPlanetTouchListener;
+    private MediaScannerConnection mediaScannerConnection;
 
 
 
@@ -130,7 +143,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
 
             return true;
+        } else if (id == R.id.action_save_file) {
+
+            saveFile();
+
+        } else if (id == R.id.action_open_gallery) {
+
+            openGallery();
+
         }
+
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -175,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         Utils.matToBitmap(previewImg, bm);
 
         imageView.setImageBitmap(bm);
+
+        previewPlanetMaker.releasePlanetImage();
 
         imageView.setScaleType(ImageView.ScaleType.MATRIX);
 
@@ -235,19 +260,181 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
+    private void openGallery() {
+
+//        File mediaStorageDir = getMediaStorageDir();
+////
+//        Uri uri = Uri.fromFile(lastFile);
+////
+////        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+////        startActivity(intent);
+//
+//        Intent intent = new Intent();
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.setDataAndType(uri, "image/*");
+//        startActivity(intent);
+
+        startScan(MENU_ITEM_GALLERY);
+
+    }
+
+    @Override
+    public void onMediaScannerConnected() {
+
+        File mediaStorageDir = getMediaStorageDir();
+
+        String[] files = mediaStorageDir.list();
+
+        if (files == null) {
+
+            showNoFileFoundDialog();
+            return;
+
+        }
+
+        //	    Opens the most recent image:
+        Arrays.sort(files);
+
+        String fileName = mediaStorageDir.toString() + "/" + files[files.length - 1];
 
 
-//    Debugging methods:
+        mediaScannerConnection.scanFile(fileName, null);
+    }
+
+    private void showNoFileFoundDialog() {
+
+        // 1. Instantiate an AlertDialog.Builder with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setMessage(R.string.no_file_found_msg).setTitle(R.string.no_file_found_title);
+
+        // 3. Get the AlertDialog from create()
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+
+    }
+
+    private void startScan(int menuItem) {
+
+        this.menuItem = menuItem;
+
+        if(mediaScannerConnection != null)
+            mediaScannerConnection.disconnect();
+
+
+        mediaScannerConnection = new MediaScannerConnection(this, this);
+        mediaScannerConnection.connect();
+
+    }
+
+    @Override
+    public void onScanCompleted(String path, Uri uri) {
+
+        try {
+
+
+            if (uri != null) {
+                if (menuItem == MENU_ITEM_GALLERY) {
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(uri);
+                    startActivity(intent);
+
+                }
+                else if (menuItem == MENU_ITEM_SHARE) {
+                    //
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("*/*");
+
+                    //        	    TODO: use R.string.text instead of hard-coded string. Do not know why an exception is thrown here:
+                    //        	    String shareText = (String) getString(R.string.share_text);
+                    //        	    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out Zelfie - Zombie Camera: https://play.google.com/store/apps/details?id=com.zelfie.zelfiecam");
+
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    startActivity(shareIntent);
+                }
+
+
+            }
+        }
+        finally {
+            mediaScannerConnection.disconnect();
+            mediaScannerConnection = null;
+        }
+
+    }
+
+
+    private void saveFile() {
+
+
+
+        File outFile = getOutputMediaFile();
+
+        if (outFile != null) {
+
+            if (previewPlanetMaker == null)
+                return;
+
+            Mat planet = previewPlanetMaker.getFullResPlanet();
+
+            if (planet == null)
+                return;
+
+            Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
+
+            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
+
+            planet.release();
+
+            if (imgSaved) {
+                // Tell the media scanner about the new file so that it is
+                // immediately available to the user.
+                MediaScannerConnection.scanFile(this,
+                        new String[]{outFile.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+
+                            }
+                        });
+
+            }
+
+
+        }
+
+    }
+
 
     private File getOutputMediaFile() {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "TinyPlanet");
+        if (!isExternalStorageWritable()) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage(R.string.external_storage_not_accessible_msg)
+                    .setTitle(R.string.external_storage_not_accessible_title);
+
+            AlertDialog dialog = builder.create();
+
+            dialog.show();
+
+            return null;
+
+
+        }
+
+
+
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
-
+        File mediaStorageDir = getMediaStorageDir();
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
@@ -264,6 +451,26 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         return mediaFile;
 
     }
+
+    private File getMediaStorageDir() {
+
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "TinyPlanet");
+
+        return mediaStorageDir;
+    }
+
+    /* Checks if external storage is available for read and write */
+    private boolean isExternalStorageWritable() {
+
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+
+    }
+
 
 
 

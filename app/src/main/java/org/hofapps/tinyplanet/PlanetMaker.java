@@ -16,12 +16,16 @@ public class PlanetMaker {
 
     private static final double DEG2RAD = 0.017453292519943;
 
-    private Mat inputImage, planetImage;
+    private Mat inputImage, planetImage, originalImage;
     private NativeWrapper nativeWrapper;
     private int outputSize;
     private double size, scale, angle;
+    private int fullOutputSize;
     private int[] sizeMinMax;
     private boolean isTaskRunning;
+
+    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
+
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
@@ -39,26 +43,19 @@ public class PlanetMaker {
 
     }
 
-    public PlanetMaker(Mat inputImage, NativeWrapper nativeWrapper,int outputSize) {
-
-        this.inputImage = inputImage;
-        this.nativeWrapper = nativeWrapper;
-        this.outputSize = outputSize;
-
-        size = 250;
-        scale = 5000;
-        angle = 180;
-
-        initImages();
-
-
-    }
-
     public void setInputImage(Bitmap bitmap) {
 
         inputImage = new Mat();
 
         Utils.bitmapToMat(bitmap, inputImage);
+
+        this.originalImage = inputImage.clone();
+
+        fullOutputSize = Math.max(inputImage.width(), inputImage.height());
+
+        if (fullOutputSize > MAX_OUTPUT_SIZE)
+            fullOutputSize = MAX_OUTPUT_SIZE;
+
         initImages();
 
     }
@@ -67,6 +64,13 @@ public class PlanetMaker {
 
         this.inputImage = inputImage;
         initImages();
+
+    }
+
+    public void releasePlanetImage() {
+
+        planetImage.release();
+
 
     }
 
@@ -155,7 +159,31 @@ public class PlanetMaker {
 
     }
 
+    public Mat getFullResPlanet() {
+
+        if ((originalImage == null) || (nativeWrapper == null) || (inputImage == null))
+            return null;
+
+        Mat tmpInputImage = originalImage.clone();
+
+        Imgproc.resize(tmpInputImage, tmpInputImage, new Size(fullOutputSize, fullOutputSize), 0, 0, Imgproc.INTER_CUBIC);
+
+        Mat fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), inputImage.type());
+
+//        Rotate the image 90 degrees:
+        Core.flip(tmpInputImage.t(), tmpInputImage, 1);
+
+        nativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+        tmpInputImage.release();
+
+        return fullResPlanet;
+
+    }
+
     private void updatePlanet() {
+
+        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
 
         nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
 

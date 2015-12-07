@@ -19,4 +19,11 @@
         android:icon="@drawable/ic_save_white_24dp"
         />
 
+
+    <item android:id="@+id/action_open_gallery"
+        android:title="@string/action_open_gallery"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_photo_library_white_24dp"
+        />
 </menu>
