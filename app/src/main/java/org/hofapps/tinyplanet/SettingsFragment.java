@@ -1,5 +1,8 @@
 package org.hofapps.tinyplanet;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -18,6 +21,8 @@ public class SettingsFragment extends Fragment {
     protected static final int ARRAY_MAX_POS = 1;
 
     private RangeSeekBar sizeSeekBar, angleSeekBar;
+
+    private FragmentVisibilityCallBack visibilityCallBack;
 
     public SettingsFragment() {
 
@@ -60,6 +65,14 @@ public class SettingsFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement PlanetChangeCallBacks.");
         }
+
+        try {
+            visibilityCallBack = (FragmentVisibilityCallBack) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement FragmentVisibilityCallBack.");
+        }
+
+
 
     }
 
@@ -143,7 +156,48 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    @Override
+    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim)
+    {
+
+        int animatorId;
+
+        if (enter)
+            animatorId = R.animator.slide_up;
+        else
+            animatorId = R.animator.slide_down;
+
+        final Animator anim = AnimatorInflater.loadAnimator(getActivity(), animatorId);
 
 
+//        final Animator anim = AnimatorInflater.loadAnimator(getActivity(), enter);
+
+//        final int animatorId = (enter) ? R.animator.slide_down : R.animator.slide_up;
+//        final Animator anim = AnimatorInflater.loadAnimator(getActivity(), animatorId);
+        anim.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationStart(Animator animation)
+            {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+
+                visibilityCallBack.onVisibilityChange();
+
+            }
+        });
+
+        return anim;
+    }
+
+    public static interface FragmentVisibilityCallBack {
+
+        void onVisibilityChange();
+
+    }
 
 }

@@ -9,9 +9,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -23,6 +23,7 @@ public class MainActivityFragment extends Fragment {
     private SettingsFragment settingsFragment;
     FragmentManager fragmentManager;
     private ImageView imageView;
+
     private FloatingActionButton fab;
     private Drawable closeIcon;
     private Drawable menuIcon;
@@ -36,6 +37,8 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
 
         return inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -51,6 +54,9 @@ public class MainActivityFragment extends Fragment {
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
         imageView = (ImageView) view.findViewById(R.id.imageView);
+
+
+
         fragmentManager = getChildFragmentManager();
         settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
 
@@ -89,10 +95,16 @@ public class MainActivityFragment extends Fragment {
                             R.animator.slide_down,
                             R.animator.slide_up,
                             R.animator.slide_down).show(settingsFragment).commit();
-                    Animation animation = new ScaleAnimation(1f, .9f, 1f, .9f, imageView.getPivotX(), imageView.getPivotY());
-                    animation.setFillAfter(true);
-                    animation.setDuration(20);
-                    imageView.startAnimation(animation);
+
+
+//                    Animation animation = new ScaleAnimation(1f, .9f, 1f, .9f, imageView.getPivotX(), imageView.getPivotY());
+//                    animation.setFillAfter(true);
+//                    animation.setDuration(20);
+//                    imageView.startAnimation(animation);
+
+
+
+                    float y = imageView.getY();
 
                 } else {
 
@@ -105,12 +117,17 @@ public class MainActivityFragment extends Fragment {
                             R.animator.slide_down
                     ).hide(settingsFragment).commit();
 
-                    Animation animation = new ScaleAnimation(.9f, 1f, .9f, 1f, imageView.getPivotX(), imageView.getPivotY());
-                    animation.setFillAfter(true);
 
-                    // config_mediumAnimTime
-                    animation.setDuration(20);
-                    imageView.startAnimation(animation);
+
+
+
+
+//                    Animation animation = new ScaleAnimation(.9f, 1f, .9f, 1f, imageView.getPivotX(), imageView.getPivotY());
+//                    animation.setFillAfter(true);
+//
+//                    // config_mediumAnimTime
+//                    animation.setDuration(20);
+//                    imageView.startAnimation(animation);
 
                 }
 
@@ -260,6 +277,25 @@ public class MainActivityFragment extends Fragment {
 //    }
 
 
-
+//
+//    @Override
+//    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
+//        final int animatorId = (enter) ? R.animator.fade_in : R.animator.fade_out;
+//        final Animator anim = AnimatorInflater.loadAnimator(getActivity(), animatorId);
+//        anim.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//
+//            }
+//        });
+//
+//        return anim;
+//
+//    }
 
 }

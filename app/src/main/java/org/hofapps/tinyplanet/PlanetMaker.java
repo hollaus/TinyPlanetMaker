@@ -24,7 +24,7 @@ public class PlanetMaker {
     private int[] sizeMinMax;
     private boolean isTaskRunning;
 
-    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
+//    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
 
 
 
@@ -53,8 +53,8 @@ public class PlanetMaker {
 
         fullOutputSize = Math.max(inputImage.width(), inputImage.height());
 
-        if (fullOutputSize > MAX_OUTPUT_SIZE)
-            fullOutputSize = MAX_OUTPUT_SIZE;
+        if (fullOutputSize > MainActivity.MAX_IMG_SIZE)
+            fullOutputSize = MainActivity.MAX_IMG_SIZE;
 
         initImages();
 

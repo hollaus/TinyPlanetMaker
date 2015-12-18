@@ -5,12 +5,12 @@ import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+
 
 /**
  * Created by fabian on 13.10.2015.
  */
-public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<RelativeLayout> {
+public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
 
     public FloatingActionButtonBehavior(Context context, AttributeSet attrs) {
 
@@ -18,7 +18,7 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Rel
     }
 
     @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, RelativeLayout child, View dependency) {
+    public boolean layoutDependsOn(CoordinatorLayout parent, LinearLayout child, View dependency) {
 
         boolean isDependent = dependency instanceof LinearLayout;
         return isDependent;
@@ -26,7 +26,7 @@ public class FloatingActionButtonBehavior extends CoordinatorLayout.Behavior<Rel
     }
 
     @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, RelativeLayout child, View dependency) {
+    public boolean onDependentViewChanged(CoordinatorLayout parent, LinearLayout child, View dependency) {
 
 
 

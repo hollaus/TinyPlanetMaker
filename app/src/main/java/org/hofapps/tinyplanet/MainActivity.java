@@ -14,10 +14,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -30,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient {
+public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack {
 //public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
@@ -43,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
+    public static final int MAX_IMG_SIZE = 3000;
+
     private static final int MENU_ITEM_GALLERY = 0;
     private static final int MENU_ITEM_SHARE = 1;
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private MainActivityFragment mainActivityFragment;
     private OnPlanetTouchListener onPlanetTouchListener;
     private MediaScannerConnection mediaScannerConnection;
-
+    private LinearLayout imageContainerView;
 
 
 
@@ -62,25 +63,25 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.viewModeRadioButton:
-                if (checked)
-                    onPlanetTouchListener.setGestureMode(false);
-                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                    break;
-            case R.id.editModeRadioButton:
-                if (checked) {
-                    onPlanetTouchListener.setGestureMode(true);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    break;
-                }
-        }
-    }
+//    public void onRadioButtonClicked(View view) {
+//        // Is the button now checked?
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        // Check which radio button was clicked
+//        switch(view.getId()) {
+//            case R.id.viewModeRadioButton:
+//                if (checked)
+//                    onPlanetTouchListener.setGestureMode(false);
+//                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+//                    break;
+//            case R.id.editModeRadioButton:
+//                if (checked) {
+//                    onPlanetTouchListener.setGestureMode(true);
+//                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                    break;
+//                }
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +94,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         imageView.setOnTouchListener(onPlanetTouchListener);
 
+        imageContainerView = (LinearLayout) findViewById(R.id.imageContainerView);
 
         // TODO: Put this into MainActivityFragment and connect via callbacks
 
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.modeRadioGroup);
-        radioGroup.check(R.id.editModeRadioButton);
+//        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.modeRadioGroup);
+//        radioGroup.check(R.id.editModeRadioButton);
 
         nativeWrapper = new NativeWrapper();
 
@@ -176,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
 //                TODO: Find a better way to deal with large images!
-                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, 1000, 1000);
+                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
 
                 previewPlanetMaker.setInputImage(bitmap);
 
@@ -251,6 +253,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         updateImageView();
 
         mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
+
+    }
+
+    @Override
+    public void onVisibilityChange() {
+
+        int h = imageContainerView.getHeight();
+        int w = imageContainerView.getWidth();
 
     }
 
@@ -402,6 +412,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                             }
                         });
 
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(this, R.string.file_saved_msg, duration);
+                toast.show();
+
             }
 
 
@@ -411,9 +426,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
     private File getOutputMediaFile() {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
 
+        // Check if we can access the external storage:
         if (!isExternalStorageWritable()) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

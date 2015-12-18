@@ -9,4 +9,5 @@
     <string name="external_storage_not_accessible_title">File save error</string>
     <string name="no_file_found_msg">Could not find any TinyPlanet image. Save a planet first.</string>
     <string name="no_file_found_title">No image found</string>
+    <string name="file_saved_msg">Image saved.</string>
 </resources>
