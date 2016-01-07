@@ -28,13 +28,13 @@ public class ImageViewBehavior extends CoordinatorLayout.Behavior<ImageView> {
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, ImageView child, View dependency) {
 
-        float translation = dependency.getTranslationY();
-        float y = dependency.getY();
-        float h = dependency.getHeight();
-
-
-        float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
-        child.setTranslationY(translationY);
+//        float translation = dependency.getTranslationY();
+//        float y = dependency.getY();
+//        float h = dependency.getHeight();
+//
+//
+//        float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
+//        child.setTranslationY(translationY);
 
         return true;
 

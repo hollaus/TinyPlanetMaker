@@ -2,18 +2,22 @@ package org.hofapps.tinyplanet;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -53,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private MainActivityFragment mainActivityFragment;
     private OnPlanetTouchListener onPlanetTouchListener;
     private MediaScannerConnection mediaScannerConnection;
-    private LinearLayout imageContainerView;
+    private LinearLayout settingsTitle;
 
-
+    private Context context;
 
     static {
         System.loadLibrary("MyLib");
@@ -94,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         imageView.setOnTouchListener(onPlanetTouchListener);
 
-        imageContainerView = (LinearLayout) findViewById(R.id.imageContainerView);
+        settingsTitle = (LinearLayout) findViewById(R.id.title_layout);
+
+//        imageContainerView = (LinearLayout) findViewById(R.id.imageContainerView);
 
         // TODO: Put this into MainActivityFragment and connect via callbacks
 
@@ -173,16 +179,19 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             try {
 
+
+
                 AssetFileDescriptor fileDescriptor;
                 fileDescriptor = getContentResolver().openAssetFileDescriptor(uri, "r");
 
+                OpenImageTask openImageTask = new OpenImageTask(this);
+                openImageTask.execute(fileDescriptor);
 
-//                TODO: Find a better way to deal with large images!
-                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
+////                TODO: Find a better way to deal with large images!
+//                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
+//                previewPlanetMaker.setInputImage(bitmap);
+//                updateImageView();
 
-                previewPlanetMaker.setInputImage(bitmap);
-
-                updateImageView();
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -259,8 +268,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void onVisibilityChange() {
 
-        int h = imageContainerView.getHeight();
-        int w = imageContainerView.getWidth();
+        float y = settingsTitle.getY();
+
+        LayoutParams params = imageView.getLayoutParams();
+        params.height = (int) y;
+
+
+//        int h = imageContainerView.getHeight();
+//        int w = imageContainerView.getWidth();
 
     }
 
@@ -392,8 +407,10 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             Mat planet = previewPlanetMaker.getFullResPlanet();
 
-            if (planet == null)
+            if (planet == null) {
                 return;
+            }
+
 
             Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
 
@@ -418,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 toast.show();
 
             }
+
+
 
 
         }
@@ -462,6 +481,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
 
+
+
         return mediaFile;
 
     }
@@ -483,6 +504,57 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         }
         return false;
 
+    }
+
+
+
+    private class OpenImageTask extends AsyncTask<AssetFileDescriptor, Void, Void> {
+
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public OpenImageTask(Context context)
+        {
+            this.context = context;
+        }
+
+        protected void onPreExecute() {
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Loading file...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+        }
+
+
+        protected Void doInBackground(AssetFileDescriptor... descriptors) {
+
+            Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), descriptors[0], MAX_IMG_SIZE, MAX_IMG_SIZE);
+            previewPlanetMaker.setInputImage(bitmap);
+
+            // The image view cannot be touched inside the thread because it has been created on the UI thread.
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    updateImageView();
+
+                }
+
+            });
+
+            return null;
+
+        }
+
+        protected void onPostExecute(Void dummy) {
+        // The argument is necessary so that onPostExecute gets called.
+            progressDialog.dismiss();
+        }
     }
 
 
