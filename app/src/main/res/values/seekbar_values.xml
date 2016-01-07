@@ -3,11 +3,11 @@
 
     <integer-array name="size_seekbar_values">
         <item>1</item>
-        <item>500</item>
+        <item>1000</item>
     </integer-array>
 
-    <integer-array name="scale_seekbar_values">
-        <item>0</item>
+    <integer-array name="zoom_seekbar_values">
+        <item>1</item>
         <item>200</item>
     </integer-array>
 
@@ -15,5 +15,6 @@
         <item>0</item>
         <item>360</item>
     </integer-array>
+
 
 </resources>

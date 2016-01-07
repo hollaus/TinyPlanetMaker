@@ -4,13 +4,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 
 /**
@@ -18,9 +16,10 @@ import android.widget.LinearLayout;
  */
 public class MainActivityFragment extends Fragment {
 
-//    private PlanetChangeCallBack mPlanetChangeCallBacks;
-    private CoordinatorLayout coordinatorLayout;
-    private SettingsFragment settingsFragment;
+    //    private PlanetChangeCallBack mPlanetChangeCallBacks;
+//    private CoordinatorLayout coordinatorLayout;
+    //    private SettingsFragment settingsFragment;
+    private TabFragment tabFragment;
     FragmentManager fragmentManager;
     private ImageView imageView;
 
@@ -39,87 +38,63 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-
         return inflater.inflate(R.layout.fragment_main, container, false);
 
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
         super.onViewCreated(view, savedInstanceState);
 
 
-        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+//        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
         imageView = (ImageView) view.findViewById(R.id.imageView);
 
 
-
         fragmentManager = getChildFragmentManager();
-        settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+//        settingsFragment = (SettingsFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+        tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.tab_fragment);
 
         closeIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp);
         menuIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+    }
 
-//        gestureSwitch = (Switch) view.findViewById(R.id.gestureSwitch);
-
-//        gestureSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+//                if (settingsFragment.isHidden()) {
 //
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView,
-//                                         boolean isChecked) {
+//                    fab.setImageDrawable(closeIcon);
 //
-//                if (isChecked) {
-//                    switchStatus.setText("Switch is currently ON");
+//                    fragmentManager.beginTransaction().setCustomAnimations(
+//                            R.animator.slide_up,
+//                            R.animator.slide_down,
+//                            R.animator.slide_up,
+//                            R.animator.slide_down).show(settingsFragment).commit();
+//
+//
+////                    Animation animation = new ScaleAnimation(1f, .9f, 1f, .9f, imageView.getPivotX(), imageView.getPivotY());
+////                    animation.setFillAfter(true);
+////                    animation.setDuration(20);
+////                    imageView.startAnimation(animation);
+//
+//
+//
+//                    float y = imageView.getY();
+//
 //                } else {
-//                    switchStatus.setText("Switch is currently OFF");
-//                }
 //
-//            }
-//        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (settingsFragment.isHidden()) {
-
-                    fab.setImageDrawable(closeIcon);
-
-                    fragmentManager.beginTransaction().setCustomAnimations(
-                            R.animator.slide_up,
-                            R.animator.slide_down,
-                            R.animator.slide_up,
-                            R.animator.slide_down).show(settingsFragment).commit();
-
-
-//                    Animation animation = new ScaleAnimation(1f, .9f, 1f, .9f, imageView.getPivotX(), imageView.getPivotY());
-//                    animation.setFillAfter(true);
-//                    animation.setDuration(20);
-//                    imageView.startAnimation(animation);
-
-
-
-                    float y = imageView.getY();
-
-                } else {
-
-                    fab.setImageDrawable(menuIcon);
-
-                    fragmentManager.beginTransaction().setCustomAnimations(
-                            R.animator.slide_up,
-                            R.animator.slide_down,
-                            R.animator.slide_up,
-                            R.animator.slide_down
-                    ).hide(settingsFragment).commit();
-
-
-
-
+//                    fab.setImageDrawable(menuIcon);
+//
+//                    fragmentManager.beginTransaction().setCustomAnimations(
+//                            R.animator.slide_up,
+//                            R.animator.slide_down,
+//                            R.animator.slide_up,
+//                            R.animator.slide_down
+//                    ).hide(settingsFragment).commit();
 
 
 //                    Animation animation = new ScaleAnimation(.9f, 1f, .9f, 1f, imageView.getPivotX(), imageView.getPivotY());
@@ -128,34 +103,31 @@ public class MainActivityFragment extends Fragment {
 //                    // config_mediumAnimTime
 //                    animation.setDuration(20);
 //                    imageView.startAnimation(animation);
+//
+//                }
+//
+//
 
-                }
-
-
-            }
-        });
-
-
-
-    }
 
     public void initSeekBarValues(int size, int scale, int angle) {
 
-        settingsFragment.initSeekBarValues(size, scale, angle);
+        tabFragment.initSeekBarValues(size, scale, angle);
 
     }
 
     public void setSizeBarValue(int position) {
 
-        settingsFragment.setSizeBarValue(position);
+        tabFragment.setWarpBarValue(position);
 
     }
 
     public void setAngleBarValue(int position) {
 
-        settingsFragment.setAngleBarValue(position);
+        tabFragment.setRotateBarValue(position);
 
     }
+}
+
 
 
 
@@ -297,5 +269,5 @@ public class MainActivityFragment extends Fragment {
 //        return anim;
 //
 //    }
-
-}
+//
+//}

@@ -23,100 +23,46 @@
 
     >
 
-    <android.support.design.widget.CoordinatorLayout
-        
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:id="@+id/coordinatorLayout"
-
-        >
 
 
     <ImageView
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
+        android:paddingTop="@dimen/activity_vertical_margin"
+
+        android:scaleType="centerInside"
+
         android:adjustViewBounds="true"
         android:id="@+id/imageView"
 
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="top"
         android:src="@drawable/tiny_planet_bg_border"
-        app:layout_behavior="org.hofapps.tinyplanet.ImageViewBehavior"
 
-
-
-        android:layout_weight="1"
         />
 
 
     <fragment
 
-        android:name="org.hofapps.tinyplanet.SettingsFragment"
-        android:id="@+id/settings_fragment"
-        tools:layout="@layout/fragment_settings"
+        android:id="@+id/tab_fragment"
+        android:name="org.hofapps.tinyplanet.TabFragment"
+        tools:layout="@layout/tablayout_settings"
         android:background="#000000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
 
+        android:layout_alignParentBottom="true"
+
+
         />
 
 
 
-    <LinearLayout
-
-        app:layout_behavior="org.hofapps.tinyplanet.FloatingActionButtonBehavior"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:background="#cfd8dc"
-        android:elevation="2dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-
-        android:id="@+id/title_layout"
-
-        >
-
-        <TextView
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Planet modification"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-
-        <!-- use a spacing view to allow for right alignment inside a linear layout: -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            />
-
-        <android.support.design.widget.FloatingActionButton
-
-            android:id="@+id/fab"
-            android:scaleType="center"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-
-            />
 
 
 
 
-    </LinearLayout>
-
-
-
-
-    </android.support.design.widget.CoordinatorLayout>
 
 </LinearLayout>
 

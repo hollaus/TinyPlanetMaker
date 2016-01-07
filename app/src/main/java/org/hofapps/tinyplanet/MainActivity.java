@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         imageView.setOnTouchListener(onPlanetTouchListener);
 
-        settingsTitle = (LinearLayout) findViewById(R.id.title_layout);
+
 
 //        imageContainerView = (LinearLayout) findViewById(R.id.imageContainerView);
 
