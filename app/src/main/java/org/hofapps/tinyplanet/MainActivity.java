@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         imageView = (ImageView) findViewById(R.id.imageView);
 
         onPlanetTouchListener = new OnPlanetTouchListener(this);
@@ -120,8 +121,22 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         mainActivityFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
 
-    }
 
+        Intent intent = getIntent();
+
+        // Did the user intended to open an image?
+        if (Intent.ACTION_SEND.equals(intent.getAction()) && intent.getType() != null) {
+
+            Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (imageUri != null) {
+                FileLoader fileLoader = new FileLoader(this);
+                fileLoader.execute(imageUri);
+            }
+
+
+        }
+
+    }
 
 
     @Override
@@ -484,6 +499,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         return false;
 
     }
+
+    // ==================================== File Handler Classes ====================================
 
     private abstract class FileHandler extends AsyncTask<Uri, Void, Void> {
 
