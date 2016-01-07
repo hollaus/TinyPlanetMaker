@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -28,7 +27,7 @@ import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -176,27 +175,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             Uri uri = data.getData();
 
-
-            try {
-
-
-
-                AssetFileDescriptor fileDescriptor;
-                fileDescriptor = getContentResolver().openAssetFileDescriptor(uri, "r");
-
-                OpenImageTask openImageTask = new OpenImageTask(this);
-                openImageTask.execute(fileDescriptor);
-
-////                TODO: Find a better way to deal with large images!
-//                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
-//                previewPlanetMaker.setInputImage(bitmap);
-//                updateImageView();
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            FileLoader fileLoader = new FileLoader(this);
+            fileLoader.execute(uri);
 
         }
     }
@@ -398,43 +378,42 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
 
-        File outFile = getOutputMediaFile();
+        Uri uri = getOutputMediaFile();
 
-        if (outFile != null) {
+        if (uri != null) {
 
-            if (previewPlanetMaker == null)
-                return;
-
-            Mat planet = previewPlanetMaker.getFullResPlanet();
-
-            if (planet == null) {
-                return;
-            }
-
-
-            Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
-
-            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
-
-            planet.release();
-
-            if (imgSaved) {
-                // Tell the media scanner about the new file so that it is
-                // immediately available to the user.
-                MediaScannerConnection.scanFile(this,
-                        new String[]{outFile.toString()}, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            public void onScanCompleted(String path, Uri uri) {
-
-                            }
-                        });
-
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(this, R.string.file_saved_msg, duration);
-                toast.show();
-
-            }
+            FileSaver fileSaver = new FileSaver(this);
+            fileSaver.execute(uri);
+//            Mat planet = previewPlanetMaker.getFullResPlanet();
+//
+//            if (planet == null) {
+//                return;
+//            }
+//
+//
+//            Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
+//
+//            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
+//
+//            planet.release();
+//
+//            if (imgSaved) {
+//                // Tell the media scanner about the new file so that it is
+//                // immediately available to the user.
+//                MediaScannerConnection.scanFile(this,
+//                        new String[]{outFile.toString()}, null,
+//                        new MediaScannerConnection.OnScanCompletedListener() {
+//                            public void onScanCompleted(String path, Uri uri) {
+//
+//                            }
+//                        });
+//
+//                int duration = Toast.LENGTH_SHORT;
+//
+//                Toast toast = Toast.makeText(this, R.string.file_saved_msg, duration);
+//                toast.show();
+//
+//            }
 
 
 
@@ -444,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
 
-    private File getOutputMediaFile() {
+    private Uri getOutputMediaFile() {
 
         // Check if we can access the external storage:
         if (!isExternalStorageWritable()) {
@@ -481,9 +460,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
 
+        Uri uri = Uri.fromFile(mediaFile);
 
-
-        return mediaFile;
+        return uri;
 
     }
 
@@ -506,58 +485,143 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
+    private abstract class FileHandler extends AsyncTask<Uri, Void, Void> {
 
 
-    private class OpenImageTask extends AsyncTask<AssetFileDescriptor, Void, Void> {
-
-        private Context context;
+        protected Context context;
+        protected String spinnerText;
         private ProgressDialog progressDialog;
 
-        public OpenImageTask(Context context)
+        public FileHandler() {
+
+        }
+
+        public FileHandler(Context context)
         {
             this.context = context;
         }
+
+//        protected abstract void performTask();
 
         protected void onPreExecute() {
 
             progressDialog = new ProgressDialog(context);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("Loading file...");
+            progressDialog.setMessage(spinnerText);
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
             progressDialog.show();
 
         }
 
+        protected void onPostExecute(Void dummy) {
+            // The dummy argument is necessary so that onPostExecute gets called.
+            progressDialog.dismiss();
+        }
 
-        protected Void doInBackground(AssetFileDescriptor... descriptors) {
+    }
 
-            Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), descriptors[0], MAX_IMG_SIZE, MAX_IMG_SIZE);
-            previewPlanetMaker.setInputImage(bitmap);
+    private class FileLoader extends FileHandler {
 
-            // The image view cannot be touched inside the thread because it has been created on the UI thread.
-            runOnUiThread(new Runnable() {
 
-                @Override
-                public void run() {
+        public FileLoader(Context context) {
 
-                    updateImageView();
+            super(context);
+            // TODO: check why this is necessary:
+            this.context = context;
+            spinnerText = getResources().getString(R.string.file_load_text);
 
-                }
+        }
 
-            });
+        protected Void doInBackground(Uri... uris) {
+
+            try {
+
+                AssetFileDescriptor fileDescriptor;
+                fileDescriptor = getContentResolver().openAssetFileDescriptor(uris[0], "r");
+
+                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
+                previewPlanetMaker.setInputImage(bitmap);
+
+                // The image view cannot be touched inside the thread because it has been created on the UI thread.
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        updateImageView();
+
+                    }
+
+                });
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+
+            }
 
             return null;
 
         }
 
-        protected void onPostExecute(Void dummy) {
-        // The argument is necessary so that onPostExecute gets called.
-            progressDialog.dismiss();
-        }
+
+
     }
 
+    private class FileSaver extends FileHandler {
 
+        public FileSaver(Context context) {
+
+            super(context);
+            // TODO: check why this is necessary:
+            this.context = context;
+
+            spinnerText = getResources().getString(R.string.file_save_text);
+
+        }
+
+        @Override
+        protected Void doInBackground(Uri... uris) {
+
+            if (previewPlanetMaker == null)
+                return null;
+
+            Mat planet = previewPlanetMaker.getFullResPlanet();
+
+            if (planet == null) {
+                return null;
+            }
+
+            Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
+
+            final File outFile = new File(uris[0].getPath());
+
+            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
+
+            planet.release();
+
+            if (imgSaved) {
+
+                 MediaScannerConnection.scanFile(context,
+                        new String[]{outFile.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+
+                            public void onScanCompleted(String path, Uri uri) {
+
+
+                            }
+                });
+            }
+
+
+
+            return null;
+
+
+        }
+
+
+    }
 
 
 }

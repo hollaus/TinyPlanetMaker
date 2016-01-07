@@ -10,4 +10,6 @@
     <string name="no_file_found_msg">Could not find any TinyPlanet image. Save a planet first.</string>
     <string name="no_file_found_title">No image found</string>
     <string name="file_saved_msg">Image saved.</string>
+    <string name="file_load_text">Loading file...</string>
+    <string name="file_save_text">Saving file...</string>
 </resources>
