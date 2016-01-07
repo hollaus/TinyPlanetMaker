@@ -35,6 +35,8 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
     PointF mid = new PointF();
     float oldDist = 1f;
 
+    PointF lastPoint = new PointF();
+
     int width,height;
 
 
@@ -72,16 +74,16 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 savedMatrix.set(matrix);
-                start.set(event.getX(), event.getY());
+                lastPoint.set(event.getX(), event.getY());
                 mode = DRAG;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 oldDist = spacing(event);
-                if (oldDist > 10f) {
+//                if (oldDist > 10f) {
                     savedMatrix.set(matrix);
                     midPoint(mid, event);
                     mode = ZOOM;
-                }
+//                }
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
@@ -91,74 +93,46 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
 
                 if (mode == DRAG) {
 
-                    if (gesturesModifyPlanet) {
+                    float xDiff = event.getX() - lastPoint.x;
+                    float yDiff = event.getY() - lastPoint.y;
 
-                        float xDiff = event.getX() - start.x;
-                        float yDiff = event.getY() - start.y;
+                    float diff;
 
-                        float diff;
-
-                        if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                            diff = xDiff;
-                            if (event.getY() < view.getHeight() / 2)
-                                diff *= -1;
-                        }
-                        else {
-                            diff = yDiff;
-                            if (event.getX() > view.getWidth() / 2)
-                                diff *= -1;
-                        }
-
-                        float fac = .25f;
-                        int iDiff = Math.round(diff * fac);
-
-                        Log.d("Rotate", Integer.toString(iDiff));
-
-                        mPlanetChangeCallBacks.addAngle(iDiff);
-
+                    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                        diff = xDiff;
+                        if (event.getY() < view.getHeight() / 2)
+                            diff *= -1;
                     }
                     else {
-                        matrix.set(savedMatrix);
-                        matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+                        diff = yDiff;
+                        if (event.getX() > view.getWidth() / 2)
+                            diff *= -1;
                     }
+
+                    float fac = .25f;
+                    int iDiff = Math.round(diff * fac);
+
+                    Log.d("Rotate", Integer.toString(iDiff));
+
+                    mPlanetChangeCallBacks.addAngle(iDiff);
+
+                    lastPoint.set(event.getX(), event.getY());
+
 
                 } else if (mode == ZOOM) {
 
-                    if (gesturesModifyPlanet) {
+                    float newDist = spacing(event);
 
-                        float newDist = spacing(event);
+                    float scale = newDist / oldDist;
+                    Log.d("Scale", Float.toString(scale));
+                    mPlanetChangeCallBacks.addScaleLog(scale * scale);
 
-                        if (newDist > 10f) {
-                            float scale = newDist / oldDist;
+                    oldDist = newDist;
 
-                            Log.d("Scale", Float.toString(scale));
-
-                            mPlanetChangeCallBacks.addScaleLog(scale);
-                        }
-
-                    }
-                    else  {
-
-                        float newDist = spacing(event);
-                        if (newDist > 10f) {
-                            matrix.set(savedMatrix);
-                            float scale = newDist / oldDist;
-                            matrix.postScale(scale, scale, mid.x, mid.y);
-                        }
-
-                    }
                 }
                 break;
         }
 
-        if (!gesturesModifyPlanet) {
-
-            limitZoom(matrix);
-            limitDrag(matrix);
-
-            view.setImageMatrix(matrix);
-
-        }
 
         return true; // indicate event was handled
     }
