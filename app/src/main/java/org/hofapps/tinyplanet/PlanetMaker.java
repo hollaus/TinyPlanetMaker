@@ -1,7 +1,6 @@
 package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -22,7 +21,7 @@ public class PlanetMaker {
     private double size, scale, angle;
     private int fullOutputSize;
     private int[] sizeMinMax;
-    private boolean isTaskRunning;
+    private boolean isImageLoaded;
 
 //    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
 
@@ -34,16 +33,18 @@ public class PlanetMaker {
         this.outputSize = outputSize;
         this.sizeMinMax = sizeMinMax;
 
-        size = 1000;
+        size = 500;
         scale = 100;
         angle = 180;
 
-        isTaskRunning = false;
+        isImageLoaded = false;
 
 
     }
 
     public void setInputImage(Bitmap bitmap) {
+
+        isImageLoaded = true;
 
         inputImage = new Mat();
 
@@ -58,14 +59,16 @@ public class PlanetMaker {
 
         initImages();
 
-    }
 
-    public void setInputImage(Mat inputImage) {
-
-        this.inputImage = inputImage;
-        initImages();
 
     }
+
+    public boolean getIsImageLoaded() {
+
+        return isImageLoaded;
+
+    }
+
 
     public void releasePlanetImage() {
 
@@ -183,9 +186,15 @@ public class PlanetMaker {
 
     private void updatePlanet() {
 
+        if (!isImageLoaded)
+            return;
+
         planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
 
+
+
         nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+//        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
 
 //        if (!isTaskRunning) {
 //
@@ -229,27 +238,7 @@ public class PlanetMaker {
         void addScaleLog(float scaleLog);
     }
 
-//    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
 
-    private class PlanetCalcTask extends AsyncTask<Double, Void, Void> {
-
-
-        protected Void doInBackground(Double... values) {
-
-            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, values[0], values[1], values[2]);
-
-            return null;
-
-        }
-
-        protected void onPostExecute(Void v) {
-
-            isTaskRunning = false;
-
-        }
-
-
-    }
 
 
 }

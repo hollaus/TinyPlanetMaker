@@ -198,6 +198,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void updateImageView() {
 
+        if (!previewPlanetMaker.getIsImageLoaded())
+            return;
+
         Mat previewImg = previewPlanetMaker.getPlanetImage();
 
         Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
@@ -532,7 +535,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         }
 
         protected void onPostExecute(Void dummy) {
-            // The dummy argument is necessary so that onPostExecute gets called.
+            // The Void dummy argument is necessary so that onPostExecute gets called.
             progressDialog.dismiss();
         }
 
@@ -565,9 +568,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
                     @Override
                     public void run() {
-
+                        // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
+//                        imageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
                         updateImageView();
-
                     }
 
                 });
