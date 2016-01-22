@@ -175,6 +175,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         }
 
+        else if (id == R.id.action_about) {
+
+            showAboutDialog();
+
+        }
+
 
 
         return super.onOptionsItemSelected(item);
@@ -489,6 +495,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "TinyPlanet");
 
+        // Create the storage directory if it does not exist
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+//	            Log.d("Zelfie", "failed to create directory");
+                return null;
+            }
+        }
+
         return mediaStorageDir;
     }
 
@@ -500,6 +514,20 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             return true;
         }
         return false;
+
+    }
+
+    // About dialog:
+
+    private void showAboutDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.about_msg).setTitle(R.string.action_help_about_title);
+        builder.setIcon(R.drawable.tiny_planet_gray_300px);
+        AlertDialog dialog = builder.create();
+//        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
+        dialog.setIcon(R.drawable.tiny_planet_gray_300px);
+        dialog.show();
 
     }
 

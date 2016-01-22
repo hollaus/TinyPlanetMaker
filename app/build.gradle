@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
+        config {
+            keyAlias 'alias'
+            storeFile file('C:/Users/fabian/test3.jks')
+            keyPassword 'keinpwd'
+            storePassword 'keinpwd'
+        }
+        config1 {
+        }
     }
     compileSdkVersion 23
     buildToolsVersion '21.1.2'

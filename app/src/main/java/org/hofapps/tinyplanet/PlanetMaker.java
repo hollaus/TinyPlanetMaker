@@ -178,7 +178,6 @@ public class PlanetMaker {
 
         double fac = tmpInputImage.width() / inputImage.width();
 
-        // TODO: resize to the maximal possible height/width
         nativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, size * fac, scale, angle * DEG2RAD);
 
         tmpInputImage.release();
