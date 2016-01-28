@@ -21,7 +21,7 @@ public class PlanetMaker {
     private double size, scale, angle;
     private int fullOutputSize;
     private int[] sizeMinMax;
-    private boolean isImageLoaded;
+    private boolean isImageLoaded, isPlanetInverted;
 
 //    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
 
@@ -38,6 +38,7 @@ public class PlanetMaker {
         angle = 180;
 
         isImageLoaded = false;
+        isPlanetInverted = false;
 
 
     }
@@ -66,7 +67,7 @@ public class PlanetMaker {
         size = 500;
         scale = 100;
         angle = 180;
-
+        isPlanetInverted = false;
         updatePlanet();
 
     }

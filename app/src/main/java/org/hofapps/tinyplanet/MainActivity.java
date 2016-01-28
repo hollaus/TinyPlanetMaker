@@ -1,10 +1,12 @@
 package org.hofapps.tinyplanet;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -13,7 +15,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack {
+public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack, ActivityCompat.OnRequestPermissionsResultCallback {
 //public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private CoordinatorLayout coordinatorLayout;
     private int[] sizeMinMax;
 
+    private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -167,7 +172,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             return true;
         } else if (id == R.id.action_save_file) {
 
-            saveFile();
+//            saveFile();
+            requestFileSave();
 
         } else if (id == R.id.action_share) {
 
@@ -415,7 +421,37 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
 
+    // This method is used to enable file saving in marshmallow (Android 6), since in this version file saving is not allowed without user permission:
+    private void requestFileSave() {
+
+        // Check Permissions Now
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // ask for permission:
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE);
+        }
+        else
+            saveFile();
+
+    }
+
+
     private void saveFile() {
+
+
+//        // marshmallow try:
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            // Check Permissions Now
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+//        }
+////
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//
+//            showNoSavingPermissionDialog();
+//            return;
+//
+//        }
+        // try end
 
 
 
@@ -461,6 +497,18 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         }
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveFile();
+            } else {
+                showNoSavingPermissionDialog();
+            }
+        }
     }
 
 
@@ -531,6 +579,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             return true;
         }
         return false;
+
+    }
+
+    // cannot save image dialog:
+
+    private void showNoSavingPermissionDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_saving_permission_msg).setTitle(R.string.no_saving_permission_title);
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
     }
 

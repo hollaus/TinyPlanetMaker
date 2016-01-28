@@ -13,8 +13,10 @@
     <string name="file_load_text">Loading file...</string>
     <string name="file_save_text">Saving file...</string>
     <string name="invert_text">Invert image</string>
-    <string name="action_help_about_title">"About"</string>
+    <string name="action_help_about_title">About</string>
     <string name="about_msg">TinyPlanet\n© Fabian Hollaus, 2016</string>
     <string name="action_about">About</string>
     <string name="action_reset">Reset values</string>
+    <string name="no_saving_permission_title">Permission required</string>
+    <string name="no_saving_permission_msg">Cannot save images, if the permission is not given by the user.</string>
 </resources>
