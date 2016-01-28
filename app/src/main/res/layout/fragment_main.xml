@@ -34,7 +34,6 @@
 
         <ImageView
 
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
@@ -42,9 +41,8 @@
             android:adjustViewBounds="true"
             android:id="@+id/imageView"
 
-
             android:layout_gravity="center_vertical"
-            android:src="@drawable/tiny_planet_light_gray"
+            android:src="@drawable/tiny_planet_gray_600px"
 
             />
 
