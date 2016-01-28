@@ -59,7 +59,15 @@ public class PlanetMaker {
 
         initImages();
 
+    }
 
+    public void reset() {
+
+        size = 500;
+        scale = 100;
+        angle = 180;
+
+        updatePlanet();
 
     }
 

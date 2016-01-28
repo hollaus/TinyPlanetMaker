@@ -126,6 +126,12 @@ public class MainActivityFragment extends Fragment {
         tabFragment.setRotateBarValue(position);
 
     }
+
+    public void setZoomBarValue(int position) {
+
+        tabFragment.setZoomBarValue(position);
+
+    }
 }
 
 

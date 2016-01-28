@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             saveFile();
 
-        } else if (id == R.id.action_open_gallery) {
+        } else if (id == R.id.action_share) {
 
             openGallery();
 
@@ -181,6 +181,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         }
 
+        else if (id == R.id.action_reset) {
+
+            resetPlanetValues();
+
+        }
 
 
         return super.onOptionsItemSelected(item);
@@ -286,6 +291,18 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public static interface PlanetInitCallBack {
 
         void onInit(int size, int scale, int angle);
+
+    }
+
+    private void resetPlanetValues() {
+
+        previewPlanetMaker.reset();
+
+        mainActivityFragment.setAngleBarValue((int) previewPlanetMaker.getAngle());
+        mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
+        mainActivityFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
+
+        updateImageView();
 
     }
 
