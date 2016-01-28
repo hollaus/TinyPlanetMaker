@@ -132,6 +132,13 @@ public class MainActivityFragment extends Fragment {
         tabFragment.setZoomBarValue(position);
 
     }
+
+    public void setInvertPlanetSwitch(boolean isInverted) {
+
+        tabFragment.setInvertPlanetSwitch(isInverted);
+
+    }
+
 }
 
 

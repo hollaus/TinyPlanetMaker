@@ -281,6 +281,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
     @Override
+    public void onInvertChange(boolean isInverted) {
+
+        previewPlanetMaker.invert(isInverted);
+        updateImageView();
+
+    }
+
+    @Override
     public void onVisibilityChange() {
 
         float y = settingsTitle.getY();
@@ -307,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         mainActivityFragment.setAngleBarValue((int) previewPlanetMaker.getAngle());
         mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
         mainActivityFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
+        mainActivityFragment.setInvertPlanetSwitch(previewPlanetMaker.getIsPlanetInverted());
 
         updateImageView();
 

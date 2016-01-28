@@ -12,7 +12,7 @@
     <string name="file_saved_msg">Image saved.</string>
     <string name="file_load_text">Loading file...</string>
     <string name="file_save_text">Saving file...</string>
-    <string name="invert_text">Invert image</string>
+    <string name="invert_text">Invert planet</string>
     <string name="action_help_about_title">About</string>
     <string name="about_msg">TinyPlanet\n© Fabian Hollaus, 2016</string>
     <string name="action_about">About</string>

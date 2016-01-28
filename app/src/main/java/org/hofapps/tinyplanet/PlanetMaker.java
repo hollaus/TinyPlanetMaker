@@ -67,7 +67,11 @@ public class PlanetMaker {
         size = 500;
         scale = 100;
         angle = 180;
+
+        if (isPlanetInverted)
+            Core.flip(inputImage, inputImage, -1);
         isPlanetInverted = false;
+
         updatePlanet();
 
     }
@@ -171,6 +175,20 @@ public class PlanetMaker {
 
     }
 
+    public void invert(boolean isInverted) {
+
+        isPlanetInverted = isInverted;
+        Core.flip(inputImage, inputImage, -1);
+        updatePlanet();
+
+    }
+
+    public boolean getIsPlanetInverted() {
+
+        return isPlanetInverted;
+
+    }
+
     public Mat getFullResPlanet() {
 
         if ((originalImage == null) || (nativeWrapper == null) || (inputImage == null))
@@ -201,25 +219,8 @@ public class PlanetMaker {
             return;
 
         planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-
-
-
         nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-//        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-
-//        if (!isTaskRunning) {
-//
-//            isTaskRunning = true;
-//
-//            Double[] values = new Double[3];
-//            values[0] = size;
-//            values[1] = scale;
-//            values[2] = angle * DEG2RAD;
-//
-//            new PlanetCalcTask().execute(values);
-//
-//        }
-
+//        planetImage = inputImage.clone();
     }
 
     private void initImages() {
@@ -227,7 +228,18 @@ public class PlanetMaker {
         Imgproc.resize(inputImage, inputImage, new Size(outputSize, outputSize), 0, 0, Imgproc.INTER_CUBIC);
 
 //        Rotate the image 90 degrees:
+
+//        Creates the planet and inverts it:
         Core.flip(inputImage.t(), inputImage, 1);
+
+
+//        Inverts the planet and undos it:
+//        Core.flip(inputImage.t(), inputImage, 0);
+//        Core.flip(inputImage, inputImage, -1);
+
+        // rotates -90 and undos
+//        Core.flip(inputImage.t(), inputImage, 0);
+//        Core.flip(inputImage.t(), inputImage, 1);
 
 //        This was necessary when the image was opened by OpenCV and NOT Android BitmapFactory
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
@@ -247,6 +259,8 @@ public class PlanetMaker {
         void onAngleChange(int angle);
         void addAngle(float angle);
         void addScaleLog(float scaleLog);
+        void onInvertChange(boolean isInverted);
+
     }
 
 
