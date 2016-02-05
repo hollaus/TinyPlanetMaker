@@ -63,6 +63,8 @@ public class MainActivityFragment extends Fragment {
         closeIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp);
         menuIcon = getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp);
 
+
+
     }
 
 //                if (settingsFragment.isHidden()) {

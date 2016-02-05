@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -684,6 +685,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                         // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
 //                        imageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
                         updateImageView();
+
+                        SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
+
+                        if (pref.getBoolean("firstRun", true))
+                            showAboutDialog();
+
+                        pref.edit().putBoolean("firstRun", false).commit();
+
+
                     }
 
                 });
