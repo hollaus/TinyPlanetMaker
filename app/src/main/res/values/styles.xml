@@ -22,7 +22,7 @@
         <!-- https://www.google.com/design/spec/style/color.html#color-color-palette -->
         <item name="colorPrimary">#607d8b</item>
         <item name="colorPrimaryDark">#263238</item>
-        <item name="colorAccent">#e040fb</item>
+        <item name="colorAccent"> #ffc107</item>
     </style>
 
 </resources>

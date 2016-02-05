@@ -68,8 +68,9 @@ public class PlanetMaker {
         scale = 100;
         angle = 180;
 
-        if (isPlanetInverted)
+        if (isPlanetInverted && inputImage != null)
             Core.flip(inputImage, inputImage, -1);
+
         isPlanetInverted = false;
 
         updatePlanet();
@@ -178,6 +179,10 @@ public class PlanetMaker {
     public void invert(boolean isInverted) {
 
         isPlanetInverted = isInverted;
+
+        if (!isImageLoaded)
+            return;
+
         Core.flip(inputImage, inputImage, -1);
         updatePlanet();
 
@@ -202,6 +207,10 @@ public class PlanetMaker {
 
 //        Rotate the image 90 degrees:
         Core.flip(tmpInputImage.t(), tmpInputImage, 1);
+
+        if (isPlanetInverted)
+            Core.flip(inputImage, inputImage, -1);
+
 
         double fac = tmpInputImage.width() / inputImage.width();
 
@@ -231,6 +240,9 @@ public class PlanetMaker {
 
 //        Creates the planet and inverts it:
         Core.flip(inputImage.t(), inputImage, 1);
+
+        if (isPlanetInverted)
+            Core.flip(inputImage, inputImage, -1);
 
 
 //        Inverts the planet and undos it:
