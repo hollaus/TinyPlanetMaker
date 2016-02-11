@@ -2,8 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
 
     <item android:id="@+id/action_open_file"
         android:title="@string/action_open_image"
@@ -13,7 +11,7 @@
         />
 
     <item android:id="@+id/action_save_file"
-        android:title="@string/action_open_image"
+        android:title="@string/action_save_image"
         android:orderInCategory="100"
         app:showAsAction="always"
         android:icon="@drawable/ic_save_white_24dp"
@@ -32,7 +30,16 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         />
-
+    <item android:id="@+id/action_help"
+        android:title="@string/action_help"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/action_samples"
+        android:title="@string/action_samples"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
 
     <item android:id="@+id/action_about"
         android:title="@string/action_about"

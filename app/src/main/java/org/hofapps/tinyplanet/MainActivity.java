@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.app.Fragment;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private CoordinatorLayout coordinatorLayout;
     private int[] sizeMinMax;
 
+    private GesturesDialogFragment gestureFragment;
+    private SamplesFragment samplesFragment;
+
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private Context context;
 
     static {
-        System.loadLibrary("MyLib");
+        System.loadLibrary("wrapper");
         System.loadLibrary("opencv_java");
     }
 
@@ -159,9 +163,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_open_file) {
+        if (id == R.id.action_open_file) {
 
             Intent intent = new Intent();
             // Show only images, no videos or anything else
@@ -194,6 +196,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         }
 
+        else if (id == R.id.action_samples) {
+
+            showSamplesFragment();
+
+        }
+
+        else if (id == R.id.action_help) {
+
+            showGestureFragment();
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -361,6 +374,33 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
         mediaScannerConnection.scanFile(fileName, null);
+    }
+
+    private void showGestureFragment() {
+
+        if (gestureFragment == null)
+            gestureFragment = new GesturesDialogFragment();
+
+        gestureFragment.show(getFragmentManager(), "gesture_fragment");
+
+    }
+
+    private void showSamplesFragment() {
+
+        if (samplesFragment == null)
+            samplesFragment = new SamplesFragment();
+
+        samplesFragment.show(getFragmentManager(), "samples_fragment");
+
+    }
+
+    private void showFragment(Fragment fragment) {
+
+        FragmentManager fragmentManager = getFragmentManager();
+        android.app.FragmentTransaction ft = fragmentManager.beginTransaction();
+//        ft.add(R.id.container, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void showNoFileFoundDialog() {
