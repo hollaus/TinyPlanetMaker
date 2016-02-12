@@ -109,6 +109,7 @@ public class SettingsFragment extends Fragment {
     private SeekBar.OnSeekBarChangeListener getSeekBarListener() {
 
         SeekBar.OnSeekBarChangeListener l = new SeekBar.OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
 

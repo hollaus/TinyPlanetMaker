@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
@@ -25,7 +26,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.app.Fragment;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -38,7 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack, MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
+        MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack,
+        ActivityCompat.OnRequestPermissionsResultCallback, SamplesFragment.SampleSelectedCallBack {
 //public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
@@ -121,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         sizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
 
-        previewPlanetMaker = new PlanetMaker(nativeWrapper, 500, sizeMinMax);
+        previewPlanetMaker = new PlanetMaker(nativeWrapper, 800, sizeMinMax);
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
 
@@ -310,9 +312,29 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         LayoutParams params = imageView.getLayoutParams();
         params.height = (int) y;
 
+    }
 
-//        int h = imageContainerView.getHeight();
-//        int w = imageContainerView.getWidth();
+    @Override
+    public void onSampleSelected(int id) {
+
+        int imageId = -1;
+
+        switch (id) {
+            case R.id.vienna_imagebutton:
+                imageId = R.drawable.vienna_1000;
+                break;
+            case R.id.rome_imagebutton:
+                imageId = R.drawable.rome_1000;
+                break;
+            case R.id.nancy_imagebutton:
+                imageId = R.drawable.nancy_1000;
+                break;
+        }
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageId);
+
+        previewPlanetMaker.setInputImage(bitmap);
+        updateImageView();
 
     }
 
@@ -394,14 +416,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
-    private void showFragment(Fragment fragment) {
-
-        FragmentManager fragmentManager = getFragmentManager();
-        android.app.FragmentTransaction ft = fragmentManager.beginTransaction();
-//        ft.add(R.id.container, fragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
 
     private void showNoFileFoundDialog() {
 
@@ -488,62 +502,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private void saveFile() {
 
 
-//        // marshmallow try:
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            // Check Permissions Now
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
-//        }
-////
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//
-//            showNoSavingPermissionDialog();
-//            return;
-//
-//        }
-        // try end
-
-
-
         Uri uri = getOutputMediaFile();
 
         if (uri != null) {
 
             FileSaver fileSaver = new FileSaver(this);
             fileSaver.execute(uri);
-//            Mat planet = previewPlanetMaker.getFullResPlanet();
-//
-//            if (planet == null) {
-//                return;
-//            }
-//
-//
-//            Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
-//
-//            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
-//
-//            planet.release();
-//
-//            if (imgSaved) {
-//                // Tell the media scanner about the new file so that it is
-//                // immediately available to the user.
-//                MediaScannerConnection.scanFile(this,
-//                        new String[]{outFile.toString()}, null,
-//                        new MediaScannerConnection.OnScanCompletedListener() {
-//                            public void onScanCompleted(String path, Uri uri) {
-//
-//                            }
-//                        });
-//
-//                int duration = Toast.LENGTH_SHORT;
-//
-//                Toast toast = Toast.makeText(this, R.string.file_saved_msg, duration);
-//                toast.show();
-//
-//            }
-
-
-
 
         }
 
@@ -551,7 +515,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveFile();
@@ -580,8 +546,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
         }
-
-
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.

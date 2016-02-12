@@ -2,13 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
+        config2 {
             keyAlias 'alias'
-            storeFile file('C:/Users/fabian/test3.jks')
-            keyPassword 'keinpwd'
-            storePassword 'keinpwd'
-        }
-        config1 {
+            keyPassword 'fickdich'
+            storeFile file('C:/Users/fabian/test4.jks')
+            storePassword 'fickdich'
         }
     }
     compileSdkVersion 23
@@ -39,6 +37,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config2
+        }
+        debug {
+            signingConfig signingConfigs.config2
         }
     }
     productFlavors {
