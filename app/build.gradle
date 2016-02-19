@@ -13,14 +13,14 @@ android {
     buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId "org.hofapps.tinyplanet"
-        minSdkVersion 22
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
     // begin
     sourceSets.main {
-        jni.srcDirs = [] //disable automatic ndk-build call
+        jni.srcDirs = [] //disable automatic nd k-build call
     }
     task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
         commandLine "C:\\Users\\fabian\\Downloads\\android-ndk-r10e/ndk-build.cmd",

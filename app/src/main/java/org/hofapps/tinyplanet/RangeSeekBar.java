@@ -39,7 +39,7 @@ public class RangeSeekBar extends SeekBar {
 
         int progress = getProgress();
 
-        int value = (int) (getProgress() * (range[ARRAY_MAX_POS] - range[ARRAY_MIN_POS])) / 100;
+        int value = (int) range[ARRAY_MIN_POS] + (getProgress() * (range[ARRAY_MAX_POS] - range[ARRAY_MIN_POS])) / 100;
 
         return value;
 
@@ -49,7 +49,9 @@ public class RangeSeekBar extends SeekBar {
 
 
         int pos;
-        pos = (int) (value * 100 / (range[ARRAY_MAX_POS] - range[ARRAY_MIN_POS]));
+        pos = (int) (value - range[ARRAY_MIN_POS]) * 100 / (range[ARRAY_MAX_POS] - range[ARRAY_MIN_POS]);
+
+//        pos = (int) (value * 100 / (range[ARRAY_MAX_POS] - range[ARRAY_MIN_POS])) - range[ARRAY_MIN_POS];
 
         setProgress(pos);
 

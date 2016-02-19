@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -123,11 +124,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         sizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
 
-        previewPlanetMaker = new PlanetMaker(nativeWrapper, 800, sizeMinMax);
+        previewPlanetMaker = new PlanetMaker(nativeWrapper, 700, sizeMinMax);
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
-
-
         FragmentManager fragmentManager = getFragmentManager();
         mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
 
@@ -146,6 +145,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             }
 
 
+        } else {
+            SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
+
+            if (pref.getBoolean("firstRun", true))
+                showFirstTimeDialog();
+
+            pref.edit().putBoolean("firstRun", false).commit();
         }
 
     }
@@ -336,6 +342,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         previewPlanetMaker.setInputImage(bitmap);
         updateImageView();
 
+        checkFirstTimeImageOpen();
+
     }
 
     public static interface PlanetInitCallBack {
@@ -388,6 +396,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             return;
 
         }
+        else if (files.length == 0) {
+
+            showNoFileFoundDialog();
+            return;
+
+        }
 
         //	    Opens the most recent image:
         Arrays.sort(files);
@@ -429,6 +443,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         AlertDialog dialog = builder.create();
 
         dialog.show();
+
+    }
+
+    private void checkFirstTimeImageOpen() {
+
+        SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
+
+        if (pref.getBoolean("firstImageOpen", true))
+            showGestureFragment();
+
+        pref.edit().putBoolean("firstImageOpen", false).commit();
 
     }
 
@@ -572,7 +597,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private File getMediaStorageDir() {
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "TinyPlanet");
+                Environment.DIRECTORY_PICTURES), "TinyPlanetMaker");
 
         // Create the storage directory if it does not exist
         if (! mediaStorageDir.exists()){
@@ -614,6 +639,32 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.about_msg).setTitle(R.string.action_help_about_title);
         builder.setIcon(R.drawable.tiny_planet_gray_300px);
+        AlertDialog dialog = builder.create();
+//        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
+        dialog.setIcon(R.drawable.tiny_planet_gray_300px);
+        dialog.show();
+
+    }
+
+    private void showFirstTimeDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.firsttime_dialog_msg).setTitle(R.string.firsttime_dialog_title);
+        builder.setIcon(R.drawable.tiny_planet_gray_300px);
+
+        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                showSamplesFragment();
+            }
+        });
+        builder.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+
         AlertDialog dialog = builder.create();
 //        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
         dialog.setIcon(R.drawable.tiny_planet_gray_300px);
@@ -690,12 +741,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 //                        imageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
                         updateImageView();
 
-                        SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
-
-                        if (pref.getBoolean("firstRun", true))
-                            showAboutDialog();
-
-                        pref.edit().putBoolean("firstRun", false).commit();
+                        checkFirstTimeImageOpen();
 
 
                     }

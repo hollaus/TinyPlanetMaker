@@ -1,6 +1,7 @@
 package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -16,13 +17,17 @@ public class PlanetMaker {
     private static final double DEG2RAD = 0.017453292519943;
 
     private Mat inputImage, planetImage, originalImage;
+    private Mat tmp;
     private NativeWrapper nativeWrapper;
     private int outputSize;
     private double size, scale, angle;
     private int fullOutputSize;
     private int[] sizeMinMax;
     private boolean isImageLoaded, isPlanetInverted;
+    private ComputePlanetTask task;
 
+    private boolean isComputingPlanet = false;
+    private long lastRecognitionTime = -1;
 //    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
 
 
@@ -33,13 +38,10 @@ public class PlanetMaker {
         this.outputSize = outputSize;
         this.sizeMinMax = sizeMinMax;
 
-        size = 500;
-        scale = 100;
-        angle = 180;
+        setInitValues();
 
         isImageLoaded = false;
         isPlanetInverted = false;
-
 
     }
 
@@ -64,9 +66,7 @@ public class PlanetMaker {
 
     public void reset() {
 
-        size = 500;
-        scale = 100;
-        angle = 180;
+        setInitValues();
 
         if (isPlanetInverted && inputImage != null)
             Core.flip(inputImage, inputImage, -1);
@@ -86,7 +86,7 @@ public class PlanetMaker {
 
     public void releasePlanetImage() {
 
-        planetImage.release();
+//        planetImage.release();
 
 
     }
@@ -94,7 +94,10 @@ public class PlanetMaker {
 
     public Mat getPlanetImage() {
 
-        return planetImage;
+//        if (isComputingPlanet)
+//            return tmp;
+//        else
+            return planetImage;
 
     }
 
@@ -222,14 +225,44 @@ public class PlanetMaker {
 
     }
 
+    private void setInitValues() {
+
+        size = 250;
+        scale = 105;
+        angle = 180;
+
+    }
+
     private void updatePlanet() {
 
         if (!isImageLoaded)
             return;
 
-        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-//        planetImage = inputImage.clone();
+
+//        new Thread(){
+//            @Override
+//            public void run() {
+//                Message msg = new Message();
+//                if(!isComputingPlanet) {
+//                    planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+//                    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+//                    isComputingPlanet = false;
+//                }
+//            }
+//        }).start();
+
+//        long now = Calendar.getInstance().getTimeInMillis();
+
+//        if ((lastRecognitionTime == -1) || (now - lastRecognitionTime > 500)) {
+//            lastRecognitionTime = now;
+            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+//        }
+
+//        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+//        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+
     }
 
     private void initImages() {
@@ -257,9 +290,29 @@ public class PlanetMaker {
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
 //        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
         planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
 
         updatePlanet();
 
+    }
+
+    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            isComputingPlanet = true;
+            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            isComputingPlanet = false;
+        }
     }
 
 

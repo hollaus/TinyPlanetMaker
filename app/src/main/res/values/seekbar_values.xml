@@ -3,12 +3,12 @@
 
     <integer-array name="size_seekbar_values">
         <item>1</item>
-        <item>1000</item>
+        <item>500</item>
     </integer-array>
 
     <integer-array name="zoom_seekbar_values">
-        <item>10</item>
-        <item>200</item>
+        <item>90</item>
+        <item>120</item>
     </integer-array>
 
     <integer-array name="angle_seekbar_values">
