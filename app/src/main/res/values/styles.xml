@@ -20,9 +20,9 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Taken from the Google color palette: -->
         <!-- https://www.google.com/design/spec/style/color.html#color-color-palette -->
-        <item name="colorPrimary">#607d8b</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">#263238</item>
-        <item name="colorAccent"> #ffc107</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 

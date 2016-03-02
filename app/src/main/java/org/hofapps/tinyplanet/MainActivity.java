@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         } else {
             SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
 
-            if (pref.getBoolean("firstRun", true))
+//            if (pref.getBoolean("firstRun", true))
                 showFirstTimeDialog();
 
             pref.edit().putBoolean("firstRun", false).commit();
@@ -633,10 +633,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.about_msg).setTitle(R.string.action_help_about_title);
-        builder.setIcon(R.drawable.tiny_planet_gray_300px);
+//        builder.setIcon(R.drawable.icon_small);
+
+
+        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+
         AlertDialog dialog = builder.create();
 //        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
-        dialog.setIcon(R.drawable.tiny_planet_gray_300px);
+        dialog.setIcon(R.drawable.icon_small);
         dialog.show();
 
     }
@@ -645,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.firsttime_dialog_msg).setTitle(R.string.firsttime_dialog_title);
-        builder.setIcon(R.drawable.tiny_planet_gray_300px);
+//        builder.setIcon(R.drawable.icon_small);
 
         builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -662,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         AlertDialog dialog = builder.create();
 //        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
-        dialog.setIcon(R.drawable.tiny_planet_gray_300px);
+        dialog.setIcon(R.drawable.icon_small);
         dialog.show();
 
     }
