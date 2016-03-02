@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private GesturesDialogFragment gestureFragment;
     private SamplesFragment samplesFragment;
+    private TabFragment tabFragment;
 
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
 
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private int menuItem = -1;
 
     private static final String TAG = "Touch";
-    private MainActivityFragment mainActivityFragment;
+//    private MainActivityFragment mainActivityFragment;
     private OnPlanetTouchListener onPlanetTouchListener;
     private MediaScannerConnection mediaScannerConnection;
     private LinearLayout settingsTitle;
@@ -112,14 +113,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         imageView.setOnTouchListener(onPlanetTouchListener);
 
 
-
-//        imageContainerView = (LinearLayout) findViewById(R.id.imageContainerView);
-
-        // TODO: Put this into MainActivityFragment and connect via callbacks
-
-//        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.modeRadioGroup);
-//        radioGroup.check(R.id.editModeRadioButton);
-
         nativeWrapper = new NativeWrapper();
 
         sizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
@@ -128,10 +121,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
         FragmentManager fragmentManager = getFragmentManager();
-        mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
+//        mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
 
-        mainActivityFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
 
+
+        tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.tab_fragment);
+        tabFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
 
         Intent intent = getIntent();
 
@@ -288,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         previewPlanetMaker.addAngle(angle);
         updateImageView();
 
-        mainActivityFragment.setAngleBarValue((int) previewPlanetMaker.getAngle());
+        tabFragment.setRotateBarValue((int) previewPlanetMaker.getAngle());
 
     }
 
@@ -298,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         previewPlanetMaker.addScale(scale);
         updateImageView();
 
-        mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
+        tabFragment.setWarpBarValue((int) previewPlanetMaker.getSize());
 
     }
 
@@ -356,10 +351,10 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         previewPlanetMaker.reset();
 
-        mainActivityFragment.setAngleBarValue((int) previewPlanetMaker.getAngle());
-        mainActivityFragment.setSizeBarValue((int) previewPlanetMaker.getSize());
-        mainActivityFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
-        mainActivityFragment.setInvertPlanetSwitch(previewPlanetMaker.getIsPlanetInverted());
+        tabFragment.setRotateBarValue((int) previewPlanetMaker.getAngle());
+        tabFragment.setWarpBarValue((int) previewPlanetMaker.getSize());
+        tabFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
+        tabFragment.setInvertPlanetSwitch(previewPlanetMaker.getIsPlanetInverted());
 
         updateImageView();
 

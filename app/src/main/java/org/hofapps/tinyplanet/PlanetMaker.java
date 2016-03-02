@@ -212,7 +212,7 @@ public class PlanetMaker {
         Core.flip(tmpInputImage.t(), tmpInputImage, 1);
 
         if (isPlanetInverted)
-            Core.flip(inputImage, inputImage, -1);
+            Core.flip(tmpInputImage, tmpInputImage, -1);
 
 
         double fac = tmpInputImage.width() / inputImage.width();

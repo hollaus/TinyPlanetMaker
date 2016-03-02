@@ -1,4 +1,44 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_fragment"
-    android:name="org.hofapps.tinyplanet.MainActivityFragment" tools:layout="@layout/fragment_main"
-    android:layout_width="match_parent" android:layout_height="match_parent"   />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+
+
+    android:orientation="vertical"
+
+
+    tools:context=".MainActivityFragment"
+
+    >
+
+<fragment
+
+    android:id="@+id/main_fragment"
+    android:name="org.hofapps.tinyplanet.MainActivityFragment"
+    tools:layout="@layout/fragment_main"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+
+    />
+
+<fragment
+
+    android:id="@+id/tab_fragment"
+    android:name="org.hofapps.tinyplanet.TabFragment"
+    tools:layout="@layout/tablayout_settings"
+    android:background="#000000"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_gravity="bottom"
+
+    android:layout_alignParentBottom="true"
+
+
+    />
+
+</LinearLayout>

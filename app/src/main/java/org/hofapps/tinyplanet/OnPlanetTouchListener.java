@@ -2,7 +2,6 @@ package org.hofapps.tinyplanet;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -80,8 +79,6 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
                     float fac = .25f;
                     int iDiff = Math.round(diff * fac);
 
-                    Log.d("Rotate", Integer.toString(iDiff));
-
                     mPlanetChangeCallBacks.addAngle(iDiff);
 
                     lastPoint.set(event.getX(), event.getY());
@@ -92,7 +89,6 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
                     float newDist = spacing(event);
 
                     float scale = newDist / oldDist;
-                    Log.d("Scale", Float.toString(scale));
                     mPlanetChangeCallBacks.addScaleLog(scale * scale);
 
                     oldDist = newDist;

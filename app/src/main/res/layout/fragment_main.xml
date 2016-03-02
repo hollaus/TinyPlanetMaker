@@ -48,21 +48,6 @@
     </LinearLayout>
 
 
-    <fragment
-
-        android:id="@+id/tab_fragment"
-        android:name="org.hofapps.tinyplanet.TabFragment"
-        tools:layout="@layout/tablayout_settings"
-        android:background="#000000"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_gravity="bottom"
-
-        android:layout_alignParentBottom="true"
-
-
-        />
-
 
 </LinearLayout>
 
