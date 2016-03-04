@@ -106,6 +106,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//
+//        setSupportActionBar(toolbar);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+
         imageView = (ImageView) findViewById(R.id.imageView);
 
         onPlanetTouchListener = new OnPlanetTouchListener(this);
@@ -143,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         } else {
             SharedPreferences pref = getSharedPreferences("org.hofapps.tinyplanet", Context.MODE_PRIVATE);
 
-//            if (pref.getBoolean("firstRun", true))
+            if (pref.getBoolean("firstRun", true))
                 showFirstTimeDialog();
 
             pref.edit().putBoolean("firstRun", false).commit();

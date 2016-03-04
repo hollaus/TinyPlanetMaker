@@ -25,6 +25,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--<style name="AppTheme" parent="android:Theme.Material.Light"></style>-->
 
 
 </resources>

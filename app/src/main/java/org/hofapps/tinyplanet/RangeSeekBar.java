@@ -3,12 +3,11 @@ package org.hofapps.tinyplanet;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.SeekBar;
 
 /**
  * Created by fabian on 02.11.2015.
  */
-public class RangeSeekBar extends SeekBar {
+public class RangeSeekBar extends android.support.v7.widget.AppCompatSeekBar {
 
     private static final int ARRAY_MIN_POS = 0;
     private static final int ARRAY_MAX_POS = 1;
