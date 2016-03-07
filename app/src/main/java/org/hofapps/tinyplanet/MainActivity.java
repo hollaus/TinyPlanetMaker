@@ -28,6 +28,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
@@ -75,8 +76,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private Context context;
 
     static {
-        System.loadLibrary("wrapper");
-        System.loadLibrary("opencv_java");
+        if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+        } else {
+            System.loadLibrary("wrapper");
+            System.loadLibrary("opencv_java");
+        }
+
     }
 
 
