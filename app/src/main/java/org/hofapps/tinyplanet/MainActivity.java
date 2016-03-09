@@ -16,6 +16,7 @@ import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private TabFragment tabFragment;
 
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE= 1;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private Context context;
 
     static {
+
+        // It seems like we need this for Android 4:
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
         } else {
@@ -132,11 +136,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         previewPlanetMaker = new PlanetMaker(nativeWrapper, 700, sizeMinMax);
 
-        // TODO: Check why we need here getChildFragmentManager instead of getFragmentManager and set sdkMinVersion to 15 back!
         FragmentManager fragmentManager = getFragmentManager();
-//        mainActivityFragment = (MainActivityFragment) fragmentManager.findFragmentById(R.id.main_fragment);
-
-
 
         tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.tab_fragment);
         tabFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
@@ -375,19 +375,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void openGallery() {
 
-//        File mediaStorageDir = getMediaStorageDir();
-////
-//        Uri uri = Uri.fromFile(lastFile);
-////
-////        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-////        startActivity(intent);
-//
-//        Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_VIEW);
-//        intent.setDataAndType(uri, "image/*");
-//        startActivity(intent);
+        int currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
-        startScan(MENU_ITEM_GALLERY);
+        if (currentApiVersion >= Build.VERSION_CODES.M)
+            requestFileOpen();
+        else
+            startScan(MENU_ITEM_GALLERY);
 
     }
 
@@ -395,6 +388,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onMediaScannerConnected() {
 
         File mediaStorageDir = getMediaStorageDir();
+
+        if (mediaStorageDir == null) {
+
+            showNoFileFoundDialog();
+            return;
+
+        }
 
         String[] files = mediaStorageDir.list();
 
@@ -488,7 +488,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 if (menuItem == MENU_ITEM_GALLERY) {
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(uri);
+//                    I do not know why setData(uri) is not working with Marshmallows, it just opens one image (not the folder), with setData(Uri.fromFile) it is working:
+
+                    int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+                    if (currentApiVersion >= Build.VERSION_CODES.M)
+                        intent.setDataAndType(Uri.fromFile(new File(path)), "image/*");
+                    else
+                        intent.setData(uri);
+//
+
                     startActivity(intent);
 
                 }
@@ -501,7 +509,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                     //        	    String shareText = (String) getString(R.string.share_text);
                     //        	    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
 
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out Zelfie - Zombie Camera: https://play.google.com/store/apps/details?id=com.zelfie.zelfiecam");
 
                     shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                     startActivity(shareIntent);
@@ -531,6 +538,19 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
+    // This method is used to enable file saving in marshmallow (Android 6), since in this version external file opening is not allowed without user permission:
+    private void requestFileOpen() {
+
+        // Check Permissions Now
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // ask for permission:
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+        }
+        else
+            startScan(MENU_ITEM_GALLERY);
+
+    }
+
 
     private void saveFile() {
 
@@ -557,6 +577,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             } else {
                 showNoSavingPermissionDialog();
             }
+        }
+
+        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startScan(MENU_ITEM_GALLERY);;
+            } else {
+                showNoReadingPermissionDialog();
+            }
+
         }
     }
 
@@ -634,7 +663,16 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private void showNoSavingPermissionDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.no_saving_permission_msg).setTitle(R.string.no_saving_permission_title);
+        builder.setMessage(R.string.no_saving_permission_msg).setTitle(R.string.no_permission_title);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    private void showNoReadingPermissionDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_reading_permission_msg).setTitle(R.string.no_permission_title);
         AlertDialog dialog = builder.create();
         dialog.show();
 

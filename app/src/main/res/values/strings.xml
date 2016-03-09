@@ -19,8 +19,9 @@
     <string name="action_reset">Reset values</string>
     <string name="action_help">Help</string>
     <string name="action_samples">Load examples</string>
-    <string name="no_saving_permission_title">Permission required</string>
+    <string name="no_permission_title">Permission required</string>
     <string name="no_saving_permission_msg">Cannot save images, if the permission is not given by the user.</string>
+    <string name="no_reading_permission_msg">Cannot load images in a gallery app, if the permission is not given by the user.</string>
     <string name="gestures_fragment_title">Help</string>
     <string name="samples_fragment_title">Select a sample</string>
     <string name="firsttime_dialog_title">Welcome!</string>
