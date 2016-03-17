@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
@@ -138,7 +139,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         FragmentManager fragmentManager = getFragmentManager();
 
-        tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.tab_fragment);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment_land);
+        else
+            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+
         tabFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
 
         Intent intent = getIntent();

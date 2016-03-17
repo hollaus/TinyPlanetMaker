@@ -28,7 +28,7 @@
 
 <fragment
 
-    android:id="@+id/tab_fragment"
+    android:id="@+id/settings_fragment"
     android:name="org.hofapps.tinyplanet.TabFragment"
     tools:layout="@layout/tablayout_settings"
     android:background="#000000"
@@ -37,6 +37,7 @@
     android:layout_gravity="bottom"
 
     android:layout_alignParentBottom="true"
+    android:tag="orientation_portrait"
 
 
     />
