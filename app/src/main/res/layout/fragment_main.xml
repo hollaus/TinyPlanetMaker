@@ -23,11 +23,6 @@
 
     >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
 
 
 
@@ -41,11 +36,10 @@
             android:id="@+id/imageView"
 
             android:layout_gravity="center_vertical"
-            android:src="@drawable/tiny_planet_gray_600px"
+            android:src="@drawable/tiny_planet_gray_600x600"
 
             />
 
-    </LinearLayout>
 
 
 

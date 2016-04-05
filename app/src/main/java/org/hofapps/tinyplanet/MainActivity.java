@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         AlertDialog dialog = builder.create();
 //        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
-        dialog.setIcon(R.drawable.icon_small);
+//        dialog.setIcon(R.drawable.icon_small);
         dialog.show();
 
     }
