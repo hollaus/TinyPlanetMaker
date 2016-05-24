@@ -28,4 +28,6 @@
     <string name="firsttime_dialog_msg">Do you want to start with an example planet?</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

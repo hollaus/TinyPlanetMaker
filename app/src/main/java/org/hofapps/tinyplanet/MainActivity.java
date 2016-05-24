@@ -22,18 +22,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -134,15 +133,16 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         imageView.setOnTouchListener(onPlanetTouchListener);
 
 
-//        Navigation drawer:
-        String[] mPlanetTitles = {"asdf", "jklö"};
+//        Navigation drawer based on this tutorial:
+//        https://guides.codepath.com/android/Fragment-Navigation-Drawer
+
 //        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mPlanetTitles));
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                android.R.layout.simple_list_item_1, mPlanetTitles));
 
 //        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -152,39 +152,28 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 //        TODO: replace R.drawable.ic_action.name with drawer icon
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.action_open_image, R.string.action_about) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
 //            /** Called when a drawer has settled in a completely closed state. */
 //            public void onDrawerClosed(View view) {
 //                super.onDrawerClosed(view);
 //                getSupportActionBar().setTitle(mTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 //            }
 //
 //            /** Called when a drawer has settled in a completely open state. */
 //            public void onDrawerOpened(View drawerView) {
 //                super.onDrawerOpened(drawerView);
 //                getSupportActionBar().setTitle(mDrawerTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 //            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mTitle);
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(mDrawerTitle);
-            }
 
 
         };
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        NavigationView mDrawer = (NavigationView) findViewById(R.id.left_drawer);
+        setupDrawerContent(mDrawer);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -266,50 +255,18 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         int id = item.getItemId();
 
-        if (id == R.id.action_open_file) {
+        switch (item.getItemId()) {
 
-            Intent intent = new Intent();
-            // Show only images, no videos or anything else
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            // Always show the chooser (if there are multiple options available)
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
 
-            return true;
-        } else if (id == R.id.action_save_file) {
 
-//            saveFile();
-            requestFileSave();
 
-        } else if (id == R.id.action_share) {
 
-            openGallery();
 
         }
 
-        else if (id == R.id.action_about) {
-
-            showAboutDialog();
-
-        }
-
-        else if (id == R.id.action_reset) {
-
-            resetPlanetValues();
-
-        }
-
-        else if (id == R.id.action_samples) {
-
-            showSamplesFragment();
-
-        }
-
-        else if (id == R.id.action_help) {
-
-            showGestureFragment();
-
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -521,6 +478,58 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
         mediaScannerConnection.scanFile(fileName, null);
+    }
+
+
+    private void setupDrawerContent(NavigationView navigationView) {
+
+        navigationView.setNavigationItemSelectedListener(
+
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        selectDrawerItem(menuItem);
+
+                        return true;
+
+                    }
+
+                });
+
+    }
+
+    private void selectDrawerItem(MenuItem menuItem) {
+
+        switch(menuItem.getItemId()) {
+
+            case R.id.action_share:
+                openGallery();
+                break;
+
+            case R.id.action_about:
+                showAboutDialog();
+                break;
+
+            case R.id.action_reset:
+                resetPlanetValues();
+                break;
+
+            case R.id.action_samples:
+                showSamplesFragment();
+                break;
+
+            case R.id.action_help:
+                showGestureFragment();
+                break;
+
+
+        }
+
+        mDrawerLayout.closeDrawers();
+
     }
 
     private void showGestureFragment() {

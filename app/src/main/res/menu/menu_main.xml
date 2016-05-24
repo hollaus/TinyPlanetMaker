@@ -16,7 +16,7 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_save_white_24dp"
         />
-
+<!--
     <item android:id="@+id/action_share"
         android:title="@string/action_share"
         android:orderInCategory="100"
@@ -47,4 +47,5 @@
         android:orderInCategory="100"
         app:showAsAction="never"
         />
+-->
 </menu>
