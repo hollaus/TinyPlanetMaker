@@ -16,5 +16,9 @@
         <item>360</item>
     </integer-array>
 
+    <integer-array name="crop_seekbar_values">
+        <item>0</item>
+        <item>100</item>
+    </integer-array>
 
 </resources>

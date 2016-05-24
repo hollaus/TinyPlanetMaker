@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
@@ -20,7 +21,8 @@ public class PlanetMaker {
     private Mat tmp;
     private NativeWrapper nativeWrapper;
     private int outputSize;
-    private double size, scale, angle;
+    private double size, scale, angle, cropLeft, cropRight;
+
     private int fullOutputSize;
     private int[] sizeMinMax;
     private boolean isImageLoaded, isPlanetInverted;
@@ -191,6 +193,23 @@ public class PlanetMaker {
 
     }
 
+
+    public void setCropLeft(int cropLeft) {
+
+        this.cropLeft = (double) cropLeft / (double) 100;
+        updatePlanet();
+
+    }
+
+
+    public void setCropRight(int cropRight) {
+
+        this.cropRight = (double) cropRight / (double) 100;
+        updatePlanet();
+
+    }
+
+
     public boolean getIsPlanetInverted() {
 
         return isPlanetInverted;
@@ -230,6 +249,8 @@ public class PlanetMaker {
         size = 250;
         scale = 105;
         angle = 180;
+        cropLeft = 0;
+        cropRight = 0;
 
     }
 
@@ -255,8 +276,49 @@ public class PlanetMaker {
 
 //        if ((lastRecognitionTime == -1) || (now - lastRecognitionTime > 500)) {
 //            lastRecognitionTime = now;
+
+
+
+        if (cropLeft != 0 || cropRight != 0) {
+
+            int startX, endX, midX;
+            midX = Math.round(inputImage.height() * 0.5f);
+            int halfDist = midX / 2;
+
+            if (cropLeft != 0)
+                startX = (int) Math.round(midX - halfDist - halfDist * (1-cropLeft));
+            else
+                startX = 0;
+
+            if (cropRight != 0)
+                endX = (int) Math.round(midX + halfDist + halfDist * (1-cropRight));
+            else
+                endX = inputImage.height() - 1;
+
+
+            Rect rect = new Rect(0, startX, inputImage.width(), endX - startX);
+            Mat image_roi = new Mat(inputImage,rect);
+            image_roi = image_roi.clone();
+
+            Imgproc.resize(image_roi, image_roi, new Size(outputSize, outputSize), 0, 0, Imgproc.INTER_CUBIC);
+
+            planetImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
+            nativeWrapper.logPolar(image_roi, planetImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, size, scale, angle * DEG2RAD);
+
+        }
+
+        else {
             planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
             nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+        }
+
+
+
+
+
+
+//            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+//            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
 //        }
 
 //        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
@@ -325,6 +387,8 @@ public class PlanetMaker {
         void addAngle(float angle);
         void addScaleLog(float scaleLog);
         void onInvertChange(boolean isInverted);
+        void onCropLeftChange(int cropLeft);
+        void onCropRightChange(int cropRight);
 
     }
 

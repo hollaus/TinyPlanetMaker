@@ -23,12 +23,17 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -53,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private PlanetMaker previewPlanetMaker;
     private CoordinatorLayout coordinatorLayout;
     private int[] sizeMinMax;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+
 
     private GesturesDialogFragment gestureFragment;
     private SamplesFragment samplesFragment;
@@ -116,19 +127,69 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//
-//        setSupportActionBar(toolbar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-
         imageView = (ImageView) findViewById(R.id.imageView);
 
         onPlanetTouchListener = new OnPlanetTouchListener(this);
 
         imageView.setOnTouchListener(onPlanetTouchListener);
+
+
+//        Navigation drawer:
+        String[] mPlanetTitles = {"asdf", "jklö"};
+//        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, mPlanetTitles));
+
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+
+        mTitle = "title";
+        mDrawerTitle = getTitle();
+
+//        TODO: replace R.drawable.ic_action.name with drawer icon
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.action_open_image, R.string.action_about) {
+
+//            /** Called when a drawer has settled in a completely closed state. */
+//            public void onDrawerClosed(View view) {
+//                super.onDrawerClosed(view);
+//                getSupportActionBar().setTitle(mTitle);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//
+//            /** Called when a drawer has settled in a completely open state. */
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                getSupportActionBar().setTitle(mDrawerTitle);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mTitle);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(mDrawerTitle);
+            }
+
+
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
 
 
         nativeWrapper = new NativeWrapper();
@@ -171,6 +232,20 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -182,6 +257,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         int id = item.getItemId();
 
         if (id == R.id.action_open_file) {
@@ -319,6 +401,22 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onInvertChange(boolean isInverted) {
 
         previewPlanetMaker.invert(isInverted);
+        updateImageView();
+
+    }
+
+    @Override
+    public void onCropLeftChange(int cropLeft) {
+
+        previewPlanetMaker.setCropLeft(cropLeft);
+        updateImageView();
+
+    }
+
+    @Override
+    public void onCropRightChange(int cropRight) {
+
+        previewPlanetMaker.setCropRight(cropRight);
         updateImageView();
 
     }

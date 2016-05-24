@@ -16,7 +16,7 @@ public class TabFragment extends Fragment {
 
     private TabHost mTabHost;
     private PlanetMaker.PlanetChangeCallBack mPlanetChangeCallBacks;
-    private RangeSeekBar rotateSeekBar, warpSeekBar, zoomSeekBar;
+    private RangeSeekBar rotateSeekBar, warpSeekBar, zoomSeekBar, cropLeftSeekBar, cropRightSeekBar;
     private android.support.v7.widget.SwitchCompat invertSwitch;
 
 
@@ -75,7 +75,6 @@ public class TabFragment extends Fragment {
                 public View createTabContent(String tag) {
 
                     View view = inflater.inflate(R.layout.fragment_warp, container, false);
-
                     warpSeekBar = (RangeSeekBar) view.findViewById(R.id.warp_seekBar);
                     warpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
                     warpSeekBar.setOnSeekBarChangeListener(listener);
@@ -152,6 +151,81 @@ public class TabFragment extends Fragment {
             });
 
             mTabHost.addTab(spec);
+
+//
+//            spec = mTabHost.newTabSpec("tag4");
+//            spec.setIndicator(createTabView(inflater, container, "Crop X"));
+//
+//            spec.setContent(new TabHost.TabContentFactory() {
+//
+//                @Override
+//                public View createTabContent(String tag) {
+//
+//                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
+//
+//                    cropLeftSeekBar = (RangeSeekBar) view.findViewById(R.id.cropLeft_seekBar);
+//                    cropLeftSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
+//                    cropLeftSeekBar.setOnSeekBarChangeListener(listener);
+//
+//                    cropRightSeekBar = (RangeSeekBar) view.findViewById(R.id.cropRight_seekBar);
+//                    cropRightSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
+//                    cropRightSeekBar.setOnSeekBarChangeListener(listener);
+//
+//                    return (view);
+//
+//                }
+//            });
+//
+//            mTabHost.addTab(spec);
+//
+//
+//            mTabHost.addTab(spec);
+//
+//            spec = mTabHost.newTabSpec("tag5");
+//            spec.setIndicator(createTabView(inflater, container, "Crop Y"));
+//
+//            spec.setContent(new TabHost.TabContentFactory() {
+//
+//                @Override
+//                public View createTabContent(String tag) {
+//
+//                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
+//
+//                    cropLeftSeekBar = (RangeSeekBar) view.findViewById(R.id.cropLeft_seekBar);
+//                    cropLeftSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
+//                    cropLeftSeekBar.setOnSeekBarChangeListener(listener);
+//
+//                    cropRightSeekBar = (RangeSeekBar) view.findViewById(R.id.cropRight_seekBar);
+//                    cropRightSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
+//                    cropRightSeekBar.setOnSeekBarChangeListener(listener);
+//
+//                    return (view);
+//
+//                }
+//            });
+//
+//            mTabHost.addTab(spec);
+//
+//
+//            spec = mTabHost.newTabSpec("tag6");
+//            spec.setIndicator(createTabView(inflater, container, "Fade"));
+//
+//            spec.setContent(new TabHost.TabContentFactory() {
+//
+//                @Override
+//                public View createTabContent(String tag) {
+//
+//                    View view = inflater.inflate(R.layout.fragment_invert, container, false);
+//
+//                    invertSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.invert_switch);
+//                    enableInvertSwitchListener();
+//
+//                    return (view);
+//
+//                }
+//            });
+//
+//            mTabHost.addTab(spec);
 
             mTabHost.setOnTabChangedListener(new AnimatedTabHostListener(mTabHost));
 
@@ -237,6 +311,17 @@ public class TabFragment extends Fragment {
 
                 }
 
+                else if (id == R.id.cropLeft_seekBar) {
+
+                    mPlanetChangeCallBacks.onCropLeftChange(value);
+
+                }
+
+                else if (id == R.id.cropRight_seekBar) {
+
+                    mPlanetChangeCallBacks.onCropRightChange(value);
+
+                }
 
 
             }
