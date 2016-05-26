@@ -553,15 +553,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void showNoFileFoundDialog() {
 
-        // 1. Instantiate an AlertDialog.Builder with its constructor
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        // 2. Chain together various setter methods to set the dialog characteristics
         builder.setMessage(R.string.no_file_found_msg).setTitle(R.string.no_file_found_title);
 
-        // 3. Get the AlertDialog from create()
-        AlertDialog dialog = builder.create();
+        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
 
+        AlertDialog dialog = builder.create();
         dialog.show();
 
     }
@@ -806,7 +806,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         AlertDialog dialog = builder.create();
 //        dialog.setFeatureDrawable(Window.FEATURE_LEFT_ICON, R.drawable.tiny_planet_gray_300px);
-        dialog.setIcon(R.drawable.icon_small);
+//        dialog.setIcon(R.drawable.icon_small);
         dialog.show();
 
     }
