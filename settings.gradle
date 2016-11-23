@@ -1,1 +1,2 @@
-include ':app', ':opencv-java'
+include ':app'
+include ':openCVLibrary310'

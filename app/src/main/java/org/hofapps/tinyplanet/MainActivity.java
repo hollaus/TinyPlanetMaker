@@ -37,7 +37,7 @@ import android.widget.LinearLayout;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.highgui.Highgui;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -45,6 +45,8 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+
+//import org.opencv.highgui.Highgui;
 
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
         MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack,
@@ -60,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
 
 
     private GesturesDialogFragment gestureFragment;
@@ -90,12 +90,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     static {
 
+        boolean init = OpenCVLoader.initDebug();
         // It seems like we need this for Android 4:
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
         } else {
             System.loadLibrary("wrapper");
-            System.loadLibrary("opencv_java");
+            System.loadLibrary("opencv_java3");
         }
 
     }
@@ -138,20 +139,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 //        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // Set the adapter for the list view
-//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//                android.R.layout.simple_list_item_1, mPlanetTitles));
-
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-
-        mTitle = "title";
-        mDrawerTitle = getTitle();
-
-//        TODO: replace R.drawable.ic_action.name with drawer icon
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
 //            /** Called when a drawer has settled in a completely closed state. */
@@ -954,7 +942,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             final File outFile = new File(uris[0].getPath());
 
-            boolean imgSaved = Highgui.imwrite(outFile.toString(), planet);
+
+
+            boolean imgSaved = Imgcodecs.imwrite(outFile.toString(), planet);
 
             planet.release();
 

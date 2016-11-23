@@ -50,6 +50,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.0'
-    compile project(':opencv-java')
     compile 'com.android.support:design:23.1.0'
+    compile project(':openCVLibrary310')
 }
