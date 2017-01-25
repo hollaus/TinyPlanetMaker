@@ -3,14 +3,14 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config2 {
-            keyAlias 'alias'
-            keyPassword 'fickdich'
-            storeFile file('C:/Users/fabian/test4.jks')
-            storePassword 'fickdich'
+            keyAlias 'xxx'
+            keyPassword 'xxx'
+            storeFile file('test.jks')
+            storePassword 'xxx'
         }
     }
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId "org.hofapps.tinyplanet"
         minSdkVersion 14
@@ -22,16 +22,13 @@ android {
     sourceSets.main {
         jni.srcDirs = [] //disable automatic nd k-build call
     }
-    task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
-        commandLine "C:\\Users\\fabian\\Downloads\\android-ndk-r10e/ndk-build.cmd",
-                'NDK_PROJECT_PATH=build/intermediates/ndk',
-                'NDK_LIBS_OUT=src/main/jniLibs',
-                'APP_BUILD_SCRIPT=src/main/jni/Android.mk',
-                'NDK_APPLICATION_MK=src/main/jni/Application.mk'
+    task ndkBuild(type: Exec) {
+        workingDir file('src/main')
+        commandLine getNdkBuildCmd()
     }
 
     task cleanNative(type: Exec, description: 'Clean JNI object files') {
-        commandLine "C:\\Users\\fabian\\Downloads\\android-ndk-r10e/ndk-build.cmd",
+        commandLine getNdkBuildCmd(),
                 '-C', file('src/main/jni').absolutePath, // Change src/main/jni the relative path to your jni source
                 'clean'
     }
@@ -56,6 +53,28 @@ android {
     }
 
 
+}
+
+def getNdkDir() {
+    if (System.env.ANDROID_NDK_ROOT != null)
+        return System.env.ANDROID_NDK_ROOT
+
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def ndkdir = properties.getProperty('ndk.dir', null)
+    if (ndkdir == null)
+        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
+
+    return ndkdir
+}
+
+def getNdkBuildCmd() {
+    def ndkbuild = getNdkDir() + "/ndk-build"
+    // TODO: check why we cannot include package Os:
+//    if (Os.isFamily(Os.FAMILY_WINDOWS))
+    ndkbuild += ".cmd"
+
+    return ndkbuild
 }
 
 dependencies {

@@ -3,7 +3,10 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 #opencv
-OPENCVROOT:= C:\cvl\dmrz\code\opencv_sdk\OpenCV-android-sdk
+# include file with user defined OpenCV SDK path (MY_OPENCVROOT):
+include $(LOCAL_PATH)/local/Android.mk
+OPENCVROOT:= $(MY_OPENCVROOT)
+
 OPENCV_CAMERA_MODULES:=off
 OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=SHARED

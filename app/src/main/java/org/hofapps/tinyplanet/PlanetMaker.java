@@ -295,8 +295,8 @@ public class PlanetMaker {
         }
 
         else {
-            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+            mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+            mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
         }
 
     }
@@ -356,7 +356,7 @@ public class PlanetMaker {
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
 //        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
         mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+        mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
         updatePlanet();
 
