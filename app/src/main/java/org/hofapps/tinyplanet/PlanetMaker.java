@@ -1,12 +1,12 @@
 package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
@@ -17,50 +17,46 @@ public class PlanetMaker {
 
     private static final double DEG2RAD = 0.017453292519943;
 
-    private Mat inputImage, planetImage, originalImage;
-    private Mat tmp;
-    private NativeWrapper nativeWrapper;
-    private int outputSize;
-    private double size, scale, angle, cropLeft, cropRight;
+    private Mat mInputImage, mPlanetImage, mOriginalImage;
+    private NativeWrapper mNativeWrapper;
+    private int mOutputSize;
+    private double mSize, mScale, mAngle, cropLeft, cropRight;
 
-    private int fullOutputSize;
-    private int[] sizeMinMax;
-    private boolean isImageLoaded, isPlanetInverted;
-    private ComputePlanetTask task;
+    private int mFullOutputSize;
+    private int[] mSizeMinMax;
+    private boolean mIsImageLoaded, mIsPlanetInverted;
+//    private ComputePlanetTask task;
 
-    private boolean isComputingPlanet = false;
-    private long lastRecognitionTime = -1;
+//    private boolean isComputingPlanet = false;
+//    private long lastRecognitionTime = -1;
 //    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
 
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
 
-        this.nativeWrapper = nativeWrapper;
-        this.outputSize = outputSize;
-        this.sizeMinMax = sizeMinMax;
+        mNativeWrapper = nativeWrapper;
+        mOutputSize = outputSize;
+        mSizeMinMax = sizeMinMax;
 
         setInitValues();
 
-        isImageLoaded = false;
-        isPlanetInverted = false;
+        mIsImageLoaded = false;
+        mIsPlanetInverted = false;
 
     }
 
     public void setInputImage(Bitmap bitmap) {
 
-        isImageLoaded = true;
+        mIsImageLoaded = true;
+        mInputImage = new Mat();
+        Utils.bitmapToMat(bitmap, mInputImage);
+        mOriginalImage = mInputImage.clone();
 
-        inputImage = new Mat();
+        mFullOutputSize = Math.max(mInputImage.width(), mInputImage.height());
 
-        Utils.bitmapToMat(bitmap, inputImage);
-
-        this.originalImage = inputImage.clone();
-
-        fullOutputSize = Math.max(inputImage.width(), inputImage.height());
-
-        if (fullOutputSize > MainActivity.MAX_IMG_SIZE)
-            fullOutputSize = MainActivity.MAX_IMG_SIZE;
+        if (mFullOutputSize > MainActivity.MAX_IMG_SIZE)
+            mFullOutputSize = MainActivity.MAX_IMG_SIZE;
 
         initImages();
 
@@ -70,18 +66,17 @@ public class PlanetMaker {
 
         setInitValues();
 
-        if (isPlanetInverted && inputImage != null)
-            Core.flip(inputImage, inputImage, -1);
+        if (mIsPlanetInverted && mInputImage != null)
+            Core.flip(mInputImage, mInputImage, -1);
 
-        isPlanetInverted = false;
-
+        mIsPlanetInverted = false;
         updatePlanet();
 
     }
 
     public boolean getIsImageLoaded() {
 
-        return isImageLoaded;
+        return mIsImageLoaded;
 
     }
 
@@ -96,48 +91,45 @@ public class PlanetMaker {
 
     public Mat getPlanetImage() {
 
-//        if (isComputingPlanet)
-//            return tmp;
-//        else
-            return planetImage;
+        return mPlanetImage;
 
     }
 
     public double getSize() {
 
-        return size;
+        return mSize;
 
     }
 
     public double getScale() {
 
-        return scale;
+        return mScale;
 
     }
 
     public double getAngle() {
 
-        return angle;
+        return mAngle;
 
     }
 
     public void setSize(double size) {
 
-        this.size = size;
+        mSize = size;
         updatePlanet();
 
     }
 
     public void setScale(double scale) {
 
-        this.scale = scale;
+        mScale = scale;
         updatePlanet();
 
     }
 
     public void setAngle(double angle) {
 
-        this.angle = angle;
+        mAngle = angle;
         updatePlanet();
 
     }
@@ -146,12 +138,12 @@ public class PlanetMaker {
 
 
 
-        angle += angleDiff;
-        angle = Math.round(angle);
-        angle %= 360;
+        mAngle += angleDiff;
+        mAngle = Math.round(mAngle);
+        mAngle %= 360;
 
-        if (angle < 0)
-            angle = 360 + angle;
+        if (mAngle < 0)
+            mAngle = 360 + mAngle;
 
         updatePlanet();
 
@@ -159,15 +151,15 @@ public class PlanetMaker {
 
     public void addScale(double scaleDiff) {
 
-        double newSize = size * scaleDiff;
+        double newSize = mSize * scaleDiff;
         newSize = Math.round(newSize);
 
-        if (newSize > sizeMinMax[SettingsFragment.ARRAY_MAX_POS])
-            newSize = sizeMinMax[SettingsFragment.ARRAY_MAX_POS];
-        else if (newSize < sizeMinMax[SettingsFragment.ARRAY_MIN_POS])
-            newSize = sizeMinMax[SettingsFragment.ARRAY_MIN_POS];
+        if (newSize > mSizeMinMax[SettingsFragment.ARRAY_MAX_POS])
+            newSize = mSizeMinMax[SettingsFragment.ARRAY_MAX_POS];
+        else if (newSize < mSizeMinMax[SettingsFragment.ARRAY_MIN_POS])
+            newSize = mSizeMinMax[SettingsFragment.ARRAY_MIN_POS];
 
-        size = newSize;
+        mSize = newSize;
 
         updatePlanet();
 
@@ -175,20 +167,20 @@ public class PlanetMaker {
 
     public void addScaleLog(double scaleDiff) {
 
-        size *= scaleDiff;
-        size = Math.round(size);
+        mSize *= scaleDiff;
+        mSize = Math.round(mSize);
         updatePlanet();
 
     }
 
     public void invert(boolean isInverted) {
 
-        isPlanetInverted = isInverted;
+        mIsPlanetInverted = isInverted;
 
-        if (!isImageLoaded)
+        if (!mIsImageLoaded)
             return;
 
-        Core.flip(inputImage, inputImage, -1);
+        Core.flip(mInputImage, mInputImage, -1);
         updatePlanet();
 
     }
@@ -212,32 +204,27 @@ public class PlanetMaker {
 
     public boolean getIsPlanetInverted() {
 
-        return isPlanetInverted;
+        return mIsPlanetInverted;
 
     }
 
     public Mat getFullResPlanet() {
 
-        if ((originalImage == null) || (nativeWrapper == null) || (inputImage == null))
+        if ((mOriginalImage == null) || (mNativeWrapper == null) || (mInputImage == null))
             return null;
 
-        Mat tmpInputImage = originalImage.clone();
-
-        Imgproc.resize(tmpInputImage, tmpInputImage, new Size(fullOutputSize, fullOutputSize), 0, 0, Imgproc.INTER_CUBIC);
-
-        Mat fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), inputImage.type());
+        Mat tmpInputImage = mOriginalImage.clone();
+        Imgproc.resize(tmpInputImage, tmpInputImage, new Size(mFullOutputSize, mFullOutputSize), 0, 0, Imgproc.INTER_CUBIC);
+        Mat fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), mInputImage.type());
 
 //        Rotate the image 90 degrees:
         Core.flip(tmpInputImage.t(), tmpInputImage, 1);
 
-        if (isPlanetInverted)
+        if (mIsPlanetInverted)
             Core.flip(tmpInputImage, tmpInputImage, -1);
 
-
-        double fac = tmpInputImage.width() / inputImage.width();
-
-        nativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, size * fac, scale, angle * DEG2RAD);
-
+        double fac = tmpInputImage.width() / mInputImage.width();
+        mNativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, mSize * fac, mScale, mAngle * DEG2RAD);
         tmpInputImage.release();
 
         return fullResPlanet;
@@ -246,9 +233,9 @@ public class PlanetMaker {
 
     private void setInitValues() {
 
-        size = 250;
-        scale = 105;
-        angle = 180;
+        mSize = 250;
+        mScale = 105;
+        mAngle = 180;
         cropLeft = 0;
         cropRight = 0;
 
@@ -256,7 +243,7 @@ public class PlanetMaker {
 
     private void updatePlanet() {
 
-        if (!isImageLoaded)
+        if (!mIsImageLoaded)
             return;
 
 
@@ -282,7 +269,7 @@ public class PlanetMaker {
         if (cropLeft != 0 || cropRight != 0) {
 
             int startX, endX, midX;
-            midX = Math.round(inputImage.height() * 0.5f);
+            midX = Math.round(mInputImage.height() * 0.5f);
             int halfDist = midX / 2;
 
             if (cropLeft != 0)
@@ -293,17 +280,17 @@ public class PlanetMaker {
             if (cropRight != 0)
                 endX = (int) Math.round(midX + halfDist + halfDist * (1-cropRight));
             else
-                endX = inputImage.height() - 1;
+                endX = mInputImage.height() - 1;
 
 
-            Rect rect = new Rect(0, startX, inputImage.width(), endX - startX);
-            Mat image_roi = new Mat(inputImage,rect);
+            Rect rect = new Rect(0, startX, mInputImage.width(), endX - startX);
+            Mat image_roi = new Mat(mInputImage,rect);
             image_roi = image_roi.clone();
 
-            Imgproc.resize(image_roi, image_roi, new Size(outputSize, outputSize), 0, 0, Imgproc.INTER_CUBIC);
+            Imgproc.resize(image_roi, image_roi, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
-            planetImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
-            nativeWrapper.logPolar(image_roi, planetImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, size, scale, angle * DEG2RAD);
+            mPlanetImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
+            mNativeWrapper.logPolar(image_roi, mPlanetImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
         }
 
@@ -312,32 +299,49 @@ public class PlanetMaker {
             nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
         }
 
+    }
 
+    private void blurImage() {
 
+        int rectW = 255;
 
+//        Rect rectLeft = new Rect(0, 0, rectW, mInputImage.height());
+        Rect rectLeft = new Rect(0, 0, mInputImage.width(), rectW);
+        Mat subMatLeft = mInputImage.submat(rectLeft);
+//        image_roi = image_roi.clone();
 
+        Rect rectRight = new Rect(0, mInputImage.height()-rectW, mInputImage.width(), rectW);
+        Mat subMatRight = mInputImage.submat(rectRight);
 
-//            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-//            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-//        }
+//        Mat tmp = new Mat(subMatLeft.rows(), subMatLeft.cols(), subMatLeft.type());
+//        Mat tmp = new Mat();
+//        Core.addWeighted(subMatLeft, .5, subMatRight, .5, 0, tmp);
 
-//        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-//        nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+        Mat tmp = new Mat();
+        Mat mask = new Mat(subMatLeft.rows(), subMatLeft.cols(), subMatLeft.type());
+
+        for (int i = 0; i < subMatLeft.rows(); i++)
+            mask.row(i).setTo(new Scalar(i, i, i, 255));
+
+//        Imgproc.cvtColor(subMatLeft, subMatLeft, Imgproc.COLOR_RGBA2GRAY, 1); //make it gray
+//        Imgproc.cvtColor(subMatLeft, subMatLeft, Imgproc.COLOR_GRAY2RGBA, 4); //change to rgb
+
+        mask.copyTo(mInputImage.submat(rectLeft));
 
 
     }
 
     private void initImages() {
 
-        Imgproc.resize(inputImage, inputImage, new Size(outputSize, outputSize), 0, 0, Imgproc.INTER_CUBIC);
+        Imgproc.resize(mInputImage, mInputImage, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
 //        Rotate the image 90 degrees:
 
 //        Creates the planet and inverts it:
-        Core.flip(inputImage.t(), inputImage, 1);
+        Core.flip(mInputImage.t(), mInputImage, 1);
 
-        if (isPlanetInverted)
-            Core.flip(inputImage, inputImage, -1);
+        if (mIsPlanetInverted)
+            Core.flip(mInputImage, mInputImage, -1);
 
 
 //        Inverts the planet and undos it:
@@ -351,35 +355,34 @@ public class PlanetMaker {
 //        This was necessary when the image was opened by OpenCV and NOT Android BitmapFactory
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
 //        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
-        planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+        mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
         nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-
 
         updatePlanet();
 
     }
 
-    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            isComputingPlanet = true;
-            planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-            nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            isComputingPlanet = false;
-        }
-    }
-
-
-
-    public static interface PlanetChangeCallBack {
+//    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//            isComputingPlanet = true;
+//            mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+//            mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            isComputingPlanet = false;
+//        }
+//    }
+//
+//
+//
+    public interface PlanetChangeCallBack {
 
         void onSizeChange(int size);
         void onScaleChange(int scale);

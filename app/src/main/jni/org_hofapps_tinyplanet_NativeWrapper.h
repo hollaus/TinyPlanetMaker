@@ -15,6 +15,9 @@ extern "C" {
 JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeLogPolar
   (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jdouble, jdouble, jdouble);
 
+JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeImgBlend
+  (JNIEnv *, jclass, jlong, jlong);
+
 /*
  * Class:     org_hofapps_tinyplanet_NativeWrapper
  * Method:    getStringFromNative

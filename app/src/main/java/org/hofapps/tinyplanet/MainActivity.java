@@ -241,20 +241,26 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             return true;
         }
 
-        int id = item.getItemId();
-
         switch (item.getItemId()) {
 
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
 
+            case R.id.action_open_file:
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                return true;
 
-
-
+            case R.id.action_save_file:
+                requestFileSave();
+                return true;
 
         }
-
 
         return super.onOptionsItemSelected(item);
     }
