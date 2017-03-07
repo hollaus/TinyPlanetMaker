@@ -1,16 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        config2 {
-            keyAlias 'xxx'
-            keyPassword 'xxx'
-            storeFile file('test.jks')
-            storePassword 'xxx'
-        }
-    }
+//    signingConfigs {
+//        config2 {
+//            keyAlias 'xxx'
+//            keyPassword 'xxx'
+//            storeFile file('test.jks')
+//            storePassword 'xxx'
+//        }
+//    }
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "org.hofapps.tinyplanet"
         minSdkVersion 14
@@ -43,10 +43,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config2
+//            signingConfig signingConfigs.config2
         }
         debug {
-            signingConfig signingConfigs.config2
+//            signingConfig signingConfigs.config2
         }
     }
     productFlavors {
@@ -82,4 +82,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile project(':openCVLibrary310')
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    compile 'com.isseiaoki:simplecropview:1.1.4'
 }

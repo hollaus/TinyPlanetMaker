@@ -3,14 +3,20 @@ package org.hofapps.tinyplanet;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TabHost;
 import android.widget.TextView;
+
+import com.isseiaoki.simplecropview.CropImageView;
+import com.isseiaoki.simplecropview.callback.CropCallback;
 
 public class TabFragment extends Fragment {
 
@@ -67,7 +73,7 @@ public class TabFragment extends Fragment {
 //        spec.setIndicator("Warp");
 
             TabHost.TabSpec spec = mTabHost.newTabSpec("tag0");
-            spec.setIndicator(createTabView(inflater, container, "Warp"));
+            spec.setIndicator(createTabView(inflater, container, getString(R.string.warp_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
 
@@ -89,7 +95,7 @@ public class TabFragment extends Fragment {
 //        spec.setIndicator("Rotate");
 
             spec = mTabHost.newTabSpec("tag1");
-            spec.setIndicator(createTabView(inflater, container, "Rotate"));
+            spec.setIndicator(createTabView(inflater, container, getString(R.string.rotate_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
 
@@ -112,7 +118,7 @@ public class TabFragment extends Fragment {
 //        spec.setIndicator("Zoom");
 
             spec = mTabHost.newTabSpec("tag2");
-            spec.setIndicator(createTabView(inflater, container, "Zoom"));
+            spec.setIndicator(createTabView(inflater, container, getString(R.string.zoom_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
 
@@ -133,7 +139,7 @@ public class TabFragment extends Fragment {
             mTabHost.addTab(spec);
 
             spec = mTabHost.newTabSpec("tag3");
-            spec.setIndicator(createTabView(inflater, container, "Invert"));
+            spec.setIndicator(createTabView(inflater, container, getString(R.string.invert_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
 
@@ -152,17 +158,49 @@ public class TabFragment extends Fragment {
 
             mTabHost.addTab(spec);
 
-//
-//            spec = mTabHost.newTabSpec("tag4");
-//            spec.setIndicator(createTabView(inflater, container, "Crop X"));
-//
-//            spec.setContent(new TabHost.TabContentFactory() {
-//
-//                @Override
-//                public View createTabContent(String tag) {
-//
-//                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
-//
+
+            spec = mTabHost.newTabSpec("tag4");
+            spec.setIndicator(createTabView(inflater, container, getString(R.string.crop_title)));
+
+            spec.setContent(new TabHost.TabContentFactory() {
+
+                @Override
+                public View createTabContent(String tag) {
+
+                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
+
+                    CropImageView v = (CropImageView) view.findViewById(R.id.cropImageView);
+                    v.setCropCallback(new CropCallback() {
+                        @Override
+                        public void onSuccess(Bitmap cropped) {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
+
+
+                    v.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+
+                            float left = ((CropImageView) v).getActualCropRect().left / (float)((CropImageView) v).getImageBitmap().getWidth();
+                            float right = ((CropImageView) v).getActualCropRect().right / (float)((CropImageView) v).getImageBitmap().getWidth();
+                            float top = ((CropImageView) v).getActualCropRect().top / (float)((CropImageView) v).getImageBitmap().getHeight();
+                            float bottom = ((CropImageView) v).getActualCropRect().bottom / (float)((CropImageView) v).getImageBitmap().getHeight();
+                            RectF rect = new RectF(left, top, right, bottom);
+
+                            mPlanetChangeCallBacks.onCrop(rect);
+
+                            return false;
+                        }
+                    });
+//                    View view = inflater.inflate(R.layout.sadfsadff, container, false);
+
 //                    cropLeftSeekBar = (RangeSeekBar) view.findViewById(R.id.cropLeft_seekBar);
 //                    cropLeftSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
 //                    cropLeftSeekBar.setOnSeekBarChangeListener(listener);
@@ -170,13 +208,13 @@ public class TabFragment extends Fragment {
 //                    cropRightSeekBar = (RangeSeekBar) view.findViewById(R.id.cropRight_seekBar);
 //                    cropRightSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
 //                    cropRightSeekBar.setOnSeekBarChangeListener(listener);
-//
-//                    return (view);
-//
-//                }
-//            });
-//
-//            mTabHost.addTab(spec);
+
+                    return (view);
+
+                }
+            });
+
+            mTabHost.addTab(spec);
 //
 //
 //            mTabHost.addTab(spec);
@@ -249,6 +287,8 @@ public class TabFragment extends Fragment {
     }
 
 
+
+
     public View createTabView(final LayoutInflater inflater, final ViewGroup container, final String text) {
 //        View view = LayoutInflater.from(context).inflate(R.layout.tab_layout,
 //                null);
@@ -311,17 +351,17 @@ public class TabFragment extends Fragment {
 
                 }
 
-                else if (id == R.id.cropLeft_seekBar) {
-
-                    mPlanetChangeCallBacks.onCropLeftChange(value);
-
-                }
-
-                else if (id == R.id.cropRight_seekBar) {
-
-                    mPlanetChangeCallBacks.onCropRightChange(value);
-
-                }
+//                else if (id == R.id.cropLeft_seekBar) {
+//
+//                    mPlanetChangeCallBacks.onCropLeftChange(value);
+//
+//                }
+//
+//                else if (id == R.id.cropRight_seekBar) {
+//
+//                    mPlanetChangeCallBacks.onCropRightChange(value);
+//
+//                }
 
 
             }

@@ -1,6 +1,7 @@
 package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -21,6 +22,7 @@ public class PlanetMaker {
     private NativeWrapper mNativeWrapper;
     private int mOutputSize;
     private double mSize, mScale, mAngle, cropLeft, cropRight;
+    private RectF cropRect;
 
     private int mFullOutputSize;
     private int[] mSizeMinMax;
@@ -185,6 +187,12 @@ public class PlanetMaker {
 
     }
 
+    public void setCropRect(RectF cropRect) {
+        this.cropRect = cropRect;
+
+        updatePlanet();
+    }
+
 
     public void setCropLeft(int cropLeft) {
 
@@ -266,24 +274,17 @@ public class PlanetMaker {
 
 
 
-        if (cropLeft != 0 || cropRight != 0) {
+        if (cropRect != null) {
 
-            int startX, endX, midX;
-            midX = Math.round(mInputImage.height() * 0.5f);
-            int halfDist = midX / 2;
-
-            if (cropLeft != 0)
-                startX = (int) Math.round(midX - halfDist - halfDist * (1-cropLeft));
-            else
-                startX = 0;
-
-            if (cropRight != 0)
-                endX = (int) Math.round(midX + halfDist + halfDist * (1-cropRight));
-            else
-                endX = mInputImage.height() - 1;
+            int startX, startY, endX, endY;
+            startX = (int) Math.floor(cropRect.left * mInputImage.width());
+            endX = (int) Math.floor(cropRect.right * mInputImage.width());
+            startY = (int) Math.floor(cropRect.top * mInputImage.height());
+            endY = (int) Math.floor(cropRect.bottom * mInputImage.height());
 
 
-            Rect rect = new Rect(0, startX, mInputImage.width(), endX - startX);
+//            Rect rect = new Rect(0, startX, mInputImage.width(), endX - startX);
+            Rect rect = new Rect(startX, startY, endX - startX, endY - startY);
             Mat image_roi = new Mat(mInputImage,rect);
             image_roi = image_roi.clone();
 
@@ -362,7 +363,9 @@ public class PlanetMaker {
 
     }
 
-//    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
+
+
+    //    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
 //
 //        @Override
 //        protected Void doInBackground(Void... voids) {
@@ -390,6 +393,7 @@ public class PlanetMaker {
         void addAngle(float angle);
         void addScaleLog(float scaleLog);
         void onInvertChange(boolean isInverted);
+        void onCrop(RectF rect);
         void onCropLeftChange(int cropLeft);
         void onCropRightChange(int cropRight);
 

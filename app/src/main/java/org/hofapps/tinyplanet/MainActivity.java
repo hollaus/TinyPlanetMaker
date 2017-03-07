@@ -13,6 +13,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
@@ -33,6 +34,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.isseiaoki.simplecropview.CropImageView;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -352,6 +355,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onInvertChange(boolean isInverted) {
 
         previewPlanetMaker.invert(isInverted);
+        updateImageView();
+
+    }
+
+    @Override
+    public void onCrop(RectF rect) {
+
+        previewPlanetMaker.setCropRect(rect);
         updateImageView();
 
     }
@@ -888,8 +899,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 AssetFileDescriptor fileDescriptor;
                 fileDescriptor = getContentResolver().openAssetFileDescriptor(uris[0], "r");
 
-                Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
+                final Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
                 previewPlanetMaker.setInputImage(bitmap);
+
+//                TODO: use a resized version here:
+                final CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        view.setImageBitmap(bitmap);
+                    }
+                });
+
 
                 // The image view cannot be touched inside the thread because it has been created on the UI thread.
                 runOnUiThread(new Runnable() {
