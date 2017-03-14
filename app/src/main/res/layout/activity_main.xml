@@ -7,7 +7,7 @@
 
     <!-- The main content view -->
 
-    <LinearLayout
+    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -23,8 +23,7 @@
             tools:layout="@layout/fragment_main"
             android:layout_width="match_parent"
             android:layout_gravity="top"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             />
 
         <fragment
@@ -34,16 +33,15 @@
             tools:layout="@layout/tablayout_settings"
             android:background="#000000"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-
             android:layout_alignParentBottom="true"
             android:tag="orientation_portrait"
 
 
             />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView

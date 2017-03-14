@@ -72,7 +72,7 @@ public class TabFragment extends Fragment {
 //        TabHost.TabSpec spec = mTabHost.newTabSpec("tag");
 //        spec.setIndicator("Warp");
 
-            TabHost.TabSpec spec = mTabHost.newTabSpec("tag0");
+            TabHost.TabSpec spec = mTabHost.newTabSpec(getString(R.string.warp_tab));
             spec.setIndicator(createTabView(inflater, container, getString(R.string.warp_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
@@ -94,7 +94,7 @@ public class TabFragment extends Fragment {
 //        spec = mTabHost.newTabSpec("tag1");
 //        spec.setIndicator("Rotate");
 
-            spec = mTabHost.newTabSpec("tag1");
+            spec = mTabHost.newTabSpec(getString(R.string.rotate_tab));
             spec.setIndicator(createTabView(inflater, container, getString(R.string.rotate_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
@@ -117,7 +117,7 @@ public class TabFragment extends Fragment {
 //        spec = mTabHost.newTabSpec("tag2");
 //        spec.setIndicator("Zoom");
 
-            spec = mTabHost.newTabSpec("tag2");
+            spec = mTabHost.newTabSpec(getString(R.string.zoom_tab));
             spec.setIndicator(createTabView(inflater, container, getString(R.string.zoom_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
@@ -138,7 +138,7 @@ public class TabFragment extends Fragment {
 
             mTabHost.addTab(spec);
 
-            spec = mTabHost.newTabSpec("tag3");
+            spec = mTabHost.newTabSpec(getString(R.string.invert_tab));
             spec.setIndicator(createTabView(inflater, container, getString(R.string.invert_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
@@ -159,7 +159,7 @@ public class TabFragment extends Fragment {
             mTabHost.addTab(spec);
 
 
-            spec = mTabHost.newTabSpec("tag4");
+            spec = mTabHost.newTabSpec(getString(R.string.crop_tab));
             spec.setIndicator(createTabView(inflater, container, getString(R.string.crop_title)));
 
             spec.setContent(new TabHost.TabContentFactory() {
@@ -215,55 +215,6 @@ public class TabFragment extends Fragment {
             });
 
             mTabHost.addTab(spec);
-//
-//
-//            mTabHost.addTab(spec);
-//
-//            spec = mTabHost.newTabSpec("tag5");
-//            spec.setIndicator(createTabView(inflater, container, "Crop Y"));
-//
-//            spec.setContent(new TabHost.TabContentFactory() {
-//
-//                @Override
-//                public View createTabContent(String tag) {
-//
-//                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
-//
-//                    cropLeftSeekBar = (RangeSeekBar) view.findViewById(R.id.cropLeft_seekBar);
-//                    cropLeftSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
-//                    cropLeftSeekBar.setOnSeekBarChangeListener(listener);
-//
-//                    cropRightSeekBar = (RangeSeekBar) view.findViewById(R.id.cropRight_seekBar);
-//                    cropRightSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
-//                    cropRightSeekBar.setOnSeekBarChangeListener(listener);
-//
-//                    return (view);
-//
-//                }
-//            });
-//
-//            mTabHost.addTab(spec);
-//
-//
-//            spec = mTabHost.newTabSpec("tag6");
-//            spec.setIndicator(createTabView(inflater, container, "Fade"));
-//
-//            spec.setContent(new TabHost.TabContentFactory() {
-//
-//                @Override
-//                public View createTabContent(String tag) {
-//
-//                    View view = inflater.inflate(R.layout.fragment_invert, container, false);
-//
-//                    invertSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.invert_switch);
-//                    enableInvertSwitchListener();
-//
-//                    return (view);
-//
-//                }
-//            });
-//
-//            mTabHost.addTab(spec);
 
             mTabHost.setOnTabChangedListener(new AnimatedTabHostListener(mTabHost));
 

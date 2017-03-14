@@ -22,7 +22,7 @@ public class PlanetMaker {
     private NativeWrapper mNativeWrapper;
     private int mOutputSize;
     private double mSize, mScale, mAngle, cropLeft, cropRight;
-    private RectF cropRect;
+    private RectF mCropRect;
 
     private int mFullOutputSize;
     private int[] mSizeMinMax;
@@ -188,8 +188,8 @@ public class PlanetMaker {
     }
 
     public void setCropRect(RectF cropRect) {
-        this.cropRect = cropRect;
 
+        mCropRect = cropRect;
         updatePlanet();
     }
 
@@ -274,31 +274,51 @@ public class PlanetMaker {
 
 
 
-        if (cropRect != null) {
-
-            int startX, startY, endX, endY;
-            startX = (int) Math.floor(cropRect.left * mInputImage.width());
-            endX = (int) Math.floor(cropRect.right * mInputImage.width());
-            startY = (int) Math.floor(cropRect.top * mInputImage.height());
-            endY = (int) Math.floor(cropRect.bottom * mInputImage.height());
+        if (mCropRect != null) {
 
 
-//            Rect rect = new Rect(0, startX, mInputImage.width(), endX - startX);
-            Rect rect = new Rect(startX, startY, endX - startX, endY - startY);
-            Mat image_roi = new Mat(mInputImage,rect);
-            image_roi = image_roi.clone();
+//            Take care here, because the images are flipped after they have been loaded:
+            Rect flippedRect = flipCropRect();
+            Mat image_roi = mInputImage.submat(flippedRect);
 
-            Imgproc.resize(image_roi, image_roi, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
+//            Imgproc.resize(image_roi, image_roi, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
             mPlanetImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
             mNativeWrapper.logPolar(image_roi, mPlanetImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-
+//            mPlanetImage = mInputImage.clone();
         }
 
         else {
             mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
             mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
         }
+
+    }
+
+    private Rect flipCropRect() {
+
+        int startX, startY, endX, endY;
+        if (!mIsPlanetInverted) {
+            startX = Math.round((1 - mCropRect.bottom) * mInputImage.height());
+            endX = Math.round((1 - mCropRect.top) * mInputImage.height());
+            startY = Math.round(mCropRect.left * mInputImage.width());
+            endY = Math.round(mCropRect.right * mInputImage.width());
+        }
+        else {
+            startX = Math.round(mCropRect.top * mInputImage.height());
+            endX = Math.round(mCropRect.bottom * mInputImage.height());
+            startY = Math.round((1 - mCropRect.right) * mInputImage.width());
+            endY = Math.round((1 - mCropRect.left) * mInputImage.width());
+        }
+
+        startX  = (startX < 0) ? 0 : startX;
+        startY  = (startY < 0) ? 0 : startY;
+        endX    = (endX > mInputImage.width()) ? mInputImage.width() : endX;
+        endY    = (endY > mInputImage.height()) ? mInputImage.height() : endY;
+
+        Rect flippedRect = new Rect(startX, startY, endX - startX, endY - startY);
+
+        return flippedRect;
 
     }
 

@@ -35,4 +35,9 @@
     <string name="invert_title">Invert</string>
     <string name="zoom_title">Zoom</string>
     <string name="rotate_title">Rotate</string>
+    <string name="crop_tab">crop_tab</string>
+    <string name="invert_tab">invert_tab</string>
+    <string name="zoom_tab">zoom_tab</string>
+    <string name="rotate_tab">rotate_tab</string>
+    <string name="warp_tab">warp_tab</string>
 </resources>

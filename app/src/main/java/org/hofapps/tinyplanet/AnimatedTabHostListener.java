@@ -43,18 +43,26 @@ public class AnimatedTabHostListener implements OnTabChangeListener
     {
 
         currentView = tabHost.getCurrentView();
-        if (tabHost.getCurrentTab() > currentTab)
-        {
-            previousView.setAnimation(outToLeftAnimation());
-            currentView.setAnimation(inFromRightAnimation());
-        }
-        else
-        {
-            previousView.setAnimation(outToRightAnimation());
-            currentView.setAnimation(inFromLeftAnimation());
-        }
-        previousView = currentView;
-        currentTab = tabHost.getCurrentTab();
+        
+
+////TODO: find another way to reference here:
+//        if (tabId == "crop_tab") {
+//            ViewGroup.LayoutParams p = currentView.getLayoutParams();
+//            p.height = 500;
+//            currentView.setLayoutParams(p);
+//
+//        }
+//        else {
+            if (tabHost.getCurrentTab() > currentTab) {
+                previousView.setAnimation(outToLeftAnimation());
+                currentView.setAnimation(inFromRightAnimation());
+            } else {
+                previousView.setAnimation(outToRightAnimation());
+                currentView.setAnimation(inFromLeftAnimation());
+            }
+            previousView = currentView;
+            currentTab = tabHost.getCurrentTab();
+//        }
 
     }
 
