@@ -4,7 +4,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_open_image">Open image</string>
     <string name="action_save_image">Save image</string>
-    <string name="action_share">Open image in other app</string>
+    <string name="action_share">Share planetimage_roiimage_roiimage_roiimage_roi</string>
     <string name="external_storage_not_accessible_msg">The external storage is not accessible.</string>
     <string name="external_storage_not_accessible_title">File save error</string>
     <string name="no_file_found_msg">Could not find any TinyPlanet image. Save a planet first.</string>

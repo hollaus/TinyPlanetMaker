@@ -7,41 +7,51 @@
 
     <!-- The main content view -->
 
-    <RelativeLayout
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="#263238"
         tools:context=".MainActivityFragment"
         >
 
-        <fragment
-            android:id="@+id/main_fragment"
-            android:name="org.hofapps.tinyplanet.MainActivityFragment"
-            tools:layout="@layout/fragment_main"
-            android:layout_width="match_parent"
-            android:layout_gravity="top"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageView"
+            android:src="@drawable/tiny_planet_gray_600x600"
+            android:scaleType="fitCenter"
+            android:layout_weight="1"
+            android:layout_gravity="center"
             />
+
+        <!--<fragment-->
+            <!--android:id="@+id/main_fragment"-->
+            <!--android:name="org.hofapps.tinyplanet.MainActivityFragment"-->
+            <!--tools:layout="@layout/fragment_main"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--/>-->
 
         <fragment
 
             android:id="@+id/settings_fragment"
             android:name="org.hofapps.tinyplanet.TabFragment"
             tools:layout="@layout/tablayout_settings"
-            android:background="#000000"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
             android:tag="orientation_portrait"
-
-
             />
 
-    </RelativeLayout>
+
+
+    </LinearLayout>
 
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/tab_indicator"
     android:orientation="vertical"
     android:padding="15dp" >
@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/tab_text_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="#FFFFFFFF"
         />

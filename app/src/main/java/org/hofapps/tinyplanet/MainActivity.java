@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         previewPlanetMaker.releasePlanetImage();
 
-        imageView.setScaleType(ImageView.ScaleType.MATRIX);
+//        imageView.setScaleType(ImageView.ScaleType.MATRIX);
 
     }
 
@@ -967,8 +967,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             Imgproc.cvtColor(planet, planet, Imgproc.COLOR_BGR2RGB);
 
             final File outFile = new File(uris[0].getPath());
-
-
 
             boolean imgSaved = Imgcodecs.imwrite(outFile.toString(), planet);
 
