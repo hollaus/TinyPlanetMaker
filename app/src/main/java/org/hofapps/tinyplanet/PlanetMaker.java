@@ -264,6 +264,7 @@ public class PlanetMaker {
         mAngle = 180;
         cropLeft = 0;
         cropRight = 0;
+        mCropRect = null;
 
     }
 

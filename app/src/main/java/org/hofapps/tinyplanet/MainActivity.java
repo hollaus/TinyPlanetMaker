@@ -433,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         tabFragment.setWarpBarValue((int) previewPlanetMaker.getSize());
         tabFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
         tabFragment.setInvertPlanetSwitch(previewPlanetMaker.getIsPlanetInverted());
+        tabFragment.resetCropView();
 
         updateImageView();
 

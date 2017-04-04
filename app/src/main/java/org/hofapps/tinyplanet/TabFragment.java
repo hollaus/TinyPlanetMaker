@@ -24,6 +24,7 @@ public class TabFragment extends Fragment {
     private PlanetMaker.PlanetChangeCallBack mPlanetChangeCallBacks;
     private RangeSeekBar rotateSeekBar, warpSeekBar, zoomSeekBar, cropLeftSeekBar, cropRightSeekBar;
     private android.support.v7.widget.SwitchCompat invertSwitch;
+    private CropImageView mCropView;
 
 
     @Override
@@ -169,8 +170,8 @@ public class TabFragment extends Fragment {
 
                     View view = inflater.inflate(R.layout.fragment_crop, container, false);
 
-                    CropImageView v = (CropImageView) view.findViewById(R.id.cropImageView);
-                    v.setCropCallback(new CropCallback() {
+                    mCropView = (CropImageView) view.findViewById(R.id.cropImageView);
+                    mCropView.setCropCallback(new CropCallback() {
                         @Override
                         public void onSuccess(Bitmap cropped) {
 
@@ -184,7 +185,7 @@ public class TabFragment extends Fragment {
 
 
 
-                    v.setOnTouchListener(new View.OnTouchListener() {
+                    mCropView.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
 
@@ -199,15 +200,6 @@ public class TabFragment extends Fragment {
                             return false;
                         }
                     });
-//                    View view = inflater.inflate(R.layout.sadfsadff, container, false);
-
-//                    cropLeftSeekBar = (RangeSeekBar) view.findViewById(R.id.cropLeft_seekBar);
-//                    cropLeftSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
-//                    cropLeftSeekBar.setOnSeekBarChangeListener(listener);
-//
-//                    cropRightSeekBar = (RangeSeekBar) view.findViewById(R.id.cropRight_seekBar);
-//                    cropRightSeekBar.setRange(getResources().getIntArray(R.array.crop_seekbar_values));
-//                    cropRightSeekBar.setOnSeekBarChangeListener(listener);
 
                     return (view);
 
@@ -356,7 +348,12 @@ public class TabFragment extends Fragment {
         invertSwitch.setChecked(isInverted);
         enableInvertSwitchListener();
 
+    }
 
+    public void resetCropView() {
+
+//        float left = ((CropImageView) v).getActualCropRect().left / (float)((CropImageView) v).getImageBitmap().getWidth();
+        mCropView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
     }
 
     public void initSeekBarValues(int size, int scale, int angle) {
