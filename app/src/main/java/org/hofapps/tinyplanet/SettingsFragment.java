@@ -164,9 +164,9 @@ public class SettingsFragment extends Fragment {
         int animatorId;
 
         if (enter)
-            animatorId = R.animator.slide_up;
+            animatorId = R.animator.fade_in;
         else
-            animatorId = R.animator.slide_down;
+            animatorId = R.animator.fade_out;
 
         final Animator anim = AnimatorInflater.loadAnimator(getActivity(), animatorId);
 

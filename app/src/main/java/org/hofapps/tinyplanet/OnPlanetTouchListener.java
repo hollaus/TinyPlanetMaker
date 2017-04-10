@@ -2,6 +2,7 @@ package org.hofapps.tinyplanet;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +18,8 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
     private static final int NONE = 0;
     private static final int DRAG = 1;
     private static final int ZOOM = 2;
+
+    private static final int LEFT_MARGIN = 50;
 
     private int mode = NONE;
     private float oldDist = 1f;
@@ -59,6 +62,10 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
 
                 if (mode == DRAG) {
+
+                    // Do nothing at the outer left side. Probably the user opened the navigation drawer:
+                    if (event.getX() < LEFT_MARGIN)
+                        return false;
 
                     float xDiff = event.getX() - lastPoint.x;
                     float yDiff = event.getY() - lastPoint.y;
@@ -125,6 +132,7 @@ public class OnPlanetTouchListener implements View.OnTouchListener {
                 sb.append(";");
         }
         sb.append("]");
+        Log.d("Touch", sb.toString());
     }
 
     /** Determine the space between the first two fingers */

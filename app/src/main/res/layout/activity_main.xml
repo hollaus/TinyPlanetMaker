@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <!-- The main content view -->
 
@@ -15,8 +16,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#263238"
-        tools:context=".MainActivityFragment"
         >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/GalaxyZooThemeToolbarDarkOverflow"
+            android:elevation="4dp"
+            />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -27,18 +37,10 @@
             android:scaleType="fitCenter"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:background="#fff"
             />
 
-        <!--<fragment-->
-            <!--android:id="@+id/main_fragment"-->
-            <!--android:name="org.hofapps.tinyplanet.MainActivityFragment"-->
-            <!--tools:layout="@layout/fragment_main"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--/>-->
-
         <fragment
-
             android:id="@+id/settings_fragment"
             android:name="org.hofapps.tinyplanet.TabFragment"
             tools:layout="@layout/tablayout_settings"
@@ -48,8 +50,6 @@
             android:layout_alignParentBottom="true"
             android:tag="orientation_portrait"
             />
-
-
 
     </LinearLayout>
 
@@ -61,6 +61,8 @@
         android:layout_gravity="start"
         android:background="@android:color/white"
         app:menu="@menu/drawer_view"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/navigation_view_header"
         />
 
 

@@ -13,6 +13,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -29,6 +30,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
@@ -65,11 +67,10 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-
-
     private GesturesDialogFragment gestureFragment;
     private SamplesFragment samplesFragment;
     private TabFragment tabFragment;
+    private NavigationView mDrawer;
 
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE= 1;
@@ -89,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private MediaScannerConnection mediaScannerConnection;
     private LinearLayout settingsTitle;
 
-    private Context context;
-
     static {
 
         boolean init = OpenCVLoader.initDebug();
@@ -105,26 +104,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
 
-//    public void onRadioButtonClicked(View view) {
-//        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        // Check which radio button was clicked
-//        switch(view.getId()) {
-//            case R.id.viewModeRadioButton:
-//                if (checked)
-//                    onPlanetTouchListener.setGestureMode(false);
-//                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
-//                    break;
-//            case R.id.editModeRadioButton:
-//                if (checked) {
-//                    onPlanetTouchListener.setGestureMode(true);
-//                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                    break;
-//                }
-//        }
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -136,36 +115,20 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         imageView.setOnTouchListener(onPlanetTouchListener);
 
-
-//        Navigation drawer based on this tutorial:
-//        https://guides.codepath.com/android/Fragment-Navigation-Drawer
-
-//        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-//            /** Called when a drawer has settled in a completely closed state. */
-//            public void onDrawerClosed(View view) {
-//                super.onDrawerClosed(view);
-//                getSupportActionBar().setTitle(mTitle);
-//            }
-//
-//            /** Called when a drawer has settled in a completely open state. */
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                getSupportActionBar().setTitle(mDrawerTitle);
-//            }
-
 
         };
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        NavigationView mDrawer = (NavigationView) findViewById(R.id.left_drawer);
+        mDrawer = (NavigationView) findViewById(R.id.left_drawer);
         setupDrawerContent(mDrawer);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -210,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -223,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -295,8 +256,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         Utils.matToBitmap(previewImg, bm);
 
         imageView.setImageBitmap(bm);
+        imageView.setBackgroundColor(Color.TRANSPARENT);
 
         previewPlanetMaker.releasePlanetImage();
+
+//        tabFragment.resetCropView();
 
 //        imageView.setScaleType(ImageView.ScaleType.MATRIX);
 
@@ -411,6 +375,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         }
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageId);
+
+        //                TODO: use a resized version here:
+        CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
+        view.setImageBitmap(bitmap);
+        tabFragment.resetCropView();
 
         previewPlanetMaker.setInputImage(bitmap);
         updateImageView();
@@ -908,6 +877,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 MainActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         view.setImageBitmap(bitmap);
+                        tabFragment.resetCropView();
                     }
                 });
 

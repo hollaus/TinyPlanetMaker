@@ -17,7 +17,7 @@
 
     <!--</style>-->
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Taken from the Google color palette: -->
         <!-- https://www.google.com/design/spec/style/color.html#color-color-palette -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -25,6 +25,22 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:dialogTheme">@style/AppCompatAlertDialogStyle</item>
         <item name="android:alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <!--Taken from: https://www.murrayc.com/permalink/2014/10/28/android-changing-the-toolbars-text-color-and-overflow-icon-color/-->
+    <style name="GalaxyZooThemeToolbarDarkOverflow" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
+
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 
     <style name="AlertDialogText" parent="@android:style/TextAppearance">

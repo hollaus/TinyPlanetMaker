@@ -2,6 +2,7 @@ package org.hofapps.tinyplanet;
 
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.TabHost;
@@ -53,17 +54,24 @@ public class AnimatedTabHostListener implements OnTabChangeListener
 //
 //        }
 //        else {
-            if (tabHost.getCurrentTab() > currentTab) {
-                previousView.setAnimation(outToLeftAnimation());
-                currentView.setAnimation(inFromRightAnimation());
-            } else {
-                previousView.setAnimation(outToRightAnimation());
-                currentView.setAnimation(inFromLeftAnimation());
-            }
+//            if (tabHost.getCurrentTab() > currentTab) {
+//                previousView.setAnimation(outToLeftAnimation());
+//                currentView.setAnimation(inFromRightAnimation());
+//            } else {
+//                previousView.setAnimation(outToRightAnimation());
+//                currentView.setAnimation(inFromLeftAnimation());
+//            }
+        previousView.setAnimation(fadeOut());
+        currentView.setAnimation(inFromRightAnimation());
             previousView = currentView;
             currentTab = tabHost.getCurrentTab();
 //        }
 
+    }
+
+    private Animation fadeOut() {
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        return setProperties(fadeOut);
     }
 
     /**
@@ -73,8 +81,6 @@ public class AnimatedTabHostListener implements OnTabChangeListener
      */
     private Animation inFromRightAnimation()
     {
-//        Animation inFromRight = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 1.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
-//                Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f);
 
         Animation inFromRight = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 1.0f, Animation.RELATIVE_TO_PARENT, 0.0f);
