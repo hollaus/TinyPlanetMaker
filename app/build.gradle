@@ -1,22 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-//    signingConfigs {
-//        config2 {
-//            keyAlias 'xxx'
-//            keyPassword 'xxx'
-//            storeFile file('test.jks')
-//            storePassword 'xxx'
-//        }
-//    }
+
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "org.hofapps.tinyplanet"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.2"
+        versionCode 5
+        versionName "1.2.1"
     }
     // begin
     sourceSets.main {
@@ -29,7 +22,7 @@ android {
 
     task cleanNative(type: Exec, description: 'Clean JNI object files') {
         commandLine getNdkBuildCmd(),
-                '-C', file('src/main/jni').absolutePath, // Change src/main/jni the relative path to your jni source
+                '-C', file('src/main/jni').absolutePath,
                 'clean'
     }
 

@@ -23,7 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -56,13 +55,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
         MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack,
         ActivityCompat.OnRequestPermissionsResultCallback, SamplesFragment.SampleSelectedCallBack {
-//public class MainActivity extends ActionBarActivity implements PlanetMaker.PlanetChangeCallBack {
 
     private NativeWrapper nativeWrapper;
-    private Mat originalImg, transformedImg;
     private ImageView imageView;
     private PlanetMaker previewPlanetMaker;
-    private CoordinatorLayout coordinatorLayout;
     private int[] sizeMinMax;
 
     private DrawerLayout mDrawerLayout;
@@ -129,11 +125,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-
 
         nativeWrapper = new NativeWrapper();
 
@@ -260,10 +253,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         previewPlanetMaker.releasePlanetImage();
 
-//        tabFragment.resetCropView();
-
-//        imageView.setScaleType(ImageView.ScaleType.MATRIX);
-
     }
 
     @Override
@@ -332,22 +321,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
     @Override
-    public void onCropLeftChange(int cropLeft) {
-
-        previewPlanetMaker.setCropLeft(cropLeft);
-        updateImageView();
-
-    }
-
-    @Override
-    public void onCropRightChange(int cropRight) {
-
-        previewPlanetMaker.setCropRight(cropRight);
-        updateImageView();
-
-    }
-
-    @Override
     public void onVisibilityChange() {
 
         float y = settingsTitle.getY();
@@ -373,6 +346,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 imageId = R.drawable.nancy_1000;
                 break;
         }
+
+        resetPlanetValues();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageId);
 
@@ -591,11 +566,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                     //
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("*/*");
-
-                    //        	    TODO: use R.string.text instead of hard-coded string. Do not know why an exception is thrown here:
-                    //        	    String shareText = (String) getString(R.string.share_text);
-                    //        	    shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-
 
                     shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                     startActivity(shareIntent);
@@ -860,6 +830,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             this.context = context;
             spinnerText = getResources().getString(R.string.file_load_text);
 
+            resetPlanetValues();
+
         }
 
         protected Void doInBackground(Uri... uris) {
@@ -872,11 +844,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 final Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
                 previewPlanetMaker.setInputImage(bitmap);
 
-//                TODO: use a resized version here:
+                final Bitmap cropBitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, 500, 500);
                 final CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
                 MainActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        view.setImageBitmap(bitmap);
+                        view.setImageBitmap(cropBitmap);
                         tabFragment.resetCropView();
                     }
                 });

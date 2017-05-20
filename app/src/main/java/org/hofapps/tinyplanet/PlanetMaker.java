@@ -21,18 +21,12 @@ public class PlanetMaker {
     private Mat mInputImage, mPlanetImage, mOriginalImage;
     private NativeWrapper mNativeWrapper;
     private int mOutputSize;
-    private double mSize, mScale, mAngle, cropLeft, cropRight;
+    private double mSize, mScale, mAngle;
     private RectF mCropRect;
 
     private int mFullOutputSize;
     private int[] mSizeMinMax;
     private boolean mIsImageLoaded, mIsPlanetInverted;
-//    private ComputePlanetTask task;
-
-//    private boolean isComputingPlanet = false;
-//    private long lastRecognitionTime = -1;
-//    private static final int MAX_OUTPUT_SIZE = 3000; // try out different values here:
-
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
@@ -194,20 +188,6 @@ public class PlanetMaker {
     }
 
 
-    public void setCropLeft(int cropLeft) {
-
-        this.cropLeft = (double) cropLeft / (double) 100;
-        updatePlanet();
-
-    }
-
-
-    public void setCropRight(int cropRight) {
-
-        this.cropRight = (double) cropRight / (double) 100;
-        updatePlanet();
-
-    }
 
 
     public boolean getIsPlanetInverted() {
@@ -262,8 +242,6 @@ public class PlanetMaker {
         mSize = 250;
         mScale = 105;
         mAngle = 180;
-        cropLeft = 0;
-        cropRight = 0;
         mCropRect = null;
 
     }
@@ -430,8 +408,6 @@ public class PlanetMaker {
         void addScaleLog(float scaleLog);
         void onInvertChange(boolean isInverted);
         void onCrop(RectF rect);
-        void onCropLeftChange(int cropLeft);
-        void onCropRightChange(int cropRight);
 
     }
 

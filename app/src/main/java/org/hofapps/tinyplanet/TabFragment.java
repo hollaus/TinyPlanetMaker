@@ -189,13 +189,23 @@ public class TabFragment extends Fragment {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
 
-                            float left = ((CropImageView) v).getActualCropRect().left / (float)((CropImageView) v).getImageBitmap().getWidth();
-                            float right = ((CropImageView) v).getActualCropRect().right / (float)((CropImageView) v).getImageBitmap().getWidth();
-                            float top = ((CropImageView) v).getActualCropRect().top / (float)((CropImageView) v).getImageBitmap().getHeight();
-                            float bottom = ((CropImageView) v).getActualCropRect().bottom / (float)((CropImageView) v).getImageBitmap().getHeight();
-                            RectF rect = new RectF(left, top, right, bottom);
+                            if (v == null)
+                                return false;
 
-                            mPlanetChangeCallBacks.onCrop(rect);
+                            CropImageView cropView = (CropImageView) v;
+
+                            if (cropView.getActualCropRect() == null)
+                                return false;
+
+                            RectF rect = ((CropImageView) v).getActualCropRect();
+
+                            float left = rect.left / (float) cropView.getImageBitmap().getWidth();
+                            float right = rect.right / (float) cropView.getImageBitmap().getWidth();
+                            float top = rect.top / (float) cropView.getImageBitmap().getHeight();
+                            float bottom = rect.bottom / (float) cropView.getImageBitmap().getHeight();
+                            RectF normedRect = new RectF(left, top, right, bottom);
+
+                            mPlanetChangeCallBacks.onCrop(normedRect);
 
                             return false;
                         }
