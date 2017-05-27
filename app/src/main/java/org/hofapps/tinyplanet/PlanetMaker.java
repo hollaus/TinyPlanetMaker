@@ -46,7 +46,13 @@ public class PlanetMaker {
 
         mIsImageLoaded = true;
         mInputImage = new Mat();
+        
+//        Check if the bitmap has the correct type for the OpenCV bitmapToMat function:
+        if (bitmap.getConfig() != Bitmap.Config.ARGB_8888 && bitmap.getConfig() != Bitmap.Config.RGB_565)
+            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
+
         Utils.bitmapToMat(bitmap, mInputImage);
+//        Utils.bitmapToMat(bitmap, mInputImage);
         mOriginalImage = mInputImage.clone();
 
         mFullOutputSize = Math.max(mInputImage.width(), mInputImage.height());
@@ -250,6 +256,12 @@ public class PlanetMaker {
 
         if (!mIsImageLoaded)
             return;
+//
+////        mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+////        mPlanetImage = mInputImage.clone();
+////        mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+//        mNativeWrapper.blendImgs(mInputImage, mPlanetImage);
+
 
         if (mCropRect != null) {
 
@@ -269,23 +281,23 @@ public class PlanetMaker {
             mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
             mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
         }
-
-//        new Thread(){
-//            @Override
-//            public void run() {
-//                Message msg = new Message();
-//                if(!isComputingPlanet) {
-//                    planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-//                    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-//                    isComputingPlanet = false;
-//                }
-//            }
-//        }).start();
-
-//        long now = Calendar.getInstance().getTimeInMillis();
-
-//        if ((lastRecognitionTime == -1) || (now - lastRecognitionTime > 500)) {
-//            lastRecognitionTime = now;
+//
+////        new Thread(){
+////            @Override
+////            public void run() {
+////                Message msg = new Message();
+////                if(!isComputingPlanet) {
+////                    planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
+////                    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
+////                    isComputingPlanet = false;
+////                }
+////            }
+////        }).start();
+//
+////        long now = Calendar.getInstance().getTimeInMillis();
+//
+////        if ((lastRecognitionTime == -1) || (now - lastRecognitionTime > 500)) {
+////            lastRecognitionTime = now;
 
     }
 
@@ -370,6 +382,7 @@ public class PlanetMaker {
 //        This was necessary when the image was opened by OpenCV and NOT Android BitmapFactory
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
 //        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
+
         mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
         mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
