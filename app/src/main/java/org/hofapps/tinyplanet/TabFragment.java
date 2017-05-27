@@ -194,10 +194,14 @@ public class TabFragment extends Fragment {
 
                             CropImageView cropView = (CropImageView) v;
 
+                            // cropView.getActualCropRect() causes nullpointer exceptions when no image is loaded:
+                            if (cropView.getImageBitmap() == null)
+                                return false;
+
                             if (cropView.getActualCropRect() == null)
                                 return false;
 
-                            RectF rect = ((CropImageView) v).getActualCropRect();
+                            RectF rect = cropView.getActualCropRect();
 
                             float left = rect.left / (float) cropView.getImageBitmap().getWidth();
                             float right = rect.right / (float) cropView.getImageBitmap().getWidth();

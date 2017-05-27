@@ -18,9 +18,14 @@ using namespace std;
 
 inline void nativeImgBlend(Mat src, Mat dst) {
 
+
+
 	Mat image1 = src.clone();
 
-	    dsc::Utils::print("mat-type", dsc::Utils::num2str(image1.type()));
+
+
+	dsc::Utils::print("mat-type", dsc::Utils::num2str(image1.type()));
+
 
 	cvtColor(image1, image1, CV_BGRA2BGR);
 
@@ -54,6 +59,12 @@ inline void nativeImgBlend(Mat src, Mat dst) {
 
     dsc::Utils::print("dst6-type", dsc::Utils::num2str(result.type()));
     dsc::Utils::print("dst5-type", dsc::Utils::num2str(image1.type()));
+
+    dst = image2s.clone();
+
+
+
+    //dst = src.clone();
 
 
 /*

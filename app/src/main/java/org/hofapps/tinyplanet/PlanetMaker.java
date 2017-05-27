@@ -46,13 +46,12 @@ public class PlanetMaker {
 
         mIsImageLoaded = true;
         mInputImage = new Mat();
-        
+
 //        Check if the bitmap has the correct type for the OpenCV bitmapToMat function:
         if (bitmap.getConfig() != Bitmap.Config.ARGB_8888 && bitmap.getConfig() != Bitmap.Config.RGB_565)
             bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
 
         Utils.bitmapToMat(bitmap, mInputImage);
-//        Utils.bitmapToMat(bitmap, mInputImage);
         mOriginalImage = mInputImage.clone();
 
         mFullOutputSize = Math.max(mInputImage.width(), mInputImage.height());
