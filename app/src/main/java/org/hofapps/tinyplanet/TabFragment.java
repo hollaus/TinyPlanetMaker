@@ -2,7 +2,6 @@ package org.hofapps.tinyplanet;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -38,27 +37,27 @@ public class TabFragment extends Fragment {
 
         // Get the orientation of the layout:
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            rootView = inflater.inflate(R.layout.fragment_settings_land, container, false);
-
-            warpSeekBar = (RangeSeekBar) rootView.findViewById(R.id.warp_seekBar);
-            warpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
-            warpSeekBar.setOnSeekBarChangeListener(listener);
-
-            rotateSeekBar = (RangeSeekBar) rootView.findViewById(R.id.rotate_seekBar);
-            rotateSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
-            rotateSeekBar.setOnSeekBarChangeListener(listener);
-
-            zoomSeekBar = (RangeSeekBar) rootView.findViewById(R.id.zoom_seekBar);
-            zoomSeekBar.setRange(getResources().getIntArray(R.array.zoom_seekbar_values));
-            zoomSeekBar.setOnSeekBarChangeListener(listener);
-
-            invertSwitch = (android.support.v7.widget.SwitchCompat) rootView.findViewById(R.id.invert_switch);
-            enableInvertSwitchListener();
-
-        }
-        else {
+//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//
+//            rootView = inflater.inflate(R.layout.fragment_settings_land, container, false);
+//
+//            warpSeekBar = (RangeSeekBar) rootView.findViewById(R.id.warp_seekBar);
+//            warpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
+//            warpSeekBar.setOnSeekBarChangeListener(listener);
+//
+//            rotateSeekBar = (RangeSeekBar) rootView.findViewById(R.id.rotate_seekBar);
+//            rotateSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
+//            rotateSeekBar.setOnSeekBarChangeListener(listener);
+//
+//            zoomSeekBar = (RangeSeekBar) rootView.findViewById(R.id.zoom_seekBar);
+//            zoomSeekBar.setRange(getResources().getIntArray(R.array.zoom_seekbar_values));
+//            zoomSeekBar.setOnSeekBarChangeListener(listener);
+//
+//            invertSwitch = (android.support.v7.widget.SwitchCompat) rootView.findViewById(R.id.invert_switch);
+//            enableInvertSwitchListener();
+//
+//        }
+//        else {
 
 
             rootView = inflater.inflate(R.layout.tablayout_settings, container, false);
@@ -229,7 +228,7 @@ public class TabFragment extends Fragment {
             for (int i = mTabHost.getTabWidget().getTabCount() - 1; i >= 0; i--)
                 mTabHost.setCurrentTab(i);
 
-        }
+//        }
 
         return rootView;
 

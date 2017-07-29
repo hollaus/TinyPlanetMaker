@@ -187,7 +187,6 @@ public class SettingsFragment extends Fragment {
             public void onAnimationEnd(Animator animation)
             {
 
-                visibilityCallBack.onVisibilityChange();
 
             }
         });
