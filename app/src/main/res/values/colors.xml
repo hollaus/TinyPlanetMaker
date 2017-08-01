@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorAccent">#ffc107</color >
+    <color name="colorPrimary">#607d8b</color >
+    <color name="colorSecondary">#90a4ae</color>
+    <color name="cyan">#33B5E5</color>
+
+    <color name="colorDebug">#7541ff07</color >
+
+</resources>
