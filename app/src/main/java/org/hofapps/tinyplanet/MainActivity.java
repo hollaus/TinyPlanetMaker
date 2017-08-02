@@ -30,6 +30,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
@@ -92,9 +93,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         // It seems like we need this for Android 4:
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
+            Log.d(TAG, "not inited");
         } else {
             System.loadLibrary("wrapper");
             System.loadLibrary("opencv_java3");
+            Log.d(TAG, "inited");
         }
 
     }

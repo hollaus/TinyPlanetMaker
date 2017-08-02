@@ -17,7 +17,7 @@ android {
     }
     task ndkBuild(type: Exec) {
         workingDir file('src/main')
-        commandLine getNdkBuildCmd()
+        commandLine getNdkBuildCmd(), 'NDK_LIBS_OUT=./jniLibs'
     }
 
     task cleanNative(type: Exec, description: 'Clean JNI object files') {
@@ -71,7 +71,7 @@ def getNdkBuildCmd() {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(include: ['*.jar'], dir: 'libsss')
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
     compile project(':openCVLibrary320')
