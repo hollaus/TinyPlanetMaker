@@ -6,7 +6,6 @@ include $(CLEAR_VARS)
 # include file with user defined OpenCV SDK path (MY_OPENCVROOT):
 include $(LOCAL_PATH)/local/Android.mk
 OPENCVROOT:= $(MY_OPENCVROOT)
-LOCAL_LDLIBS := -LC:\Users\fabian\files\TinyPlanetMaker\app\src\main\jniLibs
 
 OPENCV_CAMERA_MODULES:=off
 OPENCV_INSTALL_MODULES:=on

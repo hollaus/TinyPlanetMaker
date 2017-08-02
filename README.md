@@ -12,27 +12,15 @@ The 'Tiny Planet Maker' app is available for free on Google Play.
 - Android NDK (will be installed via Android Studio)
 
 ## Configuration
-- copy`.\app\src\main\jni\local\AndroidSkel.mk` to `.\app\src\main\jni\local\Android.mk`
-- open `.\app\src\main\jni\local\Android.mk` in a text editor
-- uncomment and change the line `MY_OPENCVROOT:= C:/someplace/opencv_sdk/OpenCV-android-sdk` such that
-it points to your opencv installation (contains the folders: apk, sample, sdk)
-- Open Project from Android Studio
-- You will see a dialog "Gradle settings for this project are not configured yet. Would you like the project to use the Gradle wrapper? ..." - click Ok
-- Import OpenCV module
-  - File -> New -> Import module
-  - Set the OpenCV SDK path: .\yourlocalpath\OpenCV-android-sdk\sdk\java
-  - Finish.
-  - Open project view and from there open Project -> openCVLibrary->build.gradle
-  - Set compileSdkVersion, targetSdkVersion and buildToolsVersion to the values of your main build.gradle file.
-  See step 6 in [2]
-  - Set the Android NDK path
-- Add Android NDK
-  - Open `Tools > Android > SDK Manager`
-  - Tab SDK Tools
-  - Check NDK (takes a few minutes to download/install) (copy the NDK path, you will need it later)
-  - Restart Android Studio
-  - right click `app > Open Module Settings > SDK Location`
-  - Set the NDK path
+- Open the project
+- Setup OpenCV
+  - Follow the steps listed here: https://www.learn2crack.com/2016/03/setup-opencv-sdk-android-studio.html in the section 'Download OpenCV Android SDK' and 'Setup OpenCV Android SDK'
+  (The steps in the other sections are not needed for this project.)
+- Tell the project the location of your OpenCV installation:
+  - copy`.\app\src\main\jni\local\AndroidSkel.mk` to `.\app\src\main\jni\local\Android.mk`
+  - open `.\app\src\main\jni\local\Android.mk` in a text editor
+  - uncomment and change the line `MY_OPENCVROOT:= somepath` such that
+  it points to your opencv installation (contains the folders: apk, sample, sdk)
 
 ## Debugging Hint
  `Genymotion` is a nice tool for debugging the app (on your PC)
