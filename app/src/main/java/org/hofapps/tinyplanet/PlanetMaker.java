@@ -48,8 +48,10 @@ public class PlanetMaker {
         mInputImage = new Mat();
 
 //        Check if the bitmap has the correct type for the OpenCV bitmapToMat function:
-        if (bitmap.getConfig() != Bitmap.Config.ARGB_8888 && bitmap.getConfig() != Bitmap.Config.RGB_565)
-            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
+        if (bitmap.getConfig() != null) { // bitmap.getConfig() just returns a valid value if the format is in one of the public formats.
+            if (bitmap.getConfig() != Bitmap.Config.ARGB_8888 && bitmap.getConfig() != Bitmap.Config.RGB_565)
+                bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
+        }
 
         Utils.bitmapToMat(bitmap, mInputImage);
         mOriginalImage = mInputImage.clone();
