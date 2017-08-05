@@ -5,6 +5,7 @@ import android.graphics.RectF;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -26,7 +27,7 @@ public class PlanetMaker {
 
     private int mFullOutputSize;
     private int[] mSizeMinMax;
-    private boolean mIsImageLoaded, mIsPlanetInverted;
+    private boolean mIsImageLoaded, mIsPlanetInverted, mIsFaded;
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
@@ -43,6 +44,9 @@ public class PlanetMaker {
     }
 
     public void setInputImage(Bitmap bitmap) {
+
+        if (bitmap == null)
+            return;
 
         mIsImageLoaded = true;
         mInputImage = new Mat();
@@ -188,6 +192,17 @@ public class PlanetMaker {
 
     }
 
+    public void fade(boolean isFaded) {
+
+        mIsFaded = isFaded;
+
+        if (!mIsImageLoaded)
+            return;
+
+        updatePlanet();
+
+    }
+
     public void setCropRect(RectF cropRect) {
 
         mCropRect = cropRect;
@@ -271,34 +286,38 @@ public class PlanetMaker {
             Rect flippedRect = flipCropRect(mInputImage.width(), mInputImage.height());
             Mat image_roi = mInputImage.submat(flippedRect);
 
-//            Imgproc.resize(image_roi, image_roi, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
-
             mPlanetImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
             mNativeWrapper.logPolar(image_roi, mPlanetImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-//            mPlanetImage = mInputImage.clone();
+
         }
 
         else {
-            mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-            mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+
+            Mat tmp = new Mat();
+            Imgproc.cvtColor(mInputImage, tmp, Imgproc.COLOR_RGBA2RGB);
+            tmp.convertTo(tmp, CvType.CV_16SC3);
+            Mat blendImg = new Mat(200, mInputImage.cols(), tmp.type());
+
+            mNativeWrapper.blendImgs(tmp, blendImg);
+            blendImg.convertTo(blendImg, mInputImage.type());
+            Imgproc.cvtColor(blendImg, blendImg, Imgproc.COLOR_RGB2RGBA);
+
+            mPlanetImage = mInputImage.clone();
+//            mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+
+            // Shift the input image to the bottom:
+            Mat shiftedImg = new Mat();
+            mPlanetImage.rowRange(100, mPlanetImage.rows()-100).
+                    copyTo(shiftedImg);
+            Mat subMat = mPlanetImage.submat(200, mPlanetImage.rows(), 0, mPlanetImage.cols());
+            shiftedImg.copyTo(subMat);
+
+            // Copy the blended part:
+            Mat subMatBlended = mPlanetImage.submat(0,blendImg.rows(), 0, mPlanetImage.cols());
+            blendImg.copyTo(subMatBlended);
+
+            mNativeWrapper.logPolar(mPlanetImage, mPlanetImage, mPlanetImage.width() * 0.5f, mPlanetImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
         }
-//
-////        new Thread(){
-////            @Override
-////            public void run() {
-////                Message msg = new Message();
-////                if(!isComputingPlanet) {
-////                    planetImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
-////                    nativeWrapper.logPolar(inputImage, planetImage, inputImage.width() * 0.5f, inputImage.height() * 0.5f, size, scale, angle * DEG2RAD);
-////                    isComputingPlanet = false;
-////                }
-////            }
-////        }).start();
-//
-////        long now = Calendar.getInstance().getTimeInMillis();
-//
-////        if ((lastRecognitionTime == -1) || (now - lastRecognitionTime > 500)) {
-////            lastRecognitionTime = now;
 
     }
 
@@ -384,8 +403,13 @@ public class PlanetMaker {
 //            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
 //        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
 
+        // TODO: uncomment:
+//        mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+//        mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+
         mPlanetImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-        mNativeWrapper.logPolar(mInputImage, mPlanetImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+        mPlanetImage = mInputImage.clone();
+//        mNativeWrapper.blendImgs(mInputImage, mPlanetImage);
 
         updatePlanet();
 
@@ -421,6 +445,7 @@ public class PlanetMaker {
         void addAngle(float angle);
         void addScaleLog(float scaleLog);
         void onInvertChange(boolean isInverted);
+        void onFadeChange(boolean isFaded);
         void onCrop(RectF rect);
 
     }

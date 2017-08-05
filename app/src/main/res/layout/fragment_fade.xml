@@ -7,20 +7,18 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-
-
     >
 
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/invert_switch"
-            android:layout_width="wrap_content"
-            android:minWidth="150dp"
-            android:layout_height="match_parent"
-            android:text="@string/invert_text"
-            android:layout_centerHorizontal="true"
-            android:textColor="#ffffff"
-            android:textColorHighlight="#ffffffff"
-            />
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/fade_switch"
+        android:layout_width="wrap_content"
+        android:minWidth="150dp"
+        android:layout_height="match_parent"
+        android:text="@string/fade_title"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:textColorHighlight="#ffffffff"
+        />
 
 </LinearLayout>

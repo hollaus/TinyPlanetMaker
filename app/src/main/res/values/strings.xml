@@ -30,13 +30,17 @@
     <string name="button_cancel">Cancel</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
     <string name="warp_title">Warp</string>
     <string name="crop_title">Crop</string>
     <string name="invert_title">Invert</string>
     <string name="zoom_title">Zoom</string>
     <string name="rotate_title">Rotate</string>
+    <string name="fade_title">Fade</string>
+
     <string name="crop_tab">crop_tab</string>
     <string name="invert_tab">invert_tab</string>
+    <string name="fade_tab">fade_tab</string>
     <string name="zoom_tab">zoom_tab</string>
     <string name="rotate_tab">rotate_tab</string>
     <string name="warp_tab">warp_tab</string>

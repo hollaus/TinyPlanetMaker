@@ -17,8 +17,8 @@ import android.widget.SeekBar;
 public class SettingsFragment extends Fragment {
 
     private PlanetMaker.PlanetChangeCallBack mPlanetChangeCallBacks;
-    protected static final int ARRAY_MIN_POS = 0;
-    protected static final int ARRAY_MAX_POS = 1;
+    public static final int ARRAY_MIN_POS = 0;
+    public static final int ARRAY_MAX_POS = 1;
 
     private RangeSeekBar sizeSeekBar, angleSeekBar;
 

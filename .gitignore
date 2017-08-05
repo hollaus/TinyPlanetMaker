@@ -306,3 +306,5 @@ attrs.xml
 /app/src/main/obj/local/armeabi-v7a/objs/wrapper/Utils.o
 /app/src/main/obj/local/armeabi-v7a/objs/wrapper/Utils.o.d
 /import-summary.txt
+/app/src/main/jni/jniLibs/armeabi-v7a/libopencv_java3.so
+/app/src/main/jni/jniLibs/armeabi-v7a/libwrapper.so

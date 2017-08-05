@@ -21,8 +21,8 @@ public class TabFragment extends Fragment {
 
     private TabHost mTabHost;
     private PlanetMaker.PlanetChangeCallBack mPlanetChangeCallBacks;
-    private RangeSeekBar rotateSeekBar, warpSeekBar, zoomSeekBar, cropLeftSeekBar, cropRightSeekBar;
-    private android.support.v7.widget.SwitchCompat invertSwitch;
+    private RangeSeekBar mRotateSeekBar, mWarpSeekBar, mZoomSeekBar;
+    private android.support.v7.widget.SwitchCompat mInvertSwitch, mFadeSwitch;
     private CropImageView mCropView;
 
 
@@ -35,214 +35,229 @@ public class TabFragment extends Fragment {
 
         final SeekBar.OnSeekBarChangeListener listener = getSeekBarListener();
 
-        // Get the orientation of the layout:
 
-//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//
-//            rootView = inflater.inflate(R.layout.fragment_settings_land, container, false);
-//
-//            warpSeekBar = (RangeSeekBar) rootView.findViewById(R.id.warp_seekBar);
-//            warpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
-//            warpSeekBar.setOnSeekBarChangeListener(listener);
-//
-//            rotateSeekBar = (RangeSeekBar) rootView.findViewById(R.id.rotate_seekBar);
-//            rotateSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
-//            rotateSeekBar.setOnSeekBarChangeListener(listener);
-//
-//            zoomSeekBar = (RangeSeekBar) rootView.findViewById(R.id.zoom_seekBar);
-//            zoomSeekBar.setRange(getResources().getIntArray(R.array.zoom_seekbar_values));
-//            zoomSeekBar.setOnSeekBarChangeListener(listener);
-//
-//            invertSwitch = (android.support.v7.widget.SwitchCompat) rootView.findViewById(R.id.invert_switch);
-//            enableInvertSwitchListener();
-//
-//        }
-//        else {
 
+        rootView = inflater.inflate(R.layout.tablayout_settings, container, false);
 
-            rootView = inflater.inflate(R.layout.tablayout_settings, container, false);
+        mTabHost = (TabHost) rootView.findViewById(R.id.tab_host);
+        mTabHost.setup();
+        mTabHost.setOnTabChangedListener(new AnimatedTabHostListener(mTabHost));
 
+        createWarpTab(inflater, container, listener);
+        createRotateTab(inflater, container, listener);
+        createZoomTab(inflater, container, listener);
+        createInvertTab(inflater, container);
+        createCropTab(inflater, container);
+        createFadeTab(inflater, container);
 
 
 
-            mTabHost = (TabHost) rootView.findViewById(R.id.tab_host);
-            mTabHost.setup();
+        // Initialize the tabs. Otherwise they will be initialized after the user clicks on them, but we need to connect the sliders to the callback:
+        for (int i = mTabHost.getTabWidget().getTabCount() - 1; i >= 0; i--)
+            mTabHost.setCurrentTab(i);
 
-
-//        TabHost.TabSpec spec = mTabHost.newTabSpec("tag");
-//        spec.setIndicator("Warp");
-
-            TabHost.TabSpec spec = mTabHost.newTabSpec(getString(R.string.warp_tab));
-            spec.setIndicator(createTabView(inflater, container, getString(R.string.warp_title)));
-
-            spec.setContent(new TabHost.TabContentFactory() {
-
-                @Override
-                public View createTabContent(String tag) {
-
-                    View view = inflater.inflate(R.layout.fragment_warp, container, false);
-                    warpSeekBar = (RangeSeekBar) view.findViewById(R.id.warp_seekBar);
-                    warpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
-                    warpSeekBar.setOnSeekBarChangeListener(listener);
-
-                    return (view);
-                }
-            });
-            mTabHost.addTab(spec);
-
-
-//        spec = mTabHost.newTabSpec("tag1");
-//        spec.setIndicator("Rotate");
-
-            spec = mTabHost.newTabSpec(getString(R.string.rotate_tab));
-            spec.setIndicator(createTabView(inflater, container, getString(R.string.rotate_title)));
-
-            spec.setContent(new TabHost.TabContentFactory() {
-
-                @Override
-                public View createTabContent(String tag) {
-
-                    View view = inflater.inflate(R.layout.fragment_rotate, container, false);
-
-                    rotateSeekBar = (RangeSeekBar) view.findViewById(R.id.rotate_seekBar);
-                    rotateSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
-                    rotateSeekBar.setOnSeekBarChangeListener(listener);
-
-                    return (view);
-
-                }
-            });
-            mTabHost.addTab(spec);
-
-//        spec = mTabHost.newTabSpec("tag2");
-//        spec.setIndicator("Zoom");
-
-            spec = mTabHost.newTabSpec(getString(R.string.zoom_tab));
-            spec.setIndicator(createTabView(inflater, container, getString(R.string.zoom_title)));
-
-            spec.setContent(new TabHost.TabContentFactory() {
-
-                @Override
-                public View createTabContent(String tag) {
-
-                    View view = inflater.inflate(R.layout.fragment_zoom, container, false);
-
-                    zoomSeekBar = (RangeSeekBar) view.findViewById(R.id.zoom_seekBar);
-                    zoomSeekBar.setRange(getResources().getIntArray(R.array.zoom_seekbar_values));
-                    zoomSeekBar.setOnSeekBarChangeListener(listener);
-
-                    return (view);
-
-                }
-            });
-
-            mTabHost.addTab(spec);
-
-            spec = mTabHost.newTabSpec(getString(R.string.invert_tab));
-            spec.setIndicator(createTabView(inflater, container, getString(R.string.invert_title)));
-
-            spec.setContent(new TabHost.TabContentFactory() {
-
-                @Override
-                public View createTabContent(String tag) {
-
-                    View view = inflater.inflate(R.layout.fragment_invert, container, false);
-
-                    invertSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.invert_switch);
-                    enableInvertSwitchListener();
-
-                    return (view);
-
-                }
-            });
-
-            mTabHost.addTab(spec);
-
-
-            spec = mTabHost.newTabSpec(getString(R.string.crop_tab));
-            spec.setIndicator(createTabView(inflater, container, getString(R.string.crop_title)));
-
-            spec.setContent(new TabHost.TabContentFactory() {
-
-                @Override
-                public View createTabContent(String tag) {
-
-                    View view = inflater.inflate(R.layout.fragment_crop, container, false);
-
-                    mCropView = (CropImageView) view.findViewById(R.id.cropImageView);
-                    mCropView.setCropCallback(new CropCallback() {
-                        @Override
-                        public void onSuccess(Bitmap cropped) {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-
-
-
-                    mCropView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-
-                            if (v == null)
-                                return false;
-
-                            CropImageView cropView = (CropImageView) v;
-
-                            // cropView.getActualCropRect() causes nullpointer exceptions when no image is loaded:
-                            if (cropView.getImageBitmap() == null)
-                                return false;
-
-                            if (cropView.getActualCropRect() == null)
-                                return false;
-
-                            RectF rect = cropView.getActualCropRect();
-
-                            float left = rect.left / (float) cropView.getImageBitmap().getWidth();
-                            float right = rect.right / (float) cropView.getImageBitmap().getWidth();
-                            float top = rect.top / (float) cropView.getImageBitmap().getHeight();
-                            float bottom = rect.bottom / (float) cropView.getImageBitmap().getHeight();
-                            RectF normedRect = new RectF(left, top, right, bottom);
-
-                            mPlanetChangeCallBacks.onCrop(normedRect);
-
-                            return false;
-                        }
-                    });
-
-                    return (view);
-
-                }
-            });
-
-            mTabHost.addTab(spec);
-
-            mTabHost.setOnTabChangedListener(new AnimatedTabHostListener(mTabHost));
-
-
-            // Initialize the tabs. Otherwise they will be initialized after the user clicks on them, but we need to connect the sliders to the callback:
-            for (int i = mTabHost.getTabWidget().getTabCount() - 1; i >= 0; i--)
-                mTabHost.setCurrentTab(i);
-
-//        }
 
         return rootView;
 
     }
 
+    private void createCropTab(final LayoutInflater inflater, final ViewGroup container) {
+        TabHost.TabSpec spec;
+
+
+        spec = mTabHost.newTabSpec(getString(R.string.crop_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.crop_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_crop, container, false);
+
+                mCropView = (CropImageView) view.findViewById(R.id.cropImageView);
+                mCropView.setCropCallback(new CropCallback() {
+                    @Override
+                    public void onSuccess(Bitmap cropped) {
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+
+                mCropView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+
+                        if (v == null)
+                            return false;
+
+                        CropImageView cropView = (CropImageView) v;
+
+                        // cropView.getActualCropRect() causes nullpointer exceptions when no image is loaded:
+                        if (cropView.getImageBitmap() == null)
+                            return false;
+
+                        if (cropView.getActualCropRect() == null)
+                            return false;
+
+                        RectF rect = cropView.getActualCropRect();
+
+                        float left = rect.left / (float) cropView.getImageBitmap().getWidth();
+                        float right = rect.right / (float) cropView.getImageBitmap().getWidth();
+                        float top = rect.top / (float) cropView.getImageBitmap().getHeight();
+                        float bottom = rect.bottom / (float) cropView.getImageBitmap().getHeight();
+                        RectF normedRect = new RectF(left, top, right, bottom);
+
+                        mPlanetChangeCallBacks.onCrop(normedRect);
+
+                        return false;
+                    }
+                });
+
+                return (view);
+
+            }
+        });
+
+        mTabHost.addTab(spec);
+    }
+
+    private void createInvertTab(final LayoutInflater inflater, final ViewGroup container) {
+        TabHost.TabSpec spec;
+
+        spec = mTabHost.newTabSpec(getString(R.string.invert_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.invert_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_invert, container, false);
+
+                mInvertSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.invert_switch);
+                enableInvertSwitchListener();
+
+                return (view);
+
+            }
+        });
+
+        mTabHost.addTab(spec);
+    }
+
+    private void createFadeTab(final LayoutInflater inflater, final ViewGroup container) {
+        TabHost.TabSpec spec;
+
+        spec = mTabHost.newTabSpec(getString(R.string.fade_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.fade_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_fade, container, false);
+
+                mFadeSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.fade_switch);
+                enableFadeSwitchListener();
+
+                return (view);
+
+            }
+        });
+
+        mTabHost.addTab(spec);
+    }
+
+    private void createZoomTab(final LayoutInflater inflater, final ViewGroup container, final SeekBar.OnSeekBarChangeListener listener) {
+        TabHost.TabSpec spec;
+
+        spec = mTabHost.newTabSpec(getString(R.string.zoom_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.zoom_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_zoom, container, false);
+
+                mZoomSeekBar = (RangeSeekBar) view.findViewById(R.id.zoom_seekBar);
+                mZoomSeekBar.setRange(getResources().getIntArray(R.array.zoom_seekbar_values));
+                mZoomSeekBar.setOnSeekBarChangeListener(listener);
+
+                return (view);
+
+            }
+        });
+
+        mTabHost.addTab(spec);
+    }
+
+    private void createRotateTab(final LayoutInflater inflater, final ViewGroup container, final SeekBar.OnSeekBarChangeListener listener) {
+        TabHost.TabSpec spec;
+
+        spec = mTabHost.newTabSpec(getString(R.string.rotate_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.rotate_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_rotate, container, false);
+
+                mRotateSeekBar = (RangeSeekBar) view.findViewById(R.id.rotate_seekBar);
+                mRotateSeekBar.setRange(getResources().getIntArray(R.array.angle_seekbar_values));
+                mRotateSeekBar.setOnSeekBarChangeListener(listener);
+
+                return (view);
+
+            }
+        });
+        mTabHost.addTab(spec);
+    }
+
+    private void createWarpTab(final LayoutInflater inflater, final ViewGroup container, final SeekBar.OnSeekBarChangeListener listener) {
+        TabHost.TabSpec spec = mTabHost.newTabSpec(getString(R.string.warp_tab));
+        spec.setIndicator(createTabView(inflater, container, getString(R.string.warp_title)));
+
+        spec.setContent(new TabHost.TabContentFactory() {
+
+            @Override
+            public View createTabContent(String tag) {
+
+                View view = inflater.inflate(R.layout.fragment_warp, container, false);
+                mWarpSeekBar = (RangeSeekBar) view.findViewById(R.id.warp_seekBar);
+                mWarpSeekBar.setRange(getResources().getIntArray(R.array.size_seekbar_values));
+                mWarpSeekBar.setOnSeekBarChangeListener(listener);
+
+                return (view);
+            }
+        });
+        mTabHost.addTab(spec);
+    }
+
     private void enableInvertSwitchListener() {
-        invertSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mInvertSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mPlanetChangeCallBacks.onInvertChange(isChecked);
             }
         });
     }
 
-
+    private void enableFadeSwitchListener() {
+        mFadeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mPlanetChangeCallBacks.onFadeChange(isChecked);
+            }
+        });
+    }
 
 
     public View createTabView(final LayoutInflater inflater, final ViewGroup container, final String text) {
@@ -337,28 +352,28 @@ public class TabFragment extends Fragment {
 
     public void setRotateBarValue(int position) {
 
-        rotateSeekBar.setValue(position);
+        mRotateSeekBar.setValue(position);
 
     }
 
     public void setZoomBarValue(int position) {
 
-        zoomSeekBar.setValue(position);
+        mZoomSeekBar.setValue(position);
 
     }
 
 
     public void setWarpBarValue(int position) {
 
-        warpSeekBar.setValue(position);
+        mWarpSeekBar.setValue(position);
 
     }
 
     public void setInvertPlanetSwitch(boolean isInverted) {
 
         // TODO: Check why we have to disable the listener. If it is enabled the preview image is null.
-        invertSwitch.setOnCheckedChangeListener(null);
-        invertSwitch.setChecked(isInverted);
+        mInvertSwitch.setOnCheckedChangeListener(null);
+        mInvertSwitch.setChecked(isInverted);
         enableInvertSwitchListener();
 
     }
@@ -371,9 +386,9 @@ public class TabFragment extends Fragment {
 
     public void initSeekBarValues(int size, int scale, int angle) {
 
-        warpSeekBar.setValue(size);
-        rotateSeekBar.setValue(angle);
-        zoomSeekBar.setValue(scale);
+        mWarpSeekBar.setValue(size);
+        mRotateSeekBar.setValue(angle);
+        mZoomSeekBar.setValue(scale);
 
     }
 

@@ -18,101 +18,68 @@ using namespace std;
 
 inline void nativeImgBlend(Mat src, Mat dst) {
 
+    float overlapHalf = .03;
+    int patchHeight = dst.rows * (.5 + overlapHalf);
+    dsc::Utils::print("patchHeight", dsc::Utils::num2str(patchHeight));
 
+    Mat patchTop (src, Rect(0, 0, src.cols, patchHeight));
+    Mat patchBottom (src, Rect(0, src.rows-patchHeight, src.cols, patchHeight));
 
-	Mat image1 = src.clone();
-
-
-
-	dsc::Utils::print("mat-type", dsc::Utils::num2str(image1.type()));
-
-
-	cvtColor(image1, image1, CV_BGRA2BGR);
-
-	    dsc::Utils::print("mat-type", dsc::Utils::num2str(image1.type()));
-
-	Mat image2;
-	cv::flip(image1, image2, 1);
-	Mat image1s, image2s;
-	image1.convertTo(image1s, CV_16S);
-	image2.convertTo(image2s, CV_16S);
-
-	Mat mask1(image1s.size(), CV_8U);
-	mask1(Rect(0, 0, (mask1.cols / 2) + 20, mask1.rows)).setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
-	mask1(Rect((mask1.cols / 2) + 20, 0, mask1.cols - (mask1.cols / 2) - 20, mask1.rows)).setTo(0); //Hidden portion of 1st  image
-	Mat mask2(image2s.size(), CV_8U);
-	mask2(Rect(0, 0, mask2.cols / 2, mask2.rows)).setTo(0.4);//Hidden portion of 2nd image
-	mask2(Rect(mask2.cols / 2, 0, mask2.cols - mask2.cols / 2, mask2.rows)).setTo(255);//Visible region of 2nd image
-
-	cv::detail::MultiBandBlender blender(0.5f); //sharpness
-	blender.prepare(Rect(0, 0, max(image1s.cols, image2s.cols), max(image1s.rows, image2s.rows)));
-
-    blender.feed(image1s, mask1, cv::Point(0, 0));
-    blender.feed(image2s, mask2, Point(0, 0));
-    cv::Mat result, result_mask;
-    blender.blend(result, result_mask);
-    result.convertTo(dst, CV_8U);
-
-  //  dst = src.clone();
-
-    cvtColor(dst, dst, CV_BGR2BGRA);
-
-    dsc::Utils::print("dst6-type", dsc::Utils::num2str(result.type()));
-    dsc::Utils::print("dst5-type", dsc::Utils::num2str(image1.type()));
-
-    dst = image2s.clone();
+    Mat maskTop(patchTop.size(), CV_8U);
+    //maskTop(Rect(0, 0, maskTop.cols, maskTop.rows/2+50)).setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
+    maskTop.setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
+    //maskTop(Rect(0, (maskTop.rows/2)+50, maskTop.cols, maskTop.rows - (maskTop.rows/2)-50)).setTo(0); //Hidden portion of 1st  image
+    Mat maskBottom(patchBottom.size(), CV_8U);
+    maskBottom.setTo(255);
+    //maskBottom(Rect(0, 0, maskBottom.cols, maskBottom.rows/2)).setTo(0);//Hidden portion of 2nd image
+    //maskBottom(Rect(0, maskBottom.rows/2, maskBottom.cols, maskBottom.rows - maskBottom.rows/2)).setTo(255);//Visible region of 2nd image
 
 
 
-    //dst = src.clone();
+    //cv::detail::FeatherBlender  blender(0.5f); //sharpness
+    cv::detail::MultiBandBlender blender(false, 5);
+    //blender.prepare(Rect(0, 0, max(patchTop.cols, patchBottom.cols), max(patchTop.rows, patchBottom.rows)));
+    blender.prepare(Rect(0, 0, dst.cols, dst.rows));
+
+    int patchTopY = dst.rows - patchBottom.rows;
+    dsc::Utils::print("patchTopY", dsc::Utils::num2str(patchTopY));
+    blender.feed(patchTop, maskTop, Point(0,patchTopY));
+    blender.feed(patchBottom, maskBottom, Point(0,0));
+    Mat result_s, result_mask;
+    blender.blend(result_s, result_mask); // TODO: replace with dst
+
+    dsc::Utils::print("height dest", dsc::Utils::num2str(dst.rows));
+
+    cv::resize(result_s, dst, dst.size());
 
 
+
+// Working example:
 /*
-    int rectW = 200;
-    //Mat image1 = src(cv::Rect(0, 0, src.cols, rectW));
-    Mat image1 = src(cv::Rect(100,100,100,100));
-    Mat image2 = src(cv::Rect(0, src.rows-rectW, src.cols, rectW));
+    Mat patchTop;
+    cv::flip(src.clone(), patchTop, 1);
 
-    Mat image1s, image2s;
-    image1s = image1.clone();
-    cvtColor(image1s, image1s, CV_BGRA2BGR);
-    image1s.convertTo(image1s, CV_16SC3);
-    image2s = image2.clone();
-    cvtColor(image2s, image2s, CV_BGRA2BGR);
-    image2s.convertTo(image2s, CV_16SC3);
+    Mat patchBottom;
+    cv::flip(src.clone(), patchBottom, -1);
 
-    Mat mask1(image1s.size(), CV_8U);
-    mask1(Rect(0, 0, (mask1.cols/2)+10, mask1.rows)).setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
-    mask1(Rect((mask1.cols/2)+10, 0, mask1.cols - (mask1.cols/2)-10, mask1.rows)).setTo(0); //Hidden portion of 1st  image
-    Mat mask2(image2s.size(), CV_8U);
-    mask2(Rect(0, 0, mask2.cols/2, mask2.rows)).setTo(0);//Hidden portion of 2nd image
-    mask2(Rect(mask2.cols/2, 0, mask2.cols - mask2.cols/2, mask2.rows)).setTo(255);//Visible region of 2nd image
+    Mat maskTop(patchTop.size(), CV_8U);
+    maskTop(Rect(0, 0, (maskTop.cols/2)+10, maskTop.rows)).setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
+    maskTop(Rect((maskTop.cols/2)+10, 0, maskTop.cols - (maskTop.cols/2)-10, maskTop.rows)).setTo(0); //Hidden portion of 1st  image
+    Mat maskBottom(patchBottom.size(), CV_8U);
+    maskBottom(Rect(0, 0, maskBottom.cols/2, maskBottom.rows)).setTo(0);//Hidden portion of 2nd image
+    maskBottom(Rect(maskBottom.cols/2, 0, maskBottom.cols - maskBottom.cols/2, maskBottom.rows)).setTo(255);//Visible region of 2nd image
 
-    cv::detail::FeatherBlender blender(0.5f); //sharpness
-    blender.prepare(Rect(0, 0, max(image1s.cols, image2s.cols), max(image1s.rows, image2s.rows)));
+    dsc::Utils::print("mat-type", dsc::Utils::num2str(patchTop.type()));
 
-    dsc::Utils::print("type", dsc::Utils::num2str(image1s.type()));
-    dsc::Utils::print("should be", dsc::Utils::num2str(CV_16SC3));
+    //cv::detail::FeatherBlender  blender(0.5f); //sharpness
+    cv::detail::MultiBandBlender blender(false, 5);
+    blender.prepare(Rect(0, 0, max(patchTop.cols, patchBottom.cols), max(patchTop.rows, patchBottom.rows)));
+    blender.feed(patchTop, maskTop, Point(0,0));
+    blender.feed(patchBottom, maskBottom, Point(0,0));
+    Mat result_s, result_mask;
+    blender.blend(dst, result_mask);
+    */
 
-    dsc::Utils::print("size mask", dsc::Utils::num2str(mask1.rows));
-
-    blender.feed(image1s, mask1, cv::Point(0,0));
-
-    blender.feed(image2s, mask2, Point(0,0));
-
-    cv::Mat result, result_mask;
-
-    //
-
-    blender.blend(result, result_mask);
-    result.convertTo(dst, CV_8U);
-
-    dst = image1.clone();
-    dst.convertTo(dst, CV_8U);
-
-    dsc::Utils::print("rows src", dsc::Utils::num2str(src.rows));
-    dsc::Utils::print("cols src", dsc::Utils::num2str(src.cols));
-*/
 
 }
 
@@ -197,10 +164,7 @@ JNIEXPORT jstring JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_getStringFro
 //JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeLogPolar
 //(JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jdouble, jdouble, jdouble);
 
-JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeImgBlend
-  (JNIEnv * jenv, jclass, jlong src, jlong dst) {
-    nativeImgBlend(*((Mat*)src), *((Mat*)dst));
-  }
+
 
 JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeLogPolar
 (JNIEnv * jenv, jclass, jlong src, jlong dst, jfloat xCenter, jfloat yCenter, jdouble scale, jdouble scaleLog, jdouble angle)
@@ -210,4 +174,10 @@ JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeLogPolar
 //vector_Rect_to_Mat(RectFaces, *((Mat*)faces));
 //overLayFacesMat(*((Mat*)image), *((Mat*)faceMat), (bool) isPictureRequested);
 
+}
+
+JNIEXPORT void JNICALL Java_org_hofapps_tinyplanet_NativeWrapper_nativeImgBlend
+  (JNIEnv * jenv, jclass, jlong src, jlong dst)
+{
+    nativeImgBlend(*((Mat*)src), *((Mat*)dst));
 }

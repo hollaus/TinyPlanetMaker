@@ -33,9 +33,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.isseiaoki.simplecropview.CropImageView;
 
@@ -54,13 +52,13 @@ import java.util.Date;
 //import org.opencv.highgui.Highgui;
 
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
-        MediaScannerConnectionClient, SettingsFragment.FragmentVisibilityCallBack,
-        ActivityCompat.OnRequestPermissionsResultCallback, SamplesFragment.SampleSelectedCallBack {
+        MediaScannerConnectionClient, ActivityCompat.OnRequestPermissionsResultCallback,
+        SamplesFragment.SampleSelectedCallBack {
 
-    private NativeWrapper nativeWrapper;
-    private ImageView imageView;
-    private PlanetMaker previewPlanetMaker;
-    private int[] sizeMinMax;
+    private NativeWrapper mNativeWrapper;
+    private ImageView mImageView;
+    private PlanetMaker mPreviewPlanetMaker;
+    private int[] mSizeMinMax;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -68,24 +66,19 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private SamplesFragment samplesFragment;
     private TabFragment tabFragment;
     private NavigationView mDrawer;
+    private int mMenuItem = -1;
+    private OnPlanetTouchListener mOnPlanetTouchListener;
+    private MediaScannerConnection mMediaScannerConnection;
+
 
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE= 1;
-
     private static final int PICK_IMAGE_REQUEST = 1;
-
     public static final int MAX_IMG_SIZE = 3000;
-
     private static final int MENU_ITEM_GALLERY = 0;
     private static final int MENU_ITEM_SHARE = 1;
-
-    private int menuItem = -1;
-
     private static final String TAG = "Touch";
-//    private MainActivityFragment mainActivityFragment;
-    private OnPlanetTouchListener onPlanetTouchListener;
-    private MediaScannerConnection mediaScannerConnection;
-    private LinearLayout settingsTitle;
+
 
     static {
 
@@ -108,43 +101,23 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        imageView = (ImageView) findViewById(R.id.imageView);
+        mImageView = (ImageView) findViewById(R.id.imageView);
 
-        onPlanetTouchListener = new OnPlanetTouchListener(this);
+        mOnPlanetTouchListener = new OnPlanetTouchListener(this);
 
-        imageView.setOnTouchListener(onPlanetTouchListener);
+        mImageView.setOnTouchListener(mOnPlanetTouchListener);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        initDrawer();
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        initToolbar();
 
-        };
+        mNativeWrapper = new NativeWrapper();
 
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mSizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
 
-        mDrawer = (NavigationView) findViewById(R.id.left_drawer);
-        setupDrawerContent(mDrawer);
+        mPreviewPlanetMaker = new PlanetMaker(mNativeWrapper, 700, mSizeMinMax);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        nativeWrapper = new NativeWrapper();
-
-        sizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
-
-        previewPlanetMaker = new PlanetMaker(nativeWrapper, 700, sizeMinMax);
-
-        FragmentManager fragmentManager = getFragmentManager();
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment_land);
-        else
-            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
-
-        tabFragment.initSeekBarValues((int) previewPlanetMaker.getSize(), (int) previewPlanetMaker.getScale(), (int) previewPlanetMaker.getAngle());
+        initTabFragment();
 
         Intent intent = getIntent();
 
@@ -167,6 +140,38 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             pref.edit().putBoolean("firstRun", false).commit();
         }
 
+    }
+
+    private void initTabFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment_land);
+        else
+            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+
+        tabFragment.initSeekBarValues((int) mPreviewPlanetMaker.getSize(), (int) mPreviewPlanetMaker.getScale(), (int) mPreviewPlanetMaker.getAngle());
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    private void initDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mDrawer = (NavigationView) findViewById(R.id.left_drawer);
+        setupDrawerContent(mDrawer);
     }
 
     @Override
@@ -243,25 +248,25 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void updateImageView() {
 
-        if (!previewPlanetMaker.getIsImageLoaded())
+        if (!mPreviewPlanetMaker.getIsImageLoaded())
             return;
 
-        Mat previewImg = previewPlanetMaker.getPlanetImage();
+        Mat previewImg = mPreviewPlanetMaker.getPlanetImage();
 
         Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(previewImg, bm);
 
-        imageView.setImageBitmap(bm);
-        imageView.setBackgroundColor(Color.TRANSPARENT);
+        mImageView.setImageBitmap(bm);
+        mImageView.setBackgroundColor(Color.TRANSPARENT);
 
-        previewPlanetMaker.releasePlanetImage();
+        mPreviewPlanetMaker.releasePlanetImage();
 
     }
 
     @Override
     public void onSizeChange(int size) {
 
-        previewPlanetMaker.setSize((double) size);
+        mPreviewPlanetMaker.setSize((double) size);
         updateImageView();
 
     }
@@ -269,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void onScaleChange(int scale) {
 
-        previewPlanetMaker.setScale((double) scale);
+        mPreviewPlanetMaker.setScale((double) scale);
         updateImageView();
 
     }
@@ -277,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     public void onAngleChange(int angle) {
 
-        previewPlanetMaker.setAngle((double) angle);
+        mPreviewPlanetMaker.setAngle((double) angle);
         updateImageView();
 
     }
@@ -290,48 +295,46 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 //        else if (angle < angleMinMax[SettingsFragment.ARRAY_MIN_POS])
 //            angle = angleMinMax[SettingsFragment.ARRAY_MAX_POS];
 
-        previewPlanetMaker.addAngle(angle);
+        mPreviewPlanetMaker.addAngle(angle);
         updateImageView();
 
-        tabFragment.setRotateBarValue((int) previewPlanetMaker.getAngle());
+        tabFragment.setRotateBarValue((int) mPreviewPlanetMaker.getAngle());
 
     }
 
     @Override
     public void addScaleLog(float scale) {
 
-        previewPlanetMaker.addScale(scale);
+        mPreviewPlanetMaker.addScale(scale);
         updateImageView();
 
-        tabFragment.setWarpBarValue((int) previewPlanetMaker.getSize());
+        tabFragment.setWarpBarValue((int) mPreviewPlanetMaker.getSize());
 
     }
 
     @Override
     public void onInvertChange(boolean isInverted) {
 
-        previewPlanetMaker.invert(isInverted);
+        mPreviewPlanetMaker.invert(isInverted);
         updateImageView();
 
+    }
+
+    @Override
+    public void onFadeChange(boolean isFaded) {
+
+        mPreviewPlanetMaker.fade(isFaded);
+        updateImageView();
     }
 
     @Override
     public void onCrop(RectF rect) {
 
-        previewPlanetMaker.setCropRect(rect);
+        mPreviewPlanetMaker.setCropRect(rect);
         updateImageView();
 
     }
 
-    @Override
-    public void onVisibilityChange() {
-
-        float y = settingsTitle.getY();
-
-        LayoutParams params = imageView.getLayoutParams();
-        params.height = (int) y;
-
-    }
 
     @Override
     public void onSampleSelected(int id) {
@@ -359,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         view.setImageBitmap(bitmap);
         tabFragment.resetCropView();
 
-        previewPlanetMaker.setInputImage(bitmap);
+        mPreviewPlanetMaker.setInputImage(bitmap);
         updateImageView();
 
         checkFirstTimeImageOpen();
@@ -374,12 +377,12 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void resetPlanetValues() {
 
-        previewPlanetMaker.reset();
+        mPreviewPlanetMaker.reset();
 
-        tabFragment.setRotateBarValue((int) previewPlanetMaker.getAngle());
-        tabFragment.setWarpBarValue((int) previewPlanetMaker.getSize());
-        tabFragment.setZoomBarValue((int) previewPlanetMaker.getScale());
-        tabFragment.setInvertPlanetSwitch(previewPlanetMaker.getIsPlanetInverted());
+        tabFragment.setRotateBarValue((int) mPreviewPlanetMaker.getAngle());
+        tabFragment.setWarpBarValue((int) mPreviewPlanetMaker.getSize());
+        tabFragment.setZoomBarValue((int) mPreviewPlanetMaker.getScale());
+        tabFragment.setInvertPlanetSwitch(mPreviewPlanetMaker.getIsPlanetInverted());
         tabFragment.resetCropView();
 
         updateImageView();
@@ -430,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         String fileName = mediaStorageDir.toString() + "/" + files[files.length - 1];
 
 
-        mediaScannerConnection.scanFile(fileName, null);
+        mMediaScannerConnection.scanFile(fileName, null);
     }
 
 
@@ -532,14 +535,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     private void startScan(int menuItem) {
 
-        this.menuItem = menuItem;
+        this.mMenuItem = menuItem;
 
-        if(mediaScannerConnection != null)
-            mediaScannerConnection.disconnect();
+        if(mMediaScannerConnection != null)
+            mMediaScannerConnection.disconnect();
 
 
-        mediaScannerConnection = new MediaScannerConnection(this, this);
-        mediaScannerConnection.connect();
+        mMediaScannerConnection = new MediaScannerConnection(this, this);
+        mMediaScannerConnection.connect();
 
     }
 
@@ -550,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
 
             if (uri != null) {
-                if (menuItem == MENU_ITEM_GALLERY) {
+                if (mMenuItem == MENU_ITEM_GALLERY) {
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
 //                    I do not know why setData(uri) is not working with Marshmallows, it just opens one image (not the folder), with setData(Uri.fromFile) it is working:
@@ -565,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                     startActivity(intent);
 
                 }
-                else if (menuItem == MENU_ITEM_SHARE) {
+                else if (mMenuItem == MENU_ITEM_SHARE) {
                     //
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("*/*");
@@ -578,8 +581,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             }
         }
         finally {
-            mediaScannerConnection.disconnect();
-            mediaScannerConnection = null;
+            mMediaScannerConnection.disconnect();
+            mMediaScannerConnection = null;
         }
 
     }
@@ -845,7 +848,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 fileDescriptor = getContentResolver().openAssetFileDescriptor(uris[0], "r");
 
                 final Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
-                previewPlanetMaker.setInputImage(bitmap);
+                mPreviewPlanetMaker.setInputImage(bitmap);
 
                 final Bitmap cropBitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, 500, 500);
                 final CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
@@ -863,7 +866,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                     @Override
                     public void run() {
                         // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
-//                        imageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
+//                        mImageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
                         updateImageView();
 
                         checkFirstTimeImageOpen();
@@ -901,10 +904,10 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         @Override
         protected Void doInBackground(Uri... uris) {
 
-            if (previewPlanetMaker == null)
+            if (mPreviewPlanetMaker == null)
                 return null;
 
-            Mat planet = previewPlanetMaker.getFullResPlanet();
+            Mat planet = mPreviewPlanetMaker.getFullResPlanet();
 
             if (planet == null) {
                 return null;

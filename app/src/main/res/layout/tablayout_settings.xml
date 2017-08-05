@@ -1,42 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <TabHost
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:tag="orientation_portrait"
-        android:id="@+id/tab_host"    >
+<TabHost
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:tag="orientation_portrait"
+    android:id="@+id/tab_host"    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/tab_scrollview"
         android:layout_alignParentBottom="true">
 
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tab_scrollview"
+            />
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
+        <HorizontalScrollView
+            android:id="@+id/tab_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            >
+
+            <TabWidget
+                android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/tab_scrollview"
-                />
-
-
-
-            <!--<HorizontalScrollView-->
-                <!--android:id="@+id/tab_scrollview"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentBottom="true"-->
-                <!--android:fadeScrollbars="false"-->
-                <!--&gt;-->
-
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!--</HorizontalScrollView>-->
-
-
-    </TabHost>
+                android:layout_height="wrap_content" />
+        </HorizontalScrollView>
+    </LinearLayout>
+</TabHost>
