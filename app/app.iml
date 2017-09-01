@@ -104,7 +104,6 @@
     <orderEntry type="library" exported="" name="appcompat-v7-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="simplecropview-1.1.4" level="project" />
-    <orderEntry type="module" module-name="openCVLibrary320" exported="" />
-    <orderEntry type="library" exported="" name="android-android-23" level="project" />
+    <orderEntry type="module" module-name="openCVLibrary330" exported="" />
   </component>
 </module>

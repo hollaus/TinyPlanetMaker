@@ -18,7 +18,7 @@ using namespace std;
 
 inline void nativeImgBlend(Mat src, Mat dst) {
 
-    float overlapHalf = .03;
+    float overlapHalf = .1;
     int patchHeight = dst.rows * (.5 + overlapHalf);
     dsc::Utils::print("patchHeight", dsc::Utils::num2str(patchHeight));
 
@@ -28,29 +28,35 @@ inline void nativeImgBlend(Mat src, Mat dst) {
     Mat maskTop(patchTop.size(), CV_8U);
     //maskTop(Rect(0, 0, maskTop.cols, maskTop.rows/2+50)).setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
     maskTop.setTo(255); // Mask defines visible region of 1st  image ,+10 is overlapping region
-    //maskTop(Rect(0, (maskTop.rows/2)+50, maskTop.cols, maskTop.rows - (maskTop.rows/2)-50)).setTo(0); //Hidden portion of 1st  image
+    //maskTop(Rect(0, (maskTop.rows/2)+10, maskTop.cols, maskTop.rows - (maskTop.rows/2)-10)).setTo(0); //Hidden portion of 1st  image
     Mat maskBottom(patchBottom.size(), CV_8U);
+    dsc::Utils::print("maskBottom", dsc::Utils::num2str(maskBottom.rows));
+    dsc::Utils::print("maskBottom", dsc::Utils::num2str(maskBottom.cols));
     maskBottom.setTo(255);
-    //maskBottom(Rect(0, 0, maskBottom.cols, maskBottom.rows/2)).setTo(0);//Hidden portion of 2nd image
-    //maskBottom(Rect(0, maskBottom.rows/2, maskBottom.cols, maskBottom.rows - maskBottom.rows/2)).setTo(255);//Visible region of 2nd image
+    // Define parts that do not overlap:
+ //   maskBottom(Rect(0, maskBottom.rows-5, maskBottom.cols, 5)).setTo(123);//Hidden portion of bottom image
+    //maskTop(Rect(0, 0, maskTop.cols, 50)).setTo(0);//Hidden portion of bottom image
 
-
-
-    //cv::detail::FeatherBlender  blender(0.5f); //sharpness
-    cv::detail::MultiBandBlender blender(false, 5);
+    //cv::detail::FeatherBlender  blender(0.01f); //sharpness
+    cv::detail::MultiBandBlender blender(false, 4);
     //blender.prepare(Rect(0, 0, max(patchTop.cols, patchBottom.cols), max(patchTop.rows, patchBottom.rows)));
     blender.prepare(Rect(0, 0, dst.cols, dst.rows));
 
     int patchTopY = dst.rows - patchBottom.rows;
-    dsc::Utils::print("patchTopY", dsc::Utils::num2str(patchTopY));
+    //int patchTopY = 0;
     blender.feed(patchTop, maskTop, Point(0,patchTopY));
     blender.feed(patchBottom, maskBottom, Point(0,0));
-    Mat result_s, result_mask;
-    blender.blend(result_s, result_mask); // TODO: replace with dst
 
+    dsc::Utils::print("patchTopY", dsc::Utils::num2str(patchTopY));
+    dsc::Utils::print("patchBottom.rows", dsc::Utils::num2str(patchBottom.rows));
+    dsc::Utils::print("patchTop.rows", dsc::Utils::num2str(patchTop.rows));
+
+
+    Mat result_s, result_mask;
+    blender.blend(dst, result_mask);
     dsc::Utils::print("height dest", dsc::Utils::num2str(dst.rows));
 
-    cv::resize(result_s, dst, dst.size());
+//    cv::resize(result_s, dst, dst.size());
 
 
 

@@ -3,15 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorSecondary"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     >
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/fade_switch"
+        android:layout_width="wrap_content"
+        android:minWidth="150dp"
+        android:layout_height="match_parent"
+        android:text="@string/fade_title"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:textColorHighlight="#ffffffff"
+        android:paddingTop="20dp"
+        android:paddingLeft="20dp"
+        />
 
     <com.isseiaoki.simplecropview.CropImageView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cropImageView"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
-        android:paddingTop="20dp"
+        android:layout_weight="1"
         android:paddingBottom="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
@@ -23,7 +36,7 @@
         custom:scv_touch_padding="30dp"
         custom:scv_handle_show_mode="show_always"
         custom:scv_guide_show_mode="show_always"
-        custom:scv_min_frame_size="5dp"
+        custom:scv_min_frame_size="50dp"
         custom:scv_frame_stroke_weight="1dp"
         custom:scv_guide_stroke_weight="1dp"/>
 

@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE= 1;
     private static final int PICK_IMAGE_REQUEST = 1;
     public static final int MAX_IMG_SIZE = 3000;
+    public static final int PREVIEW_IMG_SIZE = 700;
     private static final int MENU_ITEM_GALLERY = 0;
     private static final int MENU_ITEM_SHARE = 1;
     private static final String TAG = "Touch";
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         mSizeMinMax = getResources().getIntArray(R.array.size_seekbar_values);
 
-        mPreviewPlanetMaker = new PlanetMaker(mNativeWrapper, 700, mSizeMinMax);
+        mPreviewPlanetMaker = new PlanetMaker(mNativeWrapper, PREVIEW_IMG_SIZE, mSizeMinMax);
 
         initTabFragment();
 

@@ -25,17 +25,13 @@ public class TabFragment extends Fragment {
     private android.support.v7.widget.SwitchCompat mInvertSwitch, mFadeSwitch;
     private CropImageView mCropView;
 
-
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View rootView;
 
         final SeekBar.OnSeekBarChangeListener listener = getSeekBarListener();
-
-
 
         rootView = inflater.inflate(R.layout.tablayout_settings, container, false);
 
@@ -48,7 +44,7 @@ public class TabFragment extends Fragment {
         createZoomTab(inflater, container, listener);
         createInvertTab(inflater, container);
         createCropTab(inflater, container);
-        createFadeTab(inflater, container);
+//        createFadeTab(inflater, container);
 
 
 
@@ -56,14 +52,12 @@ public class TabFragment extends Fragment {
         for (int i = mTabHost.getTabWidget().getTabCount() - 1; i >= 0; i--)
             mTabHost.setCurrentTab(i);
 
-
         return rootView;
 
     }
 
     private void createCropTab(final LayoutInflater inflater, final ViewGroup container) {
         TabHost.TabSpec spec;
-
 
         spec = mTabHost.newTabSpec(getString(R.string.crop_tab));
         spec.setIndicator(createTabView(inflater, container, getString(R.string.crop_title)));
@@ -117,6 +111,9 @@ public class TabFragment extends Fragment {
                         return false;
                     }
                 });
+
+                mFadeSwitch = (android.support.v7.widget.SwitchCompat) view.findViewById(R.id.fade_switch);
+                enableFadeSwitchListener();
 
                 return (view);
 

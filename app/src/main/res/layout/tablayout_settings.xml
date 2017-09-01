@@ -18,17 +18,17 @@
             android:layout_above="@+id/tab_scrollview"
             />
 
-        <HorizontalScrollView
-            android:id="@+id/tab_scrollview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            >
+        <!--<HorizontalScrollView-->
+            <!--android:id="@+id/tab_scrollview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--&gt;-->
 
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </HorizontalScrollView>
+        <!--</HorizontalScrollView>-->
     </LinearLayout>
 </TabHost>
