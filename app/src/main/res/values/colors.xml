@@ -5,6 +5,8 @@
     <color name="colorPrimary">#607d8b</color >
     <color name="colorSecondary">#90a4ae</color>
     <color name="cyan">#33B5E5</color>
+    <color name="mainBGColor">#455a64</color>
+    <color name="white">#fff</color>
 
     <color name="colorDebug">#7541ff07</color >
 

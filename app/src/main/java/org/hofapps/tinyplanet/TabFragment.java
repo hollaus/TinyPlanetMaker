@@ -375,8 +375,8 @@ public class TabFragment extends Fragment {
 
     }
 
-    public void resetCropView() {
-
+    public void resetCropView(boolean isPano) {
+        mFadeSwitch.setChecked(!isPano);
 //        float left = ((CropImageView) v).getActualCropRect().left / (float)((CropImageView) v).getImageBitmap().getWidth();
         mCropView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
     }

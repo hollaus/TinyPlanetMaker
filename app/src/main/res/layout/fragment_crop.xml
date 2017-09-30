@@ -9,22 +9,24 @@
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/fade_switch"
         android:layout_width="wrap_content"
-        android:minWidth="150dp"
+        android:minWidth="200dp"
         android:layout_height="match_parent"
         android:text="@string/fade_title"
         android:layout_centerHorizontal="true"
         android:textColor="#ffffff"
         android:textColorHighlight="#ffffffff"
         android:paddingTop="20dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="20dp"
         />
 
     <com.isseiaoki.simplecropview.CropImageView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cropImageView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_weight="1"
+        android:paddingTop="10dp"
         android:paddingBottom="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"

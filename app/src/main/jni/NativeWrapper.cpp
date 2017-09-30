@@ -38,7 +38,7 @@ inline void nativeImgBlend(Mat src, Mat dst) {
     //maskTop(Rect(0, 0, maskTop.cols, 50)).setTo(0);//Hidden portion of bottom image
 
     //cv::detail::FeatherBlender  blender(0.01f); //sharpness
-    cv::detail::MultiBandBlender blender(false, 4);
+    cv::detail::MultiBandBlender blender(false, 3);
     //blender.prepare(Rect(0, 0, max(patchTop.cols, patchBottom.cols), max(patchTop.rows, patchBottom.rows)));
     blender.prepare(Rect(0, 0, dst.cols, dst.rows));
 

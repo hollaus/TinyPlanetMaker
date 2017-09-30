@@ -4,7 +4,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_open_image">Open image</string>
     <string name="action_save_image">Save image</string>
-    <string name="action_share">Share planet</string>
+    <string name="action_share">Share</string>
     <string name="external_storage_not_accessible_msg">The external storage is not accessible.</string>
     <string name="external_storage_not_accessible_title">File save error</string>
     <string name="no_file_found_msg">Could not find any TinyPlanet image. Save a planet first.</string>
@@ -36,7 +36,7 @@
     <string name="invert_title">Invert</string>
     <string name="zoom_title">Zoom</string>
     <string name="rotate_title">Rotate</string>
-    <string name="fade_title">Fade</string>
+    <string name="fade_title">Blend image border</string>
 
     <string name="crop_tab">crop_tab</string>
     <string name="invert_tab">invert_tab</string>
@@ -45,4 +45,6 @@
     <string name="rotate_tab">rotate_tab</string>
     <string name="warp_tab">warp_tab</string>
     <string name="cancel_text">Cancel</string>
+    <string name="snackbar_msg_text">Image saved</string>
+    <string name="snackbar_button_text">open</string>
 </resources>

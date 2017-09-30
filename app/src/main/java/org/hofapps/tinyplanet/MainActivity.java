@@ -11,9 +11,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -22,8 +22,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,6 +35,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.isseiaoki.simplecropview.CropImageView;
@@ -40,6 +43,7 @@ import com.isseiaoki.simplecropview.CropImageView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -78,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public static final int PREVIEW_IMG_SIZE = 700;
     private static final int MENU_ITEM_GALLERY = 0;
     private static final int MENU_ITEM_SHARE = 1;
-    private static final String TAG = "Touch";
+    private static final String TAG = "MainActivity";
+    private static final String PANO_PREFIX = "PANO_";
 
 
     static {
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (imageUri != null) {
-                FileLoader fileLoader = new FileLoader(this);
+                FileLoader fileLoader = new FileLoader(this, isPano(imageUri));
                 fileLoader.execute(imageUri);
             }
 
@@ -240,11 +245,49 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Uri uri = data.getData();
-
-            FileLoader fileLoader = new FileLoader(this);
+            FileLoader fileLoader = new FileLoader(this, isPano(uri));
             fileLoader.execute(uri);
 
         }
+    }
+
+    /**
+     * Converts an Uri to a 'real' file name in order to find out whether the image is a panorama
+     * image (file name is starting with 'PANO_')
+     * Taken from: https://stackoverflow.com/questions/24322738/android-how-to-get-selected-file-name-from-the-document - Post by cinthiaro
+     * @param uri
+     * @return
+     */
+    private boolean isPano(Uri uri) {
+
+        String uriString = uri.toString();
+        File myFile = new File(uriString);
+        String path = myFile.getAbsolutePath();
+        String displayName = null;
+
+        if (uriString.startsWith("content://")) {
+            Cursor cursor = null;
+            try {
+                cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        } else if (uriString.startsWith("file://")) {
+            displayName = myFile.getName();
+        }
+
+        if (displayName == null)
+            return false;
+
+        if (displayName.startsWith(PANO_PREFIX))
+            return true;
+        else
+            return false;
+
+
     }
 
     private void updateImageView() {
@@ -252,14 +295,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         if (!mPreviewPlanetMaker.getIsImageLoaded())
             return;
 
+
         Mat previewImg = mPreviewPlanetMaker.getPlanetImage();
 
         Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(previewImg, bm);
 
         mImageView.setImageBitmap(bm);
-        mImageView.setBackgroundColor(Color.TRANSPARENT);
-
+        mImageView.setBackgroundColor(getResources().getColor(R.color.mainBGColor));
         mPreviewPlanetMaker.releasePlanetImage();
 
     }
@@ -361,9 +404,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         //                TODO: use a resized version here:
         CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
         view.setImageBitmap(bitmap);
-        tabFragment.resetCropView();
+        tabFragment.resetCropView(true);
 
-        mPreviewPlanetMaker.setInputImage(bitmap);
+        mPreviewPlanetMaker.setInputImage(bitmap, true);
         updateImageView();
 
         checkFirstTimeImageOpen();
@@ -384,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         tabFragment.setWarpBarValue((int) mPreviewPlanetMaker.getSize());
         tabFragment.setZoomBarValue((int) mPreviewPlanetMaker.getScale());
         tabFragment.setInvertPlanetSwitch(mPreviewPlanetMaker.getIsPlanetInverted());
-        tabFragment.resetCropView();
+        tabFragment.resetCropView(false);
 
         updateImageView();
 
@@ -811,31 +854,50 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         protected void onPreExecute() {
 
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage(spinnerText);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    progressDialog = new ProgressDialog(context);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.setMessage(spinnerText);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                }
+
+            });
+
+
 
         }
 
         protected void onPostExecute(Void dummy) {
-            // The Void dummy argument is necessary so that onPostExecute gets called.
-            progressDialog.dismiss();
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    // The Void dummy argument is necessary so that onPostExecute gets called.
+                    progressDialog.dismiss();
+                }
+            });
         }
 
     }
 
     private class FileLoader extends FileHandler {
 
+        private boolean mIsPano;
 
-        public FileLoader(Context context) {
+
+        public FileLoader(Context context, boolean isPano) {
 
             super(context);
             // TODO: check why this is necessary:
             this.context = context;
             spinnerText = getResources().getString(R.string.file_load_text);
+            mIsPano = isPano;
 
             resetPlanetValues();
 
@@ -849,33 +911,23 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 fileDescriptor = getContentResolver().openAssetFileDescriptor(uris[0], "r");
 
                 final Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
-                mPreviewPlanetMaker.setInputImage(bitmap);
+                mPreviewPlanetMaker.setInputImage(bitmap, mIsPano);
 
                 final Bitmap cropBitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, 500, 500);
                 final CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
-                MainActivity.this.runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     public void run() {
                         view.setImageBitmap(cropBitmap);
-                        tabFragment.resetCropView();
-                    }
-                });
-
-
-                // The image view cannot be touched inside the thread because it has been created on the UI thread.
-                runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
+                        tabFragment.resetCropView(mIsPano);
                         // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
 //                        mImageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
                         updateImageView();
-
                         checkFirstTimeImageOpen();
 
-
                     }
-
                 });
+
+
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -895,9 +947,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         public FileSaver(Context context) {
 
             super(context);
-            // TODO: check why this is necessary:
-            this.context = context;
 
+            this.context = context;
             spinnerText = getResources().getString(R.string.file_save_text);
 
         }
@@ -918,7 +969,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             final File outFile = new File(uris[0].getPath());
 
-            boolean imgSaved = Imgcodecs.imwrite(outFile.toString(), planet);
+            MatOfInt params = new MatOfInt();
+            params.fromArray(Imgcodecs.IMWRITE_JPEG_QUALITY, 100);
+            boolean imgSaved = Imgcodecs.imwrite(outFile.toString(), planet, params);
 
             planet.release();
 
@@ -933,17 +986,34 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
                             }
                 });
+
+                runOnUiThread(new Runnable() {
+                                  public void run() {
+                                      Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
+                                              R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
+                                      snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View v) {
+                                              openGallery();
+                                          }
+                                      });
+                                      snackbar.show();
+                                  }});
+
+
             }
 
-
-
             return null;
-
-
         }
-
+//
+//        @Override
+//        protected void onPostExecute(Void a) {
+//
+//        }
 
     }
+
+
 
 
 }

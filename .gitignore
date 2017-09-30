@@ -175,7 +175,6 @@ resources-debug-androidTest.ap_
 openCVLibrary320-debug.aar
 openCVLibrary320-release.aar
 lint.xml
-openCVLibrary320.iml
 OpenCVEngineInterface.aidl
 AsyncServiceHelper.java
 BaseLoaderCallback.java

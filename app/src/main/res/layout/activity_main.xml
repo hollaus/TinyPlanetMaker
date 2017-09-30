@@ -9,13 +9,14 @@
     <!-- The main content view -->
 
     <LinearLayout
+        android:id="@+id/main_view"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#fff"
+        android:background="@color/mainBGColor"
         >
 
         <android.support.v7.widget.Toolbar
@@ -37,7 +38,7 @@
             android:scaleType="fitCenter"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:background="#fff"
+            android:background="@color/white"
             />
 
         <fragment

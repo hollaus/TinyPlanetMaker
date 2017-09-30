@@ -25,11 +25,9 @@ public class PlanetMaker {
     private int mOutputSize;
     private double mSize, mScale, mAngle;
     private RectF mCropRect;
-
     private int mFullOutputSize;
     private int[] mSizeMinMax;
     private boolean mIsImageLoaded, mIsPlanetInverted, mIsFaded;
-//    private int mBorderImgHeight = 150;
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
@@ -45,11 +43,12 @@ public class PlanetMaker {
 
     }
 
-    public void setInputImage(Bitmap bitmap) {
+    public void setInputImage(Bitmap bitmap, boolean isPano) {
 
         if (bitmap == null)
             return;
 
+        mIsFaded = !isPano;
         mIsImageLoaded = true;
         mInputImage = new Mat();
 
@@ -58,8 +57,11 @@ public class PlanetMaker {
             if (bitmap.getConfig() != Bitmap.Config.ARGB_8888 && bitmap.getConfig() != Bitmap.Config.RGB_565)
                 bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
         }
+        else
+            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
 
         Utils.bitmapToMat(bitmap, mInputImage);
+
         mOriginalImage = mInputImage.clone();
 
         mFullOutputSize = Math.max(mInputImage.width(), mInputImage.height());
@@ -262,7 +264,7 @@ public class PlanetMaker {
         if (mIsPlanetInverted)
             Core.flip(tmpInputImage, tmpInputImage, -1);
 
-        double fac = tmpInputImage.width() / mInputImage.width();
+        double fac = tmpInputImage.width() / (double) mInputImage.width();
 
 //        ==============================================================
         if (mCropRect != null) {
@@ -292,6 +294,7 @@ public class PlanetMaker {
         mScale = 105;
         mAngle = 180;
         mCropRect = null;
+        mIsFaded = false;
 
     }
 
@@ -299,11 +302,6 @@ public class PlanetMaker {
 
         if (!mIsImageLoaded)
             return;
-//
-////        mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-////        mOutputImage = mInputImage.clone();
-////        mNativeWrapper.logPolar(mInputImage, mOutputImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-//        mNativeWrapper.blendImgs(mInputImage, mOutputImage);
 
         // mInterimImage is used to store the result of the cropping and fading:
         if (mInterimImage == null)
@@ -312,33 +310,13 @@ public class PlanetMaker {
         mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
         mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
-
-//        if (mCropRect != null) {
-//
-//
-////            Take care here, because the images are flipped after they have been loaded:
-//            Rect flippedRect = flipCropRect(mInputImage.width(), mInputImage.height());
-//            Mat image_roi = mInputImage.submat(flippedRect);
-//
-//            mOutputImage = new Mat(image_roi.rows(), image_roi.cols(), image_roi.type());
-//            mNativeWrapper.logPolar(image_roi, mOutputImage, image_roi.width() * 0.5f, image_roi.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-//
-//        }
-//
-//        else {
-//
-
-
-//            mNativeWrapper.logPolar(mOutputImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-//        }
-
     }
 
     private Mat getFadeImg(Mat interimImage) {
 
 //        Mat result = getBlendImg();
 
-        int borderImgHeight = (int) Math.round(interimImage.cols() * .15);
+        int borderImgHeight = (int) Math.round(interimImage.cols() * .1);
         if ((borderImgHeight % 2) == 1)
             borderImgHeight++;
 
@@ -417,7 +395,6 @@ public class PlanetMaker {
 
         Imgproc.resize(mInputImage, mInputImage, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
-//        Rotate the image 90 degrees:
 
 //        Creates the planet and inverts it:
         Core.flip(mInputImage.t(), mInputImage, 1);
@@ -425,54 +402,18 @@ public class PlanetMaker {
         if (mIsPlanetInverted)
             Core.flip(mInputImage, mInputImage, -1);
 
-
-//        Inverts the planet and undos it:
-//        Core.flip(inputImage.t(), inputImage, 0);
-//        Core.flip(inputImage, inputImage, -1);
-
-        // rotates -90 and undos
-//        Core.flip(inputImage.t(), inputImage, 0);
-//        Core.flip(inputImage.t(), inputImage, 1);
-
-//        This was necessary when the image was opened by OpenCV and NOT Android BitmapFactory
-//            We need COLOR_BGR2RGBA to flip the color channel AND to get a transparent background:
-//        Imgproc.cvtColor(inputImage, inputImage, Imgproc.COLOR_BGR2RGBA);
-
-        // TODO: uncomment:
-//        mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-//        mNativeWrapper.logPolar(mInputImage, mOutputImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-
         mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
         mOutputImage = mInputImage.clone();
         mInterimImage = mInputImage.clone();
-//        mNativeWrapper.blendImgs(mInputImage, mOutputImage);
+
+        if (mIsFaded)
+            mInterimImage = getFadeImg(mInterimImage);
 
         updatePlanet();
 
     }
 
 
-
-    //    private class ComputePlanetTask extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//
-//            isComputingPlanet = true;
-//            mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-//            mNativeWrapper.logPolar(mInputImage, mOutputImage, mInputImage.width() * 0.5f, mInputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-//
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            isComputingPlanet = false;
-//        }
-//    }
-//
-//
-//
     public interface PlanetChangeCallBack {
 
         void onSizeChange(int size);

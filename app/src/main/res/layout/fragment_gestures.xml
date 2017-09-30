@@ -18,57 +18,93 @@
 
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         >
 
-        <RelativeLayout
-            android:id="@+id/warp_relativelayout"
+        <ImageView
+            android:id="@+id/warp_imageview"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:src="@drawable/help_gestures_warp_500px"
+            android:layout_centerHorizontal="true"
+            />
+
+        <TextView
+            android:id="@+id/warp_textview"
+            style="@style/AlertDialogText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/warp_imageview"
-                android:layout_width="200dp"
-                android:layout_height="100dp"
-                android:src="@drawable/help_gestures_warp_500px"
-                />
+            android:layout_height="wrap_content"
+            android:text="Warp"
+            android:layout_below="@id/warp_imageview"
+            android:layout_centerHorizontal="true"/>
 
-            <TextView
-                android:id="@+id/warp_textview"
-                style="@style/AlertDialogText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Warp"
+        <ImageView
+            android:id="@+id/rotate_imageview"
+            android:layout_below="@id/warp_textview"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/help_gestures_rotate_500px"
+            android:layout_centerHorizontal="true"
+            />
 
-                android:layout_below="@id/warp_imageview"
-                android:layout_centerInParent="true"/>
+        <TextView
+            style="@style/AlertDialogText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_below="@id/rotate_imageview"
+            android:layout_centerInParent="true"
+            android:text="Rotate"/>
 
-        </RelativeLayout>
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/warp_relativelayout"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content">-->
+            <!--<ImageView-->
+                <!--android:id="@+id/warp_imageview"-->
+                <!--android:layout_width="200dp"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:src="@drawable/help_gestures_warp_500px"-->
+                <!--/>-->
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/warp_relativelayout">
+            <!--<TextView-->
+                <!--android:id="@+id/warp_textview"-->
+                <!--style="@style/AlertDialogText"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Warp"-->
 
-            <ImageView
-                android:id="@+id/rotate_imageview"
-                android:layout_width="200dp"
-                android:layout_height="100dp"
-                android:src="@drawable/help_gestures_rotate_500px"
+                <!--android:layout_below="@id/warp_imageview"-->
+                <!--android:layout_centerInParent="true"/>-->
 
-                />
+        <!--</RelativeLayout>-->
 
-            <TextView
-                style="@style/AlertDialogText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_below="@id/rotate_imageview"
-                android:layout_centerInParent="true"
-                android:text="Rotate"/>
+    <!--<RelativeLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toRightOf="@id/warp_relativelayout">-->
 
-    </RelativeLayout>
+            <!--<ImageView-->
+                <!--android:id="@+id/rotate_imageview"-->
+                <!--android:layout_width="200dp"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:src="@drawable/help_gestures_rotate_500px"-->
+
+                <!--/>-->
+
+            <!--<TextView-->
+                <!--style="@style/AlertDialogText"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_below="@id/rotate_imageview"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:text="Rotate"/>-->
+
+    <!--</RelativeLayout>-->
 
     </RelativeLayout>
 
