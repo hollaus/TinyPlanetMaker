@@ -600,15 +600,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                 if (mMenuItem == MENU_ITEM_GALLERY) {
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-//                    I do not know why setData(uri) is not working with Marshmallows, it just opens one image (not the folder), with setData(Uri.fromFile) it is working:
 
-                    int currentApiVersion = android.os.Build.VERSION.SDK_INT;
-                    if (currentApiVersion >= Build.VERSION_CODES.M)
-                        intent.setDataAndType(Uri.fromFile(new File(path)), "image/*");
-                    else
-                        intent.setData(uri);
-//
-
+//                    Note this causes the preview to be pixelated:
+//                    intent.setDataAndType(Uri.fromFile(new File(path)), "image/*");
+//                    Not pixelated:
+                    intent.setData(uri);
                     startActivity(intent);
 
                 }
