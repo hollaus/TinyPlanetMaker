@@ -62,6 +62,8 @@
         android:layout_gravity="start"
         android:background="@android:color/white"
         app:menu="@menu/drawer_view"
+        app:itemTextColor="@color/mainBGColor"
+        app:itemIconTint="@color/mainBGColor"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/navigation_view_header"
         />
