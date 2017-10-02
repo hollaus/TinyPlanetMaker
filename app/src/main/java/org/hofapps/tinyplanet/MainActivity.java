@@ -609,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
                 }
                 else if (mMenuItem == MENU_ITEM_SHARE) {
-                    //
+
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType("*/*");
 
@@ -1001,12 +1001,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             return null;
         }
-//
-//        @Override
-//        protected void onPostExecute(Void a) {
-//
-//        }
-
     }
 
 

@@ -19,6 +19,8 @@
         android:layout_height="match_parent"        />
     <org.hofapps.tinyplanet.RangeSeekBar
         android:id="@+id/zoom_seekBar"
+        android:paddingTop="@dimen/seekbar_vertical_padding"
+        android:paddingBottom="@dimen/seekbar_vertical_padding"
         android:gravity="center_vertical"
         android:layout_weight="1"
         android:layout_width="0dp"

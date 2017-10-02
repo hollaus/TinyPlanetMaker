@@ -21,6 +21,8 @@
     <org.hofapps.tinyplanet.RangeSeekBar
         android:id="@+id/rotate_seekBar"
         android:gravity="center_vertical"
+        android:paddingTop="@dimen/seekbar_vertical_padding"
+        android:paddingBottom="@dimen/seekbar_vertical_padding"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
