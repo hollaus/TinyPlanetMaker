@@ -260,9 +260,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
      */
     private boolean isPano(Uri uri) {
 
+        if (uri == null)
+            return false;
+
         String uriString = uri.toString();
-        File myFile = new File(uriString);
-        String path = myFile.getAbsolutePath();
+        File file = new File(uriString);
+        if (file == null)
+            return false;
+
+        String path = file.getAbsolutePath();
         String displayName = null;
 
         if (uriString.startsWith("content://")) {
@@ -273,10 +279,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
                     displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         } else if (uriString.startsWith("file://")) {
-            displayName = myFile.getName();
+            displayName = file.getName();
         }
 
         if (displayName == null)
@@ -675,7 +682,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveFile();
             } else {
                 showNoSavingPermissionDialog();
@@ -683,7 +690,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         }
 
         if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScan(MENU_ITEM_GALLERY);;
             } else {
                 showNoReadingPermissionDialog();
@@ -828,101 +835,49 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
-    // ==================================== File Handler Classes ====================================
-
-    private abstract class FileHandler extends AsyncTask<Uri, Void, Void> {
 
 
-        protected Context context;
-        protected String spinnerText;
-        private ProgressDialog progressDialog;
+    private class FileLoader extends AsyncTask<Uri, Void, Bitmap[]> {
 
-        public FileHandler() {
-
-        }
-
-        public FileHandler(Context context)
-        {
-            this.context = context;
-        }
-
-//        protected abstract void performTask();
-
-        protected void onPreExecute() {
-
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    progressDialog = new ProgressDialog(context);
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progressDialog.setMessage(spinnerText);
-                    progressDialog.setIndeterminate(true);
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                }
-
-            });
-
-
-
-        }
-
-        protected void onPostExecute(Void dummy) {
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    // The Void dummy argument is necessary so that onPostExecute gets called.
-                    progressDialog.dismiss();
-                }
-            });
-        }
-
-    }
-
-    private class FileLoader extends FileHandler {
-
+        private Context mContext;
         private boolean mIsPano;
-
+        private ProgressDialog mProgressDialog;
 
         public FileLoader(Context context, boolean isPano) {
 
-            super(context);
-            // TODO: check why this is necessary:
-            this.context = context;
-            spinnerText = getResources().getString(R.string.file_load_text);
+            mContext = context;
             mIsPano = isPano;
 
             resetPlanetValues();
 
         }
 
-        protected Void doInBackground(Uri... uris) {
+        @Override
+        protected void onPreExecute() {
+
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setMessage(getResources().getString(R.string.file_load_text));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
+        }
+
+        @Override
+        protected Bitmap[] doInBackground(Uri... params) {
 
             try {
 
                 AssetFileDescriptor fileDescriptor;
-                fileDescriptor = getContentResolver().openAssetFileDescriptor(uris[0], "r");
+                fileDescriptor = getContentResolver().openAssetFileDescriptor(params[0], "r");
 
                 final Bitmap bitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
-                mPreviewPlanetMaker.setInputImage(bitmap, mIsPano);
-
                 final Bitmap cropBitmap = ImageReader.decodeSampledBitmapFromResource(getResources(), fileDescriptor, 500, 500);
-                final CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        view.setImageBitmap(cropBitmap);
-                        tabFragment.resetCropView(mIsPano);
-                        // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
-//                        mImageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
-                        updateImageView();
-                        checkFirstTimeImageOpen();
 
-                    }
-                });
+                Bitmap[] result = {bitmap, cropBitmap};
 
+                return result;
 
 
             } catch (FileNotFoundException e) {
@@ -930,27 +885,59 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             }
 
-            return null;
-
+            return  null;
         }
 
+        protected void onPostExecute(final Bitmap[] bitmap) {
+
+            if (bitmap == null) {
+                mProgressDialog.dismiss();
+                return;
+            }
+
+            if (mPreviewPlanetMaker != null)
+                mPreviewPlanetMaker.setInputImage(bitmap[0], mIsPano);
+
+            CropImageView view = (CropImageView) findViewById(R.id.cropImageView);
+            view.setImageBitmap(bitmap[1]);
+            tabFragment.resetCropView(mIsPano);
+            // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
+            //                        mImageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
+            updateImageView();
+            checkFirstTimeImageOpen();
+
+            mProgressDialog.dismiss();
+
+        }
 
 
     }
 
-    private class FileSaver extends FileHandler {
+    private class FileSaver extends AsyncTask<Uri, Void, String> {
 
-        public FileSaver(Context context) {
+        private ProgressDialog mProgressDialog;
+        private Context mContext;
 
-            super(context);
+        private FileSaver(Context context) {
 
-            this.context = context;
-            spinnerText = getResources().getString(R.string.file_save_text);
+            mContext = context;
 
         }
 
         @Override
-        protected Void doInBackground(Uri... uris) {
+        protected void onPreExecute() {
+
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setMessage(getResources().getString(R.string.file_save_text));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Uri... uris) {
 
             if (mPreviewPlanetMaker == null)
                 return null;
@@ -971,39 +958,45 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
             planet.release();
 
-            if (imgSaved) {
+            if (imgSaved)
+                return outFile.getAbsolutePath();
+            else
+                return "";
 
-                 MediaScannerConnection.scanFile(context,
-                        new String[]{outFile.toString()}, null,
+        }
+
+        @Override
+        protected void onPostExecute(String path) {
+
+            if (!path.isEmpty()) {
+
+                MediaScannerConnection.scanFile(mContext,
+                        new String[]{path}, null,
                         new MediaScannerConnection.OnScanCompletedListener() {
 
                             public void onScanCompleted(String path, Uri uri) {
 
 
                             }
+                        });
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
+                        R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openGallery();
+                    }
                 });
-
-                runOnUiThread(new Runnable() {
-                                  public void run() {
-                                      Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
-                                              R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
-                                      snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View v) {
-                                              openGallery();
-                                          }
-                                      });
-                                      snackbar.show();
-                                  }});
-
+                snackbar.show();
 
             }
 
-            return null;
+
+
+            mProgressDialog.dismiss();
+
         }
     }
-
-
-
 
 }

@@ -3,7 +3,6 @@ package org.hofapps.tinyplanet;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -320,9 +319,6 @@ public class PlanetMaker {
         if ((borderImgHeight % 2) == 1)
             borderImgHeight++;
 
-        Log.d(this.getClass().getName(), "borderImgHeight: " + borderImgHeight);
-//        if (borderImgHeight <= 100)
-//            borderImgHeight = 100;
 
         Mat blendImg = getBlendImg(interimImage, borderImgHeight);
 
