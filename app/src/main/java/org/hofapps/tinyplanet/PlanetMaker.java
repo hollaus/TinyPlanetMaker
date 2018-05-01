@@ -322,6 +322,12 @@ public class PlanetMaker {
 
         Mat blendImg = getBlendImg(interimImage, borderImgHeight);
 
+        Bitmap bmpOut =
+                Bitmap.createBitmap(blendImg.width(), blendImg.height(),
+                        Bitmap.Config.ARGB_8888);
+
+        Utils.matToBitmap(blendImg, bmpOut);
+
         // Calculate the cutoff in the mInterimImage:
         // Note the same formula is used in NativeWrapper
         float overlapHalf = .1f;
