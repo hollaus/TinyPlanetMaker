@@ -2,6 +2,7 @@ package org.hofapps.tinyplanet;
 
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import org.opencv.android.Utils;
@@ -27,6 +28,7 @@ public class PlanetMaker {
     private int mFullOutputSize;
     private int[] mSizeMinMax;
     private boolean mIsImageLoaded, mIsPlanetInverted, mIsFaded;
+    private PlanetTaskCallBack mTaskCallBack;
 
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
@@ -280,6 +282,7 @@ public class PlanetMaker {
             tmpInputImage = getFadeImg(tmpInputImage);
         }
 
+//        TODO: replace with the TaskCallback:
         mNativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, mSize * fac, mScale, mAngle * DEG2RAD);
         tmpInputImage.release();
 
@@ -306,8 +309,9 @@ public class PlanetMaker {
         if (mInterimImage == null)
             mInterimImage = mInputImage.clone();
 
-        mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-        mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+//        mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+        new PlanetTask().execute(mInterimImage);
+//        mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
     }
 
@@ -415,6 +419,39 @@ public class PlanetMaker {
 
     }
 
+    public void setTaskCallBack(PlanetTaskCallBack taskCallBack) {
+        mTaskCallBack = taskCallBack;
+    }
+
+//    mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+//        mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+
+
+    private class PlanetTask extends AsyncTask<Mat, Void, Mat> {
+
+        @Override
+        protected Mat doInBackground(Mat... mats) {
+
+            Mat out = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+            mNativeWrapper.logPolar(mats[0], out, out.width() * 0.5f, out.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+
+            return out;
+
+        }
+
+        protected void onPostExecute(Mat result) {
+
+            mTaskCallBack.onPlanetComputed(result);
+
+        }
+
+    }
+
+    public interface PlanetTaskCallBack {
+
+        void onPlanetComputed(Mat mat);
+
+    }
 
     public interface PlanetChangeCallBack {
 

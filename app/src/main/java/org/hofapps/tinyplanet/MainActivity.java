@@ -56,8 +56,8 @@ import java.util.Date;
 //import org.opencv.highgui.Highgui;
 
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
-        MediaScannerConnectionClient, ActivityCompat.OnRequestPermissionsResultCallback,
-        SamplesFragment.SampleSelectedCallBack {
+        PlanetMaker.PlanetTaskCallBack, MediaScannerConnectionClient,
+        ActivityCompat.OnRequestPermissionsResultCallback, SamplesFragment.SampleSelectedCallBack {
 
     private NativeWrapper mNativeWrapper;
     private ImageView mImageView;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     private int mMenuItem = -1;
     private OnPlanetTouchListener mOnPlanetTouchListener;
     private MediaScannerConnection mMediaScannerConnection;
-
+    private PlanetMaker.PlanetTaskCallBack mPlanetTaskCallBack;
 
     private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 2;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE= 1;
@@ -123,6 +123,15 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         mPreviewPlanetMaker = new PlanetMaker(mNativeWrapper, PREVIEW_IMG_SIZE, mSizeMinMax);
 
+        mPlanetTaskCallBack = new PlanetMaker.PlanetTaskCallBack() {
+            @Override
+            public void onPlanetComputed(Mat mat) {
+                updateImageView(mat);
+            }
+        };
+
+        mPreviewPlanetMaker.setTaskCallBack(mPlanetTaskCallBack);
+
         initTabFragment();
 
         Intent intent = getIntent();
@@ -149,14 +158,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     }
 
     private void initTabFragment() {
+
         FragmentManager fragmentManager = getFragmentManager();
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment_land);
-        else
-            tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
+        tabFragment = (TabFragment) fragmentManager.findFragmentById(R.id.settings_fragment);
 
         tabFragment.initSeekBarValues((int) mPreviewPlanetMaker.getSize(), (int) mPreviewPlanetMaker.getScale(), (int) mPreviewPlanetMaker.getAngle());
+
     }
 
     private void initToolbar() {
@@ -297,6 +305,17 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     }
 
+    private void updateImageView(Mat previewImg) {
+
+        Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(previewImg, bm);
+
+        mImageView.setImageBitmap(bm);
+        mImageView.setBackgroundColor(getResources().getColor(R.color.mainBGColor));
+        mPreviewPlanetMaker.releasePlanetImage();
+
+    }
+
     private void updateImageView() {
 
         if (!mPreviewPlanetMaker.getIsImageLoaded())
@@ -318,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onSizeChange(int size) {
 
         mPreviewPlanetMaker.setSize((double) size);
-        updateImageView();
+//        updateImageView();
 
     }
 
@@ -326,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onScaleChange(int scale) {
 
         mPreviewPlanetMaker.setScale((double) scale);
-        updateImageView();
+//        updateImageView();
 
     }
 
@@ -334,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onAngleChange(int angle) {
 
         mPreviewPlanetMaker.setAngle((double) angle);
-        updateImageView();
+//        updateImageView();
 
     }
 
@@ -347,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 //            angle = angleMinMax[SettingsFragment.ARRAY_MAX_POS];
 
         mPreviewPlanetMaker.addAngle(angle);
-        updateImageView();
+//        updateImageView();
 
         tabFragment.setRotateBarValue((int) mPreviewPlanetMaker.getAngle());
 
@@ -357,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void addScaleLog(float scale) {
 
         mPreviewPlanetMaker.addScale(scale);
-        updateImageView();
+//        updateImageView();
 
         tabFragment.setWarpBarValue((int) mPreviewPlanetMaker.getSize());
 
@@ -367,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onInvertChange(boolean isInverted) {
 
         mPreviewPlanetMaker.invert(isInverted);
-        updateImageView();
+//        updateImageView();
 
     }
 
@@ -375,14 +394,14 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onFadeChange(boolean isFaded) {
 
         mPreviewPlanetMaker.fade(isFaded);
-        updateImageView();
+//        updateImageView();
     }
 
     @Override
     public void onCrop(RectF rect) {
 
         mPreviewPlanetMaker.setCropRect(rect);
-        updateImageView();
+//        updateImageView();
 
     }
 
@@ -417,6 +436,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         updateImageView();
 
         checkFirstTimeImageOpen();
+
+    }
+
+    @Override
+    public void onPlanetComputed(Mat mat) {
+
+
 
     }
 
@@ -968,33 +994,34 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         @Override
         protected void onPostExecute(String path) {
 
-            if (!path.isEmpty()) {
+            if (path != null) {
+                if (!path.isEmpty()) {
 
-                MediaScannerConnection.scanFile(mContext,
-                        new String[]{path}, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
+                    MediaScannerConnection.scanFile(mContext,
+                            new String[]{path}, null,
+                            new MediaScannerConnection.OnScanCompletedListener() {
 
-                            public void onScanCompleted(String path, Uri uri) {
+                                public void onScanCompleted(String path, Uri uri) {
 
 
-                            }
-                        });
+                                }
+                            });
 
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
-                        R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openGallery();
-                    }
-                });
-                snackbar.show();
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
+                            R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
+                    snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openGallery();
+                        }
+                    });
+                    snackbar.show();
 
+                }
             }
 
-
-
-            mProgressDialog.dismiss();
+            if (mProgressDialog != null)
+                mProgressDialog.dismiss();
 
         }
     }

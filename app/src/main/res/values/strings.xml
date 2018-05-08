@@ -14,7 +14,7 @@
     <string name="file_save_text">Saving file...</string>
     <string name="invert_text">Invert</string>
     <string name="action_help_about_title">About</string>
-    <string name="about_msg">Tiny Planet Maker\n© Fabian Hollaus, 2017</string>
+    <string name="about_msg">Tiny Planet Maker\n© Fabian Hollaus, 2018</string>
     <string name="action_about">About</string>
     <string name="action_reset">Reset values</string>
     <string name="action_help">Help</string>
