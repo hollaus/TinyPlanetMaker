@@ -29,7 +29,8 @@ public class PlanetMaker {
     private int[] mSizeMinMax;
     private boolean mIsImageLoaded, mIsPlanetInverted, mIsFaded;
     private PlanetTaskCallBack mTaskCallBack;
-
+    private boolean mIsComputing = false;
+    private boolean mIsComputingPostponed = false;
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
 
@@ -298,6 +299,9 @@ public class PlanetMaker {
         mCropRect = null;
         mIsFaded = false;
 
+        mIsComputingPostponed = false;
+        mIsComputing = false;
+
     }
 
     private void updatePlanet() {
@@ -305,13 +309,19 @@ public class PlanetMaker {
         if (!mIsImageLoaded)
             return;
 
+        if (mIsComputing) {
+            mIsComputingPostponed = true;
+            return;
+        }
+
+        mIsComputingPostponed = false;
+
         // mInterimImage is used to store the result of the cropping and fading:
         if (mInterimImage == null)
             mInterimImage = mInputImage.clone();
 
-//        mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
-        new PlanetTask().execute(mInterimImage);
-//        mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+        if (!mIsComputing)
+            new PlanetTask().execute(mInterimImage);
 
     }
 
@@ -432,6 +442,8 @@ public class PlanetMaker {
         @Override
         protected Mat doInBackground(Mat... mats) {
 
+            mIsComputing = true;
+
             Mat out = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
             mNativeWrapper.logPolar(mats[0], out, out.width() * 0.5f, out.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
@@ -442,6 +454,10 @@ public class PlanetMaker {
         protected void onPostExecute(Mat result) {
 
             mTaskCallBack.onPlanetComputed(result);
+            mIsComputing = false;
+
+            if (mIsComputingPostponed)
+                updatePlanet();
 
         }
 

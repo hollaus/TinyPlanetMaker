@@ -56,7 +56,7 @@ import java.util.Date;
 //import org.opencv.highgui.Highgui;
 
 public class MainActivity extends AppCompatActivity implements PlanetMaker.PlanetChangeCallBack,
-        PlanetMaker.PlanetTaskCallBack, MediaScannerConnectionClient,
+        MediaScannerConnectionClient,
         ActivityCompat.OnRequestPermissionsResultCallback, SamplesFragment.SampleSelectedCallBack {
 
     private NativeWrapper mNativeWrapper;
@@ -436,13 +436,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         updateImageView();
 
         checkFirstTimeImageOpen();
-
-    }
-
-    @Override
-    public void onPlanetComputed(Mat mat) {
-
-
 
     }
 
