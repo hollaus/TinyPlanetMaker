@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -31,6 +32,8 @@ public class PlanetMaker {
     private PlanetTaskCallBack mTaskCallBack;
     private boolean mIsComputing = false;
     private boolean mIsComputingPostponed = false;
+
+    private static String TAG = "PlanetMaker";
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
 
@@ -304,6 +307,10 @@ public class PlanetMaker {
 
     }
 
+    public void computePlanet() {
+        updatePlanet();
+    }
+
     private void updatePlanet() {
 
         if (!mIsImageLoaded)
@@ -319,6 +326,8 @@ public class PlanetMaker {
         // mInterimImage is used to store the result of the cropping and fading:
         if (mInterimImage == null)
             mInterimImage = mInputImage.clone();
+
+        Log.d(TAG, "mInterimImage.cols" + mInterimImage.cols());
 
         if (!mIsComputing)
             new PlanetTask().execute(mInterimImage);
@@ -412,6 +421,8 @@ public class PlanetMaker {
         Imgproc.resize(mInputImage, mInputImage, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
 
+        Log.d(TAG, "mOutputSize: " + mOutputSize);
+
 //        Creates the planet and inverts it:
         Core.flip(mInputImage.t(), mInputImage, 1);
 
@@ -444,7 +455,9 @@ public class PlanetMaker {
 
             mIsComputing = true;
 
-            Mat out = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
+            Log.d(TAG, "mInputImage.cols : " + mats[0].cols());
+            Log.d(TAG, "mInputImage.rows : " + mats[0].rows());
+            Mat out = new Mat(mats[0].rows(), mats[0].cols(), mats[0].type());
             mNativeWrapper.logPolar(mats[0], out, out.width() * 0.5f, out.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
             return out;

@@ -310,6 +310,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         Bitmap bm = Bitmap.createBitmap(previewImg.cols(), previewImg.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(previewImg, bm);
 
+        Log.d(TAG, "bm w: " + bm.getWidth() + " bm h: " + bm.getHeight());
+
         mImageView.setImageBitmap(bm);
         mImageView.setBackgroundColor(getResources().getColor(R.color.mainBGColor));
         mPreviewPlanetMaker.releasePlanetImage();
@@ -433,7 +435,8 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         tabFragment.resetCropView(true);
 
         mPreviewPlanetMaker.setInputImage(bitmap, true);
-        updateImageView();
+//        updateImageView();
+
 
         checkFirstTimeImageOpen();
 
@@ -454,8 +457,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         tabFragment.setZoomBarValue((int) mPreviewPlanetMaker.getScale());
         tabFragment.setInvertPlanetSwitch(mPreviewPlanetMaker.getIsPlanetInverted());
         tabFragment.resetCropView(false);
-
-        updateImageView();
 
     }
 
@@ -922,7 +923,10 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             tabFragment.resetCropView(mIsPano);
             // The image view is initialized with a fixed height in order to show the 'gray planet' in a nice manner. Now we need to undo this initialization:
             //                        mImageView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
-            updateImageView();
+//            updateImageView();
+
+            mPreviewPlanetMaker.computePlanet();
+
             checkFirstTimeImageOpen();
 
             mProgressDialog.dismiss();
