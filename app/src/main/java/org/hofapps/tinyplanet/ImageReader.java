@@ -1,7 +1,6 @@
 package org.hofapps.tinyplanet;
 
 import android.content.res.AssetFileDescriptor;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -33,8 +32,28 @@ public class ImageReader {
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, AssetFileDescriptor fileDescriptor,
-                                                         int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapWithMaxHeight(AssetFileDescriptor fileDescriptor) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeResource(res, resId, options);
+
+        BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
+
+        int w = Math.max(options.outWidth, options.outHeight);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, w, w);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
+    }
+
+
+    public static Bitmap decodeSampledBitmap(AssetFileDescriptor fileDescriptor,
+                                             int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -50,4 +69,7 @@ public class ImageReader {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
     }
+
 }
+
+
