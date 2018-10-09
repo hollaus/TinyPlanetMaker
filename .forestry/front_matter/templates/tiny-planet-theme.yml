@@ -6,4 +6,5 @@ fields:
 - type: textarea
   name: first_site_test
 pages:
+- title-page.md
 - _posts/test.md
