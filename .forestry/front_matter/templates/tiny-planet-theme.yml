@@ -5,3 +5,5 @@ is_partial: false
 fields:
 - type: textarea
   name: first_site_test
+pages:
+- _posts/test.md
