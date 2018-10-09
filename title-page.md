@@ -8,6 +8,5 @@ first_site_test: |-
 
   asdf
   sadf
-published: false
 
 ---
