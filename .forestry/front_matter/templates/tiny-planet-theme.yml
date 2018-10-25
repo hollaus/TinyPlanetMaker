@@ -1,0 +1,10 @@
+---
+label: tiny planet theme
+hide_body: false
+is_partial: false
+fields:
+- type: textarea
+  name: first_site_test
+pages:
+- title-page.md
+- _posts/test.md
