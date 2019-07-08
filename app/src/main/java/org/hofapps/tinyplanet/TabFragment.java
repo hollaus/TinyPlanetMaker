@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,9 +26,13 @@ public class TabFragment extends Fragment {
     private android.support.v7.widget.SwitchCompat mInvertSwitch, mFadeSwitch;
     private CropImageView mCropView;
 
+    private static final String CLASS_NAME = "TabFragment";
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d(CLASS_NAME, "onCreateView");
 
         View rootView;
 
@@ -44,9 +49,6 @@ public class TabFragment extends Fragment {
         createZoomTab(inflater, container, listener);
         createInvertTab(inflater, container);
         createCropTab(inflater, container);
-//        createFadeTab(inflater, container);
-
-
 
         // Initialize the tabs. Otherwise they will be initialized after the user clicks on them, but we need to connect the sliders to the callback:
         for (int i = mTabHost.getTabWidget().getTabCount() - 1; i >= 0; i--)
@@ -70,17 +72,17 @@ public class TabFragment extends Fragment {
                 View view = inflater.inflate(R.layout.fragment_crop, container, false);
 
                 mCropView = (CropImageView) view.findViewById(R.id.cropImageView);
-                mCropView.setCropCallback(new CropCallback() {
-                    @Override
-                    public void onSuccess(Bitmap cropped) {
-
-                    }
-
-                    @Override
-                    public void onError() {
-
-                    }
-                });
+//                mCropView.setCropCallback(new CropCallback() {
+//                    @Override
+//                    public void onSuccess(Bitmap cropped) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//
+//                    }
+//                });
 
                 mCropView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -378,7 +380,7 @@ public class TabFragment extends Fragment {
     public void resetCropView(boolean isPano) {
         mFadeSwitch.setChecked(!isPano);
 //        float left = ((CropImageView) v).getActualCropRect().left / (float)((CropImageView) v).getImageBitmap().getWidth();
-        mCropView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
+        mCropView.setCropMode(CropImageView.CropMode.FREE);
     }
 
     public void initSeekBarValues(int size, int scale, int angle) {

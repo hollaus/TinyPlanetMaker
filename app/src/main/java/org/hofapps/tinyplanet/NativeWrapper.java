@@ -12,8 +12,8 @@ public class NativeWrapper {
 //        System.loadLibrary("MyLib");
 //    }
 
-    public void blendImgs(Mat src, Mat dst) {
-        nativeImgBlend(src.getNativeObjAddr(), dst.getNativeObjAddr());
+    public void blendImgs(Mat src, Mat dst, int borderHeight) {
+        nativeImgBlend(src.getNativeObjAddr(), dst.getNativeObjAddr(), borderHeight);
     }
 
     public void logPolar(Mat src, Mat dst, float xCenter, float yCenter, double scaleLog, double scale, double angle) {
@@ -23,7 +23,7 @@ public class NativeWrapper {
     }
 
     private static native void nativeLogPolar(long src, long dst, float xCenter, float yCenter,  double scaleLog, double scale, double angle);
-    private static native void nativeImgBlend(long src, long dst);
+    private static native void nativeImgBlend(long src, long dst, int borderHeight);
 
     public native static String getStringFromNative();
 }

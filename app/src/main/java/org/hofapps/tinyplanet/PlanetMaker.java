@@ -3,12 +3,10 @@ package org.hofapps.tinyplanet;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Size;
@@ -33,7 +31,7 @@ public class PlanetMaker {
     private boolean mIsComputing = false;
     private boolean mIsComputingPostponed = false;
 
-    private static String TAG = "PlanetMaker";
+    private static String CLASS_NAME = "PlanetMaker";
 
     public PlanetMaker(NativeWrapper nativeWrapper,int outputSize, int[] sizeMinMax) {
 
@@ -93,14 +91,6 @@ public class PlanetMaker {
     public boolean getIsImageLoaded() {
 
         return mIsImageLoaded;
-
-    }
-
-
-    public void releasePlanetImage() {
-
-//        planetImage.release();
-
 
     }
 
@@ -261,8 +251,8 @@ public class PlanetMaker {
 
         Mat tmpInputImage = mOriginalImage.clone();
         Imgproc.resize(tmpInputImage, tmpInputImage, new Size(mFullOutputSize, mFullOutputSize), 0, 0, Imgproc.INTER_CUBIC);
-        Mat fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), mInputImage.type());
 
+//        Mat fullResPlanet = new Mat();
 //        Rotate the image 90 degrees:
         Core.flip(tmpInputImage.t(), tmpInputImage, 1);
 
@@ -278,7 +268,7 @@ public class PlanetMaker {
             Rect flippedRect = flipCropRect(tmpInputImage.width(), tmpInputImage.height());
             Mat image_roi = tmpInputImage.submat(flippedRect);
             tmpInputImage = image_roi.clone();
-            fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), mInputImage.type());
+//            fullResPlanet = new Mat(tmpInputImage.rows(), tmpInputImage.cols(), mInputImage.type());
         }
 //        ==============================================================
 
@@ -286,11 +276,13 @@ public class PlanetMaker {
             tmpInputImage = getFadeImg(tmpInputImage);
         }
 
+
+        Mat result = new Mat(tmpInputImage.cols(), tmpInputImage.cols(), tmpInputImage.type());
 //        TODO: replace with the TaskCallback:
-        mNativeWrapper.logPolar(tmpInputImage, fullResPlanet, tmpInputImage.width() * 0.5f, tmpInputImage.height() * 0.5f, mSize * fac, mScale, mAngle * DEG2RAD);
+        mNativeWrapper.logPolar(tmpInputImage, result, tmpInputImage.width() * 0.5f, tmpInputImage.width() * 0.5f, mSize * fac, mScale, mAngle * DEG2RAD);
         tmpInputImage.release();
 
-        return fullResPlanet;
+        return result;
 
     }
 
@@ -327,7 +319,7 @@ public class PlanetMaker {
         if (mInterimImage == null)
             mInterimImage = mInputImage.clone();
 
-        Log.d(TAG, "mInterimImage.cols" + mInterimImage.cols());
+        Log.d(CLASS_NAME, "mInterimImage.cols" + mInterimImage.cols());
 
         if (!mIsComputing)
             new PlanetTask().execute(mInterimImage);
@@ -336,55 +328,14 @@ public class PlanetMaker {
 
     private Mat getFadeImg(Mat interimImage) {
 
-//        Mat result = getBlendImg();
-
         int borderImgHeight = (int) Math.round(interimImage.cols() * .1);
         if ((borderImgHeight % 2) == 1)
             borderImgHeight++;
 
-
-        Mat blendImg = getBlendImg(interimImage, borderImgHeight);
-
-        Bitmap bmpOut =
-                Bitmap.createBitmap(blendImg.width(), blendImg.height(),
-                        Bitmap.Config.ARGB_8888);
-
-        Utils.matToBitmap(blendImg, bmpOut);
-
-        // Calculate the cutoff in the mInterimImage:
-        // Note the same formula is used in NativeWrapper
-        float overlapHalf = .1f;
-        int patchHeight = (int) Math.round(borderImgHeight * (.5 + overlapHalf));
-        int cutOff = Math.round(patchHeight - (float) borderImgHeight / 2);
-        int cutPatchHeight = patchHeight - cutOff;
-        if (cutOff <= 0 || cutPatchHeight <= 0)
-            return interimImage;
-
-        Mat result = interimImage.rowRange(cutOff, interimImage.rows()-cutOff).clone();
-
-        Mat subMatBlendedTop = result.submat(0, patchHeight-cutOff, 0, result.cols());
-        blendImg.submat(cutPatchHeight, blendImg.rows(), 0, result.cols()).copyTo(subMatBlendedTop);
-
-        Mat subMatBlendedBottom = result.submat(result.rows()-cutPatchHeight, result.rows(), 0, result.cols());
-        blendImg.submat(0, cutPatchHeight, 0, result.cols()).copyTo(subMatBlendedBottom);
+        Mat result = new Mat();
+        mNativeWrapper.blendImgs(interimImage, result, borderImgHeight);
 
         return result;
-
-    }
-
-    @NonNull
-    private Mat getBlendImg(Mat interimImage, int borderImgHeight) {
-
-        Mat tmp = new Mat();
-        Imgproc.cvtColor(interimImage, tmp, Imgproc.COLOR_RGBA2RGB);
-        tmp.convertTo(tmp, CvType.CV_16SC3);
-
-        Mat blendImg = new Mat(borderImgHeight, interimImage.cols(), tmp.type());
-
-        mNativeWrapper.blendImgs(tmp, blendImg);
-        blendImg.convertTo(blendImg, interimImage.type());
-        Imgproc.cvtColor(blendImg, blendImg, Imgproc.COLOR_RGB2RGBA);
-        return blendImg;
 
     }
 
@@ -421,7 +372,7 @@ public class PlanetMaker {
         Imgproc.resize(mInputImage, mInputImage, new Size(mOutputSize, mOutputSize), 0, 0, Imgproc.INTER_CUBIC);
 
 
-        Log.d(TAG, "mOutputSize: " + mOutputSize);
+        Log.d(CLASS_NAME, "mOutputSize: " + mOutputSize);
 
 //        Creates the planet and inverts it:
         Core.flip(mInputImage.t(), mInputImage, 1);
@@ -444,6 +395,19 @@ public class PlanetMaker {
         mTaskCallBack = taskCallBack;
     }
 
+    public void releaseImgs() {
+
+        if (mOriginalImage != null)
+            mOriginalImage.release();
+        if (mInputImage != null)
+            mInputImage.release();
+        if (mInterimImage != null)
+            mInterimImage.release();
+        if (mOutputImage != null)
+            mOutputImage.release();
+        Log.d(CLASS_NAME, "releaseImgs: done");
+    }
+
 //    mOutputImage = new Mat(mInputImage.rows(), mInputImage.cols(), mInputImage.type());
 //        mNativeWrapper.logPolar(mInterimImage, mOutputImage, mOutputImage.width() * 0.5f, mOutputImage.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
 
@@ -455,11 +419,10 @@ public class PlanetMaker {
 
             mIsComputing = true;
 
-            Log.d(TAG, "mInputImage.cols : " + mats[0].cols());
-            Log.d(TAG, "mInputImage.rows : " + mats[0].rows());
-            Mat out = new Mat(mats[0].rows(), mats[0].cols(), mats[0].type());
-            mNativeWrapper.logPolar(mats[0], out, out.width() * 0.5f, out.height() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
-
+            Log.d(CLASS_NAME, "PlanetTask: doInBackGround");
+            Mat out = new Mat(mats[0].cols(), mats[0].cols(), mats[0].type());
+            mNativeWrapper.logPolar(mats[0], out, out.width() * 0.5f, out.width() * 0.5f, mSize, mScale, mAngle * DEG2RAD);
+//            Mat out = mats[0];
             return out;
 
         }

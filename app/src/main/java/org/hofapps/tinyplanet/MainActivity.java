@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public static final int PREVIEW_IMG_SIZE = 800;
     private static final int MENU_ITEM_GALLERY = 0;
     private static final int MENU_ITEM_SHARE = 1;
-    private static final String TAG = "MainActivity";
+    private static final String CLASS_NAME = "MainActivity";
     private static final String PANO_PREFIX = "PANO_";
 
 
@@ -92,11 +94,11 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         // It seems like we need this for Android 4:
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
-            Log.d(TAG, "not inited");
+            Log.d(CLASS_NAME, "not inited");
         } else {
             System.loadLibrary("wrapper");
             System.loadLibrary("opencv_java3");
-            Log.d(TAG, "inited");
+            Log.d(CLASS_NAME, "inited");
         }
 
     }
@@ -105,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        Log.d(CLASS_NAME, "onCreate");
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         mImageView = findViewById(R.id.imageView);
 
@@ -190,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
+        Log.d(CLASS_NAME, "onPostCreate");
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
@@ -199,6 +204,27 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onResume() {
+
+
+        super.onResume();
+
+        Log.d(getClass().getName(), "onResume");
+
+    }
+
+    @Override
+    public void onStop() {
+
+        super.onStop();
+
+//        mPlanetMaker.releaseImgs();
+
+        Log.d(getClass().getName(), "onStop");
+
     }
 
     @Override
@@ -312,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
         mImageView.setImageBitmap(bm);
         mImageView.setBackgroundColor(getResources().getColor(R.color.mainBGColor));
-        mPlanetMaker.releasePlanetImage();
 
     }
 
@@ -848,14 +873,13 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
 
                 AssetFileDescriptor fileDescriptor;
                 fileDescriptor = getContentResolver().openAssetFileDescriptor(params[0], "r");
+                if (fileDescriptor != null) {
+                    final Bitmap bitmap = ImageReader.decodeSampledBitmap(fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
+                    final Bitmap cropBitmap = ImageReader.decodeSampledBitmap(fileDescriptor, 500, 500);
+                    Bitmap[] result = {bitmap, cropBitmap};
 
-
-                final Bitmap bitmap = ImageReader.decodeSampledBitmap(fileDescriptor, MAX_IMG_SIZE, MAX_IMG_SIZE);
-                final Bitmap cropBitmap = ImageReader.decodeSampledBitmap(fileDescriptor, 500, 500);
-
-                Bitmap[] result = {bitmap, cropBitmap};
-
-                return result;
+                    return result;
+                }
 
 
             } catch (FileNotFoundException e) {
@@ -917,6 +941,9 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
         @Override
         protected String doInBackground(Uri... uris) {
 
+            if (uris[0] == null)
+                return null;
+
             if (mPlanetMaker == null)
                 return null;
 
@@ -949,25 +976,49 @@ public class MainActivity extends AppCompatActivity implements PlanetMaker.Plane
             if (path != null) {
                 if (!path.isEmpty()) {
 
-                    MediaScannerConnection.scanFile(mContext,
-                            new String[]{path}, null,
-                            new MediaScannerConnection.OnScanCompletedListener() {
+//                    MediaScannerConnection.scanFile(mContext,
+//                            new String[]{path}, null,
+//                            new MediaScannerConnection.OnScanCompletedListener() {
+//
+//                                public void onScanCompleted(String path, Uri uri) {
+//                                }
+//                            });
 
-                                public void onScanCompleted(String path, Uri uri) {
+                    final String p = path;
 
+                    Snackbar.make(findViewById(R.id.main_view), R.string.snackbar_msg_text, Snackbar.LENGTH_LONG    )
+                            .setAction("OPEN", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 
+                                    Uri path = FileProvider.getUriForFile(getApplicationContext(),
+                                            "org.hofapps.fileprovider", new File(p));
+                                    Intent intent = new Intent(Intent.ACTION_VIEW);
+//                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                    intent.setDataAndType(path, "image/*");
+                                    intent.setData(path);
+                                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    try {
+                                        startActivity(intent);
+                                    }
+                                    catch (ActivityNotFoundException e) {
+//                                        Crashlytics.logException(e);
+//                                        Helper.showActivityNotFoundAlert(mContext);
+                                    }
                                 }
-                            });
+                            })
+                            .show();
+//                }
 
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
-                            R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
-                    snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            openGallery();
-                        }
-                    });
-                    snackbar.show();
+//                    Snackbar snackbar = Snackbar.make(findViewById(R.id.main_view),
+//                            R.string.snackbar_msg_text, Snackbar.LENGTH_LONG);
+//                    snackbar.setAction(R.string.snackbar_button_text, new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            openGallery();
+//                        }
+//                    });
+//                    snackbar.show();
 
                 }
             }
